@@ -101,62 +101,6 @@
         "airport"
       ],
       "active": true
-    },
-    "mangalore": {
-      "name": "Mangalore",
-      "validFor": [
-        "city",
-        "intercity",
-        "tempo"
-      ],
-      "active": true
-    },
-    "mangalore-airport": {
-      "name": "Mangalore Airport",
-      "validFor": [
-        "airport"
-      ],
-      "active": true
-    },
-    "coorg": {
-      "name": "Coorg (Madikeri)",
-      "validFor": [
-        "intercity",
-        "tempo"
-      ],
-      "active": true
-    },
-    "ooty": {
-      "name": "Ooty",
-      "validFor": [
-        "intercity",
-        "tempo"
-      ],
-      "active": true
-    },
-    "kabini": {
-      "name": "Kabini",
-      "validFor": [
-        "intercity",
-        "tempo"
-      ],
-      "active": true
-    },
-    "wayanad": {
-      "name": "Wayanad",
-      "validFor": [
-        "intercity",
-        "tempo"
-      ],
-      "active": true
-    },
-    "dharmasthala": {
-      "name": "Dharmasthala",
-      "validFor": [
-        "intercity",
-        "tempo"
-      ],
-      "active": true
     }
   },
   "bookingTypes": {
@@ -166,8 +110,7 @@
         "sedan",
         "suv",
         "innova",
-        "crysta",
-        "tempo"
+        "crysta"
       ],
       "pricing": {
         "model": "fixed-route"
@@ -181,8 +124,7 @@
             "sedan": 3600,
             "suv": 4500,
             "innova": 4700,
-            "crysta": 5400,
-            "tempo": 7200
+            "crysta": 5400
           },
           "active": true
         },
@@ -194,21 +136,7 @@
             "sedan": 3600,
             "suv": 4500,
             "innova": 4700,
-            "crysta": 5400,
-            "tempo": 7200
-          },
-          "active": true
-        },
-        {
-          "id": "mysore-mangalore-airport",
-          "fromCityId": "mysore",
-          "toCityId": "mangalore-airport",
-          "prices": {
-            "sedan": 5500,
-            "suv": 6800,
-            "innova": 7200,
-            "crysta": 8000,
-            "tempo": 11000
+            "crysta": 5400
           },
           "active": true
         }
@@ -224,14 +152,14 @@
         "crysta"
       ],
       "pricing": {
-        "model": "fixed-route",
-        "kmLimit": 150
+        "model": "fixed-route"
       },
       "routes": [
         {
           "id": "mysore-blr-city",
           "fromCityId": "mysore",
           "toCityId": "blr-city",
+          "kmLimit": 150,
           "prices": {
             "sedan": 3100,
             "suv": 3900,
@@ -244,23 +172,12 @@
           "id": "blr-city-mysore",
           "fromCityId": "blr-city",
           "toCityId": "mysore",
+          "kmLimit": 150,
           "prices": {
             "sedan": 3100,
             "suv": 3900,
             "innova": 4100,
             "crysta": 4600
-          },
-          "active": true
-        },
-        {
-          "id": "mysore-mangalore-city",
-          "fromCityId": "mysore",
-          "toCityId": "mangalore",
-          "prices": {
-            "sedan": 5200,
-            "suv": 6500,
-            "innova": 6900,
-            "crysta": 7700
           },
           "active": true
         }
@@ -273,66 +190,11 @@
         "sedan",
         "suv",
         "innova",
-        "crysta",
-        "tempo"
+        "crysta"
       ],
       "pricing": {
         "model": "per-day"
       },
-      "packages": [
-        {
-          "id": "tour-coorg",
-          "name": "Coorg (Madikeri)",
-          "destinationCityId": "coorg",
-          "days": 2,
-          "startingFrom": {
-            "sedan": 6800,
-            "suv": 8400,
-            "innova": 8900,
-            "crysta": 9600
-          },
-          "active": true
-        },
-        {
-          "id": "tour-ooty",
-          "name": "Ooty Hill Station",
-          "destinationCityId": "ooty",
-          "days": 3,
-          "startingFrom": {
-            "sedan": 10200,
-            "suv": 12600,
-            "innova": 13400,
-            "crysta": 14400
-          },
-          "active": true
-        },
-        {
-          "id": "tour-kabini",
-          "name": "Kabini Wildlife",
-          "destinationCityId": "kabini",
-          "days": 2,
-          "startingFrom": {
-            "sedan": 6800,
-            "suv": 8400,
-            "innova": 8900,
-            "crysta": 9600
-          },
-          "active": true
-        },
-        {
-          "id": "tour-wayanad",
-          "name": "Wayanad Resorts",
-          "destinationCityId": "wayanad",
-          "days": 3,
-          "startingFrom": {
-            "sedan": 10200,
-            "suv": 12600,
-            "innova": 13400,
-            "crysta": 14400
-          },
-          "active": true
-        }
-      ],
       "active": true
     },
     "tempo": {
@@ -342,61 +204,18 @@
         "tempo-non-ac"
       ],
       "pricing": {
-        "model": "hybrid"
+        "model": "per-day"
       },
-      "packages": [
-        {
-          "id": "tempo-pilgrim",
-          "name": "Pilgrim Tour (Dharmasthala / Kukke)",
-          "destinationCityId": "dharmasthala",
-          "days": 2,
-          "startingFrom": {
-            "tempo": 14400,
-            "tempo-non-ac": 13200
-          },
-          "active": true
-        },
-        {
-          "id": "tempo-coorg",
-          "name": "Coorg Group Getaway",
-          "destinationCityId": "coorg",
-          "days": 2,
-          "startingFrom": {
-            "tempo": 14400,
-            "tempo-non-ac": 13200
-          },
-          "active": true
-        },
-        {
-          "id": "tempo-corporate",
-          "name": "Corporate Outing",
-          "destinationCityId": null,
-          "days": 1,
-          "startingFrom": {
-            "tempo": 7200,
-            "tempo-non-ac": 6600
-          },
-          "active": true
-        },
-        {
-          "id": "tempo-wedding",
-          "name": "Wedding Group Transport",
-          "destinationCityId": null,
-          "days": 2,
-          "startingFrom": {},
-          "active": true
-        }
-      ],
       "active": true
     }
   },
   "promos": {
     "FIRSTRIDE": {
-      "label": "10% off your first ride (max ₹500)",
+      "label": "10% off your first ride (max ₹250)",
       "type": "percent",
       "value": 10,
-      "maxDiscount": 500,
-      "minFare": 2000,
+      "maxDiscount": 250,
+      "minFare": 1200,
       "appliesTo": [
         "airport",
         "city"
