@@ -15,7 +15,9 @@ export default function Home() {
   const [airportType, setAirportType] = useState("drop");
   // City direction options: 'drop' (Mysore to Blr City) or 'pickup' (Blr City to Mysore)
   const [cityType, setCityType] = useState("drop");
-  // Daily / Outstation options
+  
+  // Trip Duration options
+  const [outstationDirection, setOutstationDirection] = useState("oneway"); // 'oneway', 'roundtrip'
   const [numDays, setNumDays] = useState(1);
 
   // Form Fields
@@ -26,6 +28,12 @@ export default function Home() {
   const [showPickupSuggestions, setShowPickupSuggestions] = useState(false);
   const [showDropSuggestions, setShowDropSuggestions] = useState(false);
 
+  // Active filters inside search box
+  const [only6Seaters, setOnly6Seaters] = useState(false);
+  const [filterToll, setFilterToll] = useState(true);
+  const [filterAc, setFilterAc] = useState(true);
+  const [filterDriver, setFilterDriver] = useState(true);
+
   // Selected Cab & Passenger Info
   const [selectedCab, setSelectedCab] = useState(siteConfig.cabTypes[0]);
   const [bookingId, setBookingId] = useState("");
@@ -35,7 +43,7 @@ export default function Home() {
   const [pickupAddress, setPickupAddress] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
   
-  // Payment Options: 'arrival' (Driver), 'advance' (₹500), 'full' (Total)
+  // Payment Options: 'arrival', 'advance', 'full'
   const [paymentMethod, setPaymentMethod] = useState("arrival");
 
   // Load defaults
@@ -72,7 +80,7 @@ export default function Home() {
     }
   };
 
-  // Sync inputs when trip type tab changes
+  // Sync inputs when product switcher tab changes (Flights, Hotels, Buses style)
   const handleTabChange = (tab) => {
     setTripType(tab);
     if (tab === "airport") {
@@ -82,6 +90,22 @@ export default function Home() {
     } else if (tab === "daily") {
       setPickup("Mysore");
       setDrop("Outstation Tour / Local");
+    }
+  };
+
+  // Swap pickup & drop locations
+  const handleSwapLocations = () => {
+    if (tripType === "daily") return; // No swap for daily sightseeing
+    
+    const temp = pickup;
+    setPickup(drop);
+    setDrop(temp);
+
+    // Sync sub-types
+    if (tripType === "airport") {
+      setAirportType(airportType === "drop" ? "pickup" : "drop");
+    } else if (tripType === "city") {
+      setCityType(cityType === "drop" ? "pickup" : "drop");
     }
   };
 
@@ -100,14 +124,16 @@ export default function Home() {
       setTripType("city");
       handleCityDirectionChange("pickup");
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Common suggestions lists
   const suggestions = {
     pickup: ["Mysore", "Bangalore Airport (KIA)", "Bangalore City", "Ooty", "Coorg (Madikeri)", "Kabini", "Bandipur"],
     drop: ["Bangalore Airport (KIA)", "Bangalore City", "Mysore", "Ooty", "Coorg (Madikeri)", "Kabini", "Bandipur"]
   };
 
-  // Calculation Engine
+  // Pricing engine
   const calculatePrice = (cab) => {
     if (tripType === "airport") {
       return cab.airportPrice;
@@ -117,7 +143,8 @@ export default function Home() {
       // Daily / Outstation package: (baseRatePerKm * minKmPerDay + driverAllowance) * numDays
       const baseFare = cab.ratePerKm * cab.minKmPerDay;
       const driverFare = cab.driverAllowance;
-      return (baseFare + driverFare) * numDays;
+      const total = (baseFare + driverFare) * numDays;
+      return outstationDirection === "roundtrip" ? Math.round(total * 1.8) : total;
     }
   };
 
@@ -130,12 +157,22 @@ export default function Home() {
   const onlinePaymentAmount = paymentMethod === "full" ? totalPrice : paymentMethod === "advance" ? requiredAdvance : 0;
   const payToDriverAmount = totalPrice - onlinePaymentAmount;
 
+  // Filtered Cabs based on search filters (Show 6+ Seater Cabs Only)
+  const filteredCabs = siteConfig.cabTypes.filter((cab) => {
+    if (only6Seaters && cab.seats < 6) return false;
+    return true;
+  });
+
   // Navigation handlers
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (!pickup || !drop || !date || !time) {
       alert("Please fill in all routing fields.");
       return;
+    }
+    // Set default selected cab to first item in filtered list
+    if (filteredCabs.length > 0) {
+      setSelectedCab(filteredCabs[0]);
     }
     setStep(2);
   };
@@ -202,956 +239,815 @@ Please confirm my booking. Thank you!`;
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Header */}
+    <div className="flex flex-col min-h-screen bg-slate-50">
+      {/* Pure White Header matching Cleartrip */}
       <header className="header">
         <div className="header-container">
           <a href="#" className="logo-link" onClick={() => setStep(1)}>
-            <img src={getAssetPath("/icons/taxi.svg")} alt="Logo" className="logo-icon" />
+            <img src={getAssetPath("/icons/taxi.svg")} alt="Taxi Logo" className="logo-icon" />
             <span className="logo-text">
               GLOBAL<span className="logo-highlight">AIR</span>TRAVELS
             </span>
           </a>
-          <a href={`tel:${siteConfig.phone}`} className="call-badge" aria-label="Call booking manager">
+          <a href={`tel:${siteConfig.phone}`} className="call-badge" aria-label="Call Booking Manager">
             <img src={getAssetPath("/icons/phone.svg")} alt="" className="call-icon" />
-            <span>{siteConfig.phoneDisplay}</span>
+            <span>Call: {siteConfig.phoneDisplay}</span>
           </a>
         </div>
       </header>
 
-      {/* Hero section */}
-      <section className="hero-section">
-        <div className="hero-container">
-          <h1 className="hero-title">{siteConfig.name}</h1>
-          <p className="hero-subtitle">{siteConfig.tagline}</p>
-        </div>
-      </section>
-
-      {/* Main Content Area */}
-      <main className="main-content">
-        {/* Stepper progress indicator */}
-        <div className="stepper" role="navigation" aria-label="Booking Progress">
-          <div className={`step-item ${step >= 1 ? "active" : ""} ${step > 1 ? "completed" : ""}`}>
-            <span className="step-number">1</span>
-            <span>Search</span>
-          </div>
-          <div className="step-separator"></div>
-          <div className={`step-item ${step >= 2 ? "active" : ""} ${step > 2 ? "completed" : ""}`}>
-            <span className="step-number">2</span>
-            <span>Cars</span>
-          </div>
-          <div className="step-separator"></div>
-          <div className={`step-item ${step >= 3 ? "active" : ""} ${step > 3 ? "completed" : ""}`}>
-            <span className="step-number">3</span>
-            <span>Details</span>
-          </div>
-          <div className="step-separator"></div>
-          <div className={`step-item ${step >= 4 ? "active" : ""} ${step > 4 ? "completed" : ""}`}>
-            <span className="step-number">4</span>
-            <span>Confirm</span>
-          </div>
-        </div>
-
-        {/* Step 1: Search and Book Form */}
+      {/* Main Wrapper Layout */}
+      <div className="main-wrapper">
+        
+        {/* Product Switcher Pills (Flights, Hotels, Buses style) */}
         {step === 1 && (
-          <div className="booking-card">
-            {/* Service Type Tabs (Cleartrip style) */}
-            <div className="tabs-container" role="tablist">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={tripType === "airport"}
-                className={`tab-button ${tripType === "airport" ? "active" : ""}`}
-                onClick={() => handleTabChange("airport")}
-              >
-                <img src={getAssetPath("/icons/airport.svg")} alt="" className="tab-icon" />
-                <span>Airport transfer</span>
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={tripType === "city"}
-                className={`tab-button ${tripType === "city" ? "active" : ""}`}
-                onClick={() => handleTabChange("city")}
-              >
-                <img src={getAssetPath("/icons/route.svg")} alt="" className="tab-icon" />
-                <span>Bangalore Drops</span>
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={tripType === "daily"}
-                className={`tab-button ${tripType === "daily" ? "active" : ""}`}
-                onClick={() => handleTabChange("daily")}
-              >
-                <img src={getAssetPath("/icons/calendar.svg")} alt="" className="tab-icon" />
-                <span>Local / Tour (Daily)</span>
-              </button>
-            </div>
-
-            {/* Configurable directions and inputs based on tabs */}
-            <form onSubmit={handleSearchSubmit} className="form-grid">
-              
-              {/* DIRECTION - Airport Transfer */}
-              {tripType === "airport" && (
-                <div className="form-group">
-                  <span className="form-label">Transfer Direction</span>
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <button
-                      type="button"
-                      className="btn-secondary"
-                      style={{
-                        flex: 1,
-                        backgroundColor: airportType === "drop" ? "var(--primary-navy-light)" : "transparent",
-                        borderColor: airportType === "drop" ? "var(--primary-navy)" : "var(--border-color)",
-                        color: airportType === "drop" ? "var(--primary-navy-dark)" : "var(--text-muted)"
-                      }}
-                      onClick={() => handleAirportDirectionChange("drop")}
-                    >
-                      <img src={getAssetPath("/icons/dropoff.svg")} alt="" style={{ width: 16 }} />
-                      Drop to Airport
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-secondary"
-                      style={{
-                        flex: 1,
-                        backgroundColor: airportType === "pickup" ? "var(--primary-navy-light)" : "transparent",
-                        borderColor: airportType === "pickup" ? "var(--primary-navy)" : "var(--border-color)",
-                        color: airportType === "pickup" ? "var(--primary-navy-dark)" : "var(--text-muted)"
-                      }}
-                      onClick={() => handleAirportDirectionChange("pickup")}
-                    >
-                      <img src={getAssetPath("/icons/pickup.svg")} alt="" style={{ width: 16 }} />
-                      Pickup from Airport
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* DIRECTION - Bangalore City drops */}
-              {tripType === "city" && (
-                <div className="form-group">
-                  <span className="form-label">Transfer Direction</span>
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <button
-                      type="button"
-                      className="btn-secondary"
-                      style={{
-                        flex: 1,
-                        backgroundColor: cityType === "drop" ? "var(--primary-navy-light)" : "transparent",
-                        borderColor: cityType === "drop" ? "var(--primary-navy)" : "var(--border-color)",
-                        color: cityType === "drop" ? "var(--primary-navy-dark)" : "var(--text-muted)"
-                      }}
-                      onClick={() => handleCityDirectionChange("drop")}
-                    >
-                      Mysore ➔ Bangalore
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-secondary"
-                      style={{
-                        flex: 1,
-                        backgroundColor: cityType === "pickup" ? "var(--primary-navy-light)" : "transparent",
-                        borderColor: cityType === "pickup" ? "var(--primary-navy)" : "var(--border-color)",
-                        color: cityType === "pickup" ? "var(--primary-navy-dark)" : "var(--text-muted)"
-                      }}
-                      onClick={() => handleCityDirectionChange("pickup")}
-                    >
-                      Bangalore ➔ Mysore
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* DURATION - Daily Local or Outstation */}
-              {tripType === "daily" && (
-                <div className="form-group">
-                  <label htmlFor="duration-select" className="form-label">Hire Duration (Days)</label>
-                  <div className="input-wrapper">
-                    <img src={getAssetPath("/icons/calendar.svg")} alt="" className="input-icon" />
-                    <select
-                      id="duration-select"
-                      className="form-select"
-                      value={numDays}
-                      onChange={(e) => setNumDays(Number(e.target.value))}
-                    >
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((d) => (
-                        <option key={d} value={d}>{d} Day{d > 1 ? "s" : ""} Hire Package</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              )}
-
-              {/* Pickup field */}
-              <div className="form-group" style={{ position: "relative" }}>
-                <label htmlFor="pickup-loc" className="form-label">Pickup Location</label>
-                <div className="input-wrapper">
-                  <img src={getAssetPath("/icons/location.svg")} alt="" className="input-icon" />
-                  <input
-                    id="pickup-loc"
-                    type="text"
-                    className="form-input"
-                    value={pickup}
-                    onChange={(e) => setPickup(e.target.value)}
-                    onFocus={() => setShowPickupSuggestions(true)}
-                    onBlur={() => setTimeout(() => setShowPickupSuggestions(false), 200)}
-                    placeholder="Enter pickup city/location"
-                    required
-                  />
-                </div>
-                {showPickupSuggestions && (
-                  <ul className="booking-card" style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    right: 0,
-                    zIndex: 10,
-                    padding: "0.5rem",
-                    marginTop: "0.25rem",
-                    listStyle: "none"
-                  }}>
-                    {suggestions.pickup.map((s) => (
-                      <li key={s}>
-                        <button
-                          type="button"
-                          style={{
-                            width: "100%",
-                            background: "none",
-                            border: "none",
-                            padding: "0.5rem",
-                            textAlign: "left",
-                            cursor: "pointer",
-                            fontSize: "0.9rem"
-                          }}
-                          onMouseDown={() => setPickup(s)}
-                        >
-                          {s}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+          <nav className="product-switcher-bar" aria-label="Service Type">
+            <button
+              type="button"
+              className={`product-pill ${tripType === "airport" ? "active" : ""}`}
+              onClick={() => handleTabChange("airport")}
+            >
+              <div className="product-icon-wrapper">
+                <img src={getAssetPath("/icons/airport.svg")} alt="" className="product-icon" />
               </div>
-
-              {/* Drop field */}
-              <div className="form-group" style={{ position: "relative" }}>
-                <label htmlFor="drop-loc" className="form-label">Drop Location</label>
-                <div className="input-wrapper">
-                  <img src={getAssetPath("/icons/location.svg")} alt="" className="input-icon" />
-                  <input
-                    id="drop-loc"
-                    type="text"
-                    className="form-input"
-                    value={drop}
-                    onChange={(e) => setDrop(e.target.value)}
-                    onFocus={() => setShowDropSuggestions(true)}
-                    onBlur={() => setTimeout(() => setShowDropSuggestions(false), 200)}
-                    placeholder="Enter drop destination"
-                    required
-                    disabled={tripType === "daily"}
-                  />
-                </div>
-                {showDropSuggestions && (
-                  <ul className="booking-card" style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    right: 0,
-                    zIndex: 10,
-                    padding: "0.5rem",
-                    marginTop: "0.25rem",
-                    listStyle: "none"
-                  }}>
-                    {suggestions.drop.map((s) => (
-                      <li key={s}>
-                        <button
-                          type="button"
-                          style={{
-                            width: "100%",
-                            background: "none",
-                            border: "none",
-                            padding: "0.5rem",
-                            textAlign: "left",
-                            cursor: "pointer",
-                            fontSize: "0.9rem"
-                          }}
-                          onMouseDown={() => setDrop(s)}
-                        >
-                          {s}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+              <span>Airport Transfer</span>
+            </button>
+            <button
+              type="button"
+              className={`product-pill ${tripType === "city" ? "active" : ""}`}
+              onClick={() => handleTabChange("city")}
+            >
+              <div className="product-icon-wrapper">
+                <img src={getAssetPath("/icons/route.svg")} alt="" className="product-icon" />
               </div>
-
-              {/* Date and Time selectors */}
-              <div className="form-grid two-cols" style={{ padding: 0 }}>
-                <div className="form-group">
-                  <label htmlFor="travel-date" className="form-label">Journey Date</label>
-                  <div className="input-wrapper">
-                    <img src={getAssetPath("/icons/calendar.svg")} alt="" className="input-icon" />
-                    <input
-                      id="travel-date"
-                      type="date"
-                      className="form-input"
-                      value={date}
-                      min={new Date().toISOString().split("T")[0]}
-                      onChange={(e) => setDate(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="travel-time" className="form-label">Pickup Time</label>
-                  <div className="input-wrapper">
-                    <img src={getAssetPath("/icons/calendar.svg")} alt="" className="input-icon" />
-                    <input
-                      id="travel-time"
-                      type="time"
-                      className="form-input"
-                      value={time}
-                      onChange={(e) => setTime(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
+              <span>Bangalore Drops</span>
+            </button>
+            <button
+              type="button"
+              className={`product-pill ${tripType === "daily" ? "active" : ""}`}
+              onClick={() => handleTabChange("daily")}
+            >
+              <div className="product-icon-wrapper">
+                <img src={getAssetPath("/icons/calendar.svg")} alt="" className="product-icon" />
               </div>
-
-              {/* Inclusions note helper */}
-              {tripType === "airport" && (
-                <div className="cab-inclusions-card" style={{ margin: 0 }}>
-                  <div className="cab-inclusion-item">Toll charges & driver allowance included.</div>
-                  <div className="cab-inclusion-item">Airport pickup waiting up to 45 mins included.</div>
-                </div>
-              )}
-
-              {tripType === "city" && (
-                <div className="cab-inclusions-card" style={{ margin: 0 }}>
-                  <div className="cab-inclusion-item">Includes Toll (₹400) + Base Fare.</div>
-                  <div className="cab-inclusion-item">150 Kms Limit drop.</div>
-                </div>
-              )}
-
-              {tripType === "daily" && (
-                <div className="cab-inclusions-card" style={{ margin: 0 }}>
-                  <div className="cab-inclusion-item">Outstation daily charge calculates min runs per day.</div>
-                  <div className="cab-inclusion-item">Toll, State border permits, and parking are separate (paid by guest).</div>
-                </div>
-              )}
-
-              <button type="submit" className="btn-primary">
-                Search Available Cabs ➔
-              </button>
-            </form>
-
-            {/* Presets Shortcuts */}
-            <div className="quick-routes-section">
-              <h2 className="quick-routes-title">Popular Quick Route Shortcuts</h2>
-              <div className="quick-routes-grid">
-                <button type="button" className="quick-route-btn" onClick={() => handleQuickRouteSelect("mysore-blr-airport")}>
-                  <span className="quick-route-name">Mysore ➔ Bangalore Airport</span>
-                  <span className="quick-route-price">₹3,600 Sedan • Toll Included</span>
-                </button>
-                <button type="button" className="quick-route-btn" onClick={() => handleQuickRouteSelect("blr-airport-mysore")}>
-                  <span className="quick-route-name">Bangalore Airport ➔ Mysore</span>
-                  <span className="quick-route-price">₹3,600 Sedan • Toll Included</span>
-                </button>
-                <button type="button" className="quick-route-btn" onClick={() => handleQuickRouteSelect("mysore-blr-city")}>
-                  <span className="quick-route-name">Mysore ➔ Bangalore City</span>
-                  <span className="quick-route-price">₹3,100 Sedan • Toll Included</span>
-                </button>
-                <button type="button" className="quick-route-btn" onClick={() => handleQuickRouteSelect("blr-city-mysore")}>
-                  <span className="quick-route-name">Bangalore City ➔ Mysore</span>
-                  <span className="quick-route-price">₹3,100 Sedan • Toll Included</span>
-                </button>
-              </div>
-            </div>
-          </div>
+              <span>Daily Sightseeing / Tour</span>
+            </button>
+          </nav>
         )}
 
-        {/* Step 2: Cab Options */}
-        {step === 2 && (
-          <div>
-            {/* Trip Config Summary Bar */}
-            <div className="route-summary-bar">
-              <div className="route-summary-info">
-                <span className="route-summary-cities">
-                  {pickup} ➔ {drop}
-                </span>
-                <span className="route-summary-details">
-                  Date: {date} at {time} • {tripType === "airport" ? "Airport Drop/Pickup" : tripType === "city" ? "Bangalore City Transfer" : `Daily Tour (${numDays} Days)`}
-                </span>
+        {/* Step-based view selector */}
+        {step === 1 ? (
+          <div className="cleartrip-grid">
+            {/* Left Column: Cleartrip Search Box Card */}
+            <div>
+              <div className="cleartrip-heading-area">
+                <h1 className="cleartrip-title">Book Domestic & Outstation Cabs</h1>
+                <p className="cleartrip-subtitle">Enjoy hassle free cab bookings at lowest rates</p>
               </div>
-              <button
-                type="button"
-                className="btn-secondary"
-                style={{ minHeight: "36px", padding: "0.25rem 0.75rem", fontSize: "0.8rem" }}
-                onClick={() => setStep(1)}
-              >
-                Change
-              </button>
-            </div>
 
-            {/* Cab Card grid */}
-            <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Select Your Car</h2>
-            <div className="cab-list">
-              {siteConfig.cabTypes.map((cab) => {
-                const cabPrice = calculatePrice(cab);
-                const isSelected = selectedCab.id === cab.id;
-                
-                return (
-                  <div
-                    key={cab.id}
-                    className={`cab-card ${isSelected ? "selected" : ""}`}
-                  >
-                    <div className="cab-card-header">
-                      <div className="cab-icon-box">
-                        <img
-                          src={getAssetPath(`/icons/${cab.icon}`)}
-                          alt=""
-                          className="cab-icon-img"
+              <div className="cleartrip-card">
+                {/* Inline Selectors (One way vs Round trip / Days) */}
+                <div className="inline-selectors-row">
+                  {tripType === "daily" ? (
+                    <label className="inline-radio-label">
+                      <input
+                        type="checkbox"
+                        checked={outstationDirection === "roundtrip"}
+                        onChange={(e) => setOutstationDirection(e.target.checked ? "roundtrip" : "oneway")}
+                        className="inline-radio-input"
+                      />
+                      <span>Round Trip Outstation (1.8x Km base)</span>
+                    </label>
+                  ) : (
+                    <>
+                      <label className="inline-radio-label">
+                        <input
+                          type="radio"
+                          name="direction-mode"
+                          checked={true}
+                          readOnly
+                          className="inline-radio-input"
                         />
-                      </div>
-                      
-                      <div className="cab-meta">
-                        <div className="cab-name-row">
-                          <h3 className="cab-name">{cab.name}</h3>
-                          <div className="cab-price-col">
-                            <span className="cab-price">₹{cabPrice}</span>
-                            <span className="cab-price-subtext"> (Assured)</span>
-                          </div>
-                        </div>
-                        <p className="cab-example">e.g. {cab.example}</p>
-                        
-                        <div className="cab-specs">
-                          <span className="cab-spec-badge">👤 {cab.seats} Seats</span>
-                          <span className="cab-spec-badge">💼 {cab.luggage}</span>
-                          <span className="cab-spec-badge">{cab.ac ? "❄️ AC" : "💨 Non-AC"}</span>
-                        </div>
-                      </div>
-                    </div>
+                        <span>One way</span>
+                      </label>
+                      <label className="inline-radio-label" style={{ opacity: 0.5, cursor: "not-allowed" }}>
+                        <input
+                          type="radio"
+                          name="direction-mode"
+                          checked={false}
+                          disabled
+                          className="inline-radio-input"
+                        />
+                        <span>Round trip</span>
+                      </label>
+                    </>
+                  )}
+                </div>
 
-                    {/* Rates breakdowns depending on service type */}
-                    <div className="cab-inclusions-card">
-                      {tripType === "daily" ? (
-                        <>
-                          <div className="cab-inclusions-title">Daily Booking Fare Details</div>
-                          <ul className="cab-inclusions-list">
-                            <li className="cab-inclusion-item">Running Rate: <strong>₹{cab.ratePerKm}/km</strong></li>
-                            <li className="cab-inclusion-item">Minimum Run Limit: <strong>{cab.minKmPerDay} km/day</strong></li>
-                            <li className="cab-inclusion-item">Driver Allowance: <strong>₹{cab.driverAllowance}/day</strong></li>
-                            <li className="cab-inclusion-item exclude">Tolls, Border Permits, Parking (Excl.)</li>
-                          </ul>
-                          <div style={{ fontSize: "0.75rem", marginTop: "0.5rem", color: "var(--text-muted)", borderTop: "1px dashed var(--border-color)", paddingTop: "0.5rem" }}>
-                            Assured Base: (₹{cab.ratePerKm} × {cab.minKmPerDay} km + ₹{cab.driverAllowance}) × {numDays} Days = <strong>₹{cabPrice}</strong>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="cab-inclusions-title">Assured Inclusions</div>
-                          <ul className="cab-inclusions-list">
-                            <li className="cab-inclusion-item">Toll Charges Included</li>
-                            <li className="cab-inclusion-item">State Border permit/tax Included</li>
-                            <li className="cab-inclusion-item">Driver Allowance Included</li>
-                            <li className="cab-inclusion-item">GST Included</li>
-                            <li className="cab-inclusion-item exclude">Airport Parking charges (Excl.)</li>
-                          </ul>
-                        </>
+                {/* Main Booking Search Form */}
+                <form onSubmit={handleSearchSubmit}>
+                  
+                  {/* Row 1: Adjacent Pickup & Drop Inputs with Swap circle */}
+                  <div className="cleartrip-input-row">
+                    {/* Pickup Input Column */}
+                    <div className="input-col" style={{ position: "relative" }}>
+                      <label htmlFor="pickup-input" className="input-mini-label">From</label>
+                      <input
+                        id="pickup-input"
+                        type="text"
+                        className="input-field"
+                        value={pickup}
+                        onChange={(e) => setPickup(e.target.value)}
+                        onFocus={() => setShowPickupSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowPickupSuggestions(false), 200)}
+                        placeholder="Enter pickup city"
+                        required
+                      />
+                      {showPickupSuggestions && (
+                        <div className="suggestions-dropdown">
+                          {suggestions.pickup.map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              className="suggestion-item"
+                              onMouseDown={() => setPickup(s)}
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
                       )}
                     </div>
 
+                    {/* Swap Button (Absolutely centered overlapping borders) */}
+                    {tripType !== "daily" && (
+                      <button
+                        type="button"
+                        className="swap-circle-btn"
+                        onClick={handleSwapLocations}
+                        aria-label="Swap pickup and drop locations"
+                      >
+                        <img src={getAssetPath("/icons/route.svg")} alt="" className="swap-circle-icon" />
+                      </button>
+                    )}
+
+                    {/* Drop Input Column */}
+                    <div className="input-col" style={{ position: "relative" }}>
+                      <label htmlFor="drop-input" className="input-mini-label">To</label>
+                      <input
+                        id="drop-input"
+                        type="text"
+                        className="input-field"
+                        value={drop}
+                        onChange={(e) => setDrop(e.target.value)}
+                        onFocus={() => setShowDropSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowDropSuggestions(false), 200)}
+                        placeholder="Enter destination city"
+                        required
+                        disabled={tripType === "daily"}
+                      />
+                      {showDropSuggestions && (
+                        <div className="suggestions-dropdown">
+                          {suggestions.drop.map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              className="suggestion-item"
+                              onMouseDown={() => setDrop(s)}
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Row 2: Adjacent Dates & Duration Inputs */}
+                  <div className="cleartrip-input-row">
+                    {/* Journey Date Input */}
+                    <div className="input-col">
+                      <label htmlFor="date-input" className="input-mini-label">Depart Date</label>
+                      <input
+                        id="date-input"
+                        type="date"
+                        className="input-field"
+                        value={date}
+                        min={new Date().toISOString().split("T")[0]}
+                        onChange={(e) => setDate(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    {/* Pickup Time or Duration Days input */}
+                    {tripType === "daily" ? (
+                      <div className="input-col">
+                        <label htmlFor="days-select" className="input-mini-label">Duration</label>
+                        <select
+                          id="days-select"
+                          className="input-field"
+                          value={numDays}
+                          onChange={(e) => setNumDays(Number(e.target.value))}
+                          style={{ border: "none", appearance: "none" }}
+                        >
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((d) => (
+                            <option key={d} value={d}>{d} Day{d > 1 ? "s" : ""} Tour</option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : (
+                      <div className="input-col">
+                        <label htmlFor="time-input" className="input-mini-label">Pickup Time</label>
+                        <input
+                          id="time-input"
+                          type="time"
+                          className="input-field"
+                          value={time}
+                          onChange={(e) => setTime(e.target.value)}
+                          required
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Quick Filters Checkbox Row (Cleartrip style tags) */}
+                  <div className="filter-tags-row">
+                    <label className={`filter-tag ${filterToll ? "checked" : ""}`}>
+                      <input
+                        type="checkbox"
+                        checked={filterToll}
+                        onChange={(e) => setFilterToll(e.target.checked)}
+                        className="filter-checkbox"
+                      />
+                      <span>Tolls Included</span>
+                    </label>
+                    <label className={`filter-tag ${filterAc ? "checked" : ""}`}>
+                      <input
+                        type="checkbox"
+                        checked={filterAc}
+                        onChange={(e) => setFilterAc(e.target.checked)}
+                        className="filter-checkbox"
+                      />
+                      <span>AC Cab</span>
+                    </label>
+                    <label className={`filter-tag ${filterDriver ? "checked" : ""}`}>
+                      <input
+                        type="checkbox"
+                        checked={filterDriver}
+                        onChange={(e) => setFilterDriver(e.target.checked)}
+                        className="filter-checkbox"
+                      />
+                      <span>Driver Allowance Incl.</span>
+                    </label>
+                  </div>
+
+                  {/* Bottom Action Row (Toggle Switch & Primary Button) */}
+                  <div className="cleartrip-bottom-row">
+                    {/* Dynamic Seating Filter Toggle Switch */}
+                    <div className="toggle-container" onClick={() => setOnly6Seaters(!only6Seaters)}>
+                      <div className="toggle-switch-box">
+                        <input
+                          type="checkbox"
+                          checked={only6Seaters}
+                          onChange={() => {}} // Handled by container click
+                          className="toggle-input"
+                        />
+                        <span className="toggle-slider"></span>
+                      </div>
+                      <span className="toggle-label-text">Show 6+ Seaters Only (SUV/Tempo)</span>
+                    </div>
+
+                    <button type="submit" className="btn-cleartrip-search">
+                      Search Cabs ➔
+                    </button>
+                  </div>
+
+                </form>
+              </div>
+            </div>
+
+            {/* Right Column: Cleartrip Sidebar */}
+            <aside className="cleartrip-sidebar">
+              {/* Gradient Ad Banner */}
+              <div className="cleartrip-ad-card">
+                <span className="ad-badge">Special Rate</span>
+                <p className="ad-text">Mysore ⇄ KIA Airport Drop starting at just ₹3,600/-</p>
+                <span className="ad-footer">Includes driver allowance & toll tax!</span>
+              </div>
+
+              {/* Quick Route Shortcuts */}
+              <div className="cleartrip-sidebar-card">
+                <div className="sidebar-title-row">
+                  <h2 className="sidebar-title">Popular Routes</h2>
+                  <span className="sidebar-link">Quick Select</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <button type="button" className="quick-route-btn" onClick={() => handleQuickRouteSelect("mysore-blr-airport")}>
+                    <span className="quick-route-name">Mysore ➔ Bangalore Airport</span>
+                    <span className="quick-route-price">₹3,600 Sedan • Toll Incl.</span>
+                  </button>
+                  <button type="button" className="quick-route-btn" onClick={() => handleQuickRouteSelect("blr-airport-mysore")}>
+                    <span className="quick-route-name">Bangalore Airport ➔ Mysore</span>
+                    <span className="quick-route-price">₹3,600 Sedan • Toll Incl.</span>
+                  </button>
+                  <button type="button" className="quick-route-btn" onClick={() => handleQuickRouteSelect("mysore-blr-city")}>
+                    <span className="quick-route-name">Mysore ➔ Bangalore City</span>
+                    <span className="quick-route-price">₹3,100 Sedan • Toll Incl.</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Interstate permits summary */}
+              <div className="cleartrip-sidebar-card">
+                <div className="sidebar-title-row">
+                  <h2 className="sidebar-title">Border Permits (7 Days)</h2>
+                </div>
+                <ul style={{ paddingLeft: "1rem", fontSize: "0.75rem", color: "var(--text-gray)", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                  <li>Sedan (All borders): <strong>₹600</strong></li>
+                  <li>Ertiga SUV (All borders): <strong>₹1,000</strong></li>
+                  <li>Innova (Tamil Nadu): <strong>₹1,250</strong></li>
+                  <li>Innova (Kerala): <strong>₹3,000</strong></li>
+                  <li>TT AC (Tamil Nadu): <strong>₹2,000</strong></li>
+                  <li>TT AC (Kerala): <strong>₹4,000</strong></li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        ) : (
+          /* Multi-step screen inside center container */
+          <div className="stepper-result">
+            {/* Step 2: Cab Selection */}
+            {step === 2 && (
+              <div>
+                <div className="route-summary-bar">
+                  <div className="route-summary-info">
+                    <span className="route-summary-cities">
+                      {pickup} ➔ {drop}
+                    </span>
+                    <span className="route-summary-details">
+                      Date: {date} at {time} • {tripType === "airport" ? "Airport Transfer" : tripType === "city" ? "Bangalore Drop" : `Daily Tour (${numDays} Days)`}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ minHeight: "32px", padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}
+                    onClick={() => setStep(1)}
+                  >
+                    Modify
+                  </button>
+                </div>
+
+                <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Available Vehicles ({filteredCabs.length})</h2>
+                <div className="cab-list">
+                  {filteredCabs.map((cab) => {
+                    const cabPrice = calculatePrice(cab);
+                    const isSelected = selectedCab.id === cab.id;
+                    
+                    return (
+                      <div
+                        key={cab.id}
+                        className={`cab-card ${isSelected ? "selected" : ""}`}
+                      >
+                        <div className="cab-card-header">
+                          <div className="cab-icon-box">
+                            <img
+                              src={getAssetPath(`/icons/${cab.icon}`)}
+                              alt=""
+                              className="cab-icon-img"
+                            />
+                          </div>
+                          
+                          <div className="cab-meta">
+                            <div className="cab-name-row">
+                              <h3 className="cab-name">{cab.name}</h3>
+                              <div className="cab-price-col">
+                                <span className="cab-price">₹{cabPrice}</span>
+                                <span className="cab-price-subtext"> (Assured)</span>
+                              </div>
+                            </div>
+                            <p className="cab-example">e.g. {cab.example}</p>
+                            
+                            <div className="cab-specs">
+                              <span className="cab-spec-badge">👤 {cab.seats} Seats</span>
+                              <span className="cab-spec-badge">💼 {cab.luggage}</span>
+                              <span className="cab-spec-badge">{cab.ac ? "❄️ AC" : "Non-AC"}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="cab-inclusions-card">
+                          {tripType === "daily" ? (
+                            <>
+                              <div className="cab-inclusions-title">Outstation Per-Day Rates</div>
+                              <div style={{ fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                                Running: ₹{cab.ratePerKm}/km (min {cab.minKmPerDay} km/day) + ₹{cab.driverAllowance}/day Driver allowance.
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="cab-inclusions-title">Inclusions (No Extra Costs)</div>
+                              <div style={{ fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                                Toll charges, state tax permit, driver allowance, and GST are included.
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        <button
+                          type="button"
+                          className="btn-primary"
+                          style={{
+                            marginTop: "0.5rem",
+                            backgroundColor: isSelected ? "var(--primary-navy)" : "var(--primary-orange)"
+                          }}
+                          onClick={() => handleCabSelect(cab)}
+                        >
+                          {isSelected ? "Confirm & Proceed" : "Select This Car"}
+                        </button>
+                      </div>
+                    );
+                  })}
+                  {filteredCabs.length === 0 && (
+                    <div className="booking-card" style={{ textAlign: "center", padding: "2rem" }}>
+                      <p style={{ fontWeight: 600 }}>No vehicles match your active filters.</p>
+                      <button type="button" className="btn-secondary" style={{ marginTop: "1rem", display: "inline-flex" }} onClick={() => setOnly6Seaters(false)}>
+                        Clear Seating Filter
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Passenger Info */}
+            {step === 3 && (
+              <div className="booking-card">
+                <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Passenger Information</h2>
+                
+                <form onSubmit={handlePassengerSubmit} className="passenger-form">
+                  <div className="form-group">
+                    <label htmlFor="cust-name" className="form-label">Passenger Name</label>
+                    <div className="input-wrapper">
+                      <img src={getAssetPath("/icons/driver.svg")} alt="" className="input-icon" />
+                      <input
+                        id="cust-name"
+                        type="text"
+                        className="form-input"
+                        placeholder="Enter full name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        autoComplete="name"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="cust-phone" className="form-label">WhatsApp Mobile Number</label>
+                    <div className="input-wrapper">
+                      <img src={getAssetPath("/icons/phone.svg")} alt="" className="input-icon" />
+                      <input
+                        id="cust-phone"
+                        type="tel"
+                        className="form-input"
+                        placeholder="10-digit phone number"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                        pattern="[6-9][0-9]{9}"
+                        inputMode="tel"
+                        autoComplete="tel"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="cust-email" className="form-label">Email Address (Optional)</label>
+                    <div className="input-wrapper">
+                      <img src={getAssetPath("/icons/invoice.svg")} alt="" className="input-icon" />
+                      <input
+                        id="cust-email"
+                        type="email"
+                        className="form-input"
+                        placeholder="For booking receipts"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        autoComplete="email"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="cust-address" className="form-label">Full Pickup Address</label>
+                    <div className="input-wrapper">
+                      <img src={getAssetPath("/icons/location.svg")} alt="" className="input-icon" style={{ alignSelf: "flex-start", marginTop: "0.8rem" }} />
+                      <textarea
+                        id="cust-address"
+                        className="form-input"
+                        style={{ minHeight: "80px", padding: "0.5rem 0.75rem 0.5rem 2.25rem", resize: "vertical" }}
+                        placeholder="Enter reporting address, landmark, or specific flight details"
+                        value={pickupAddress}
+                        onChange={(e) => setPickupAddress(e.target.value)}
+                        required
+                        autoComplete="street-address"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div className="form-actions">
+                    <button type="button" className="btn-secondary" onClick={() => setStep(2)}>
+                      Back
+                    </button>
+                    <button type="submit" className="btn-primary">
+                      Confirm Address Details ➔
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Step 4: Booking Checkout */}
+            {step === 4 && (
+              <div className="booking-card">
+                <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Confirm Booking Invoice</h2>
+                
+                <div className="payment-section">
+                  <div className="trip-bill-summary">
+                    <div className="bill-title">Summary of Charges</div>
+                    <div className="bill-row">
+                      <span>Vehicle Selected:</span>
+                      <span style={{ fontWeight: 600 }}>{selectedCab.name}</span>
+                    </div>
+                    <div className="bill-row">
+                      <span>Trip:</span>
+                      <span>{pickup} to {drop}</span>
+                    </div>
+                    <div className="bill-row">
+                      <span>Reporting Time:</span>
+                      <span>{date} at {time}</span>
+                    </div>
+                    {tripType === "daily" && (
+                      <div className="bill-row">
+                        <span>Duration:</span>
+                        <span>{numDays} Day{numDays > 1 ? "s" : ""} Tour</span>
+                      </div>
+                    )}
+                    <div className="bill-row total">
+                      <span>Total Assured Fare:</span>
+                      <span>₹{totalPrice}</span>
+                    </div>
+                  </div>
+
+                  <h3 className="form-label">Payment Preference</h3>
+                  <div className="payment-methods" role="radiogroup" aria-label="Payment Mode">
+                    {/* Pay on arrival */}
+                    <div
+                      className={`payment-method-card ${paymentMethod === "arrival" ? "selected" : ""}`}
+                      onClick={() => setPaymentMethod("arrival")}
+                    >
+                      <input
+                        type="radio"
+                        id="radio-arrival"
+                        name="payment-preference"
+                        checked={paymentMethod === "arrival"}
+                        onChange={() => {}}
+                        className="payment-radio"
+                      />
+                      <div className="payment-method-info">
+                        <label htmlFor="radio-arrival" className="payment-method-name">Pay to Driver (Cash/UPI)</label>
+                        <span className="payment-method-desc">Pay ₹{totalPrice} directly to driver at the end of the trip.</span>
+                      </div>
+                    </div>
+
+                    {/* Pay ₹500 advance */}
+                    <div
+                      className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`}
+                      onClick={() => setPaymentMethod("advance")}
+                    >
+                      <input
+                        type="radio"
+                        id="radio-advance"
+                        name="payment-preference"
+                        checked={paymentMethod === "advance"}
+                        onChange={() => {}}
+                        className="payment-radio"
+                      />
+                      <div className="payment-method-info">
+                        <label htmlFor="radio-advance" className="payment-method-name">
+                          Pay Booking Advance (₹{requiredAdvance})
+                          <span className="payment-badge">Leaflet Policy</span>
+                        </label>
+                        <span className="payment-method-desc">Pay ₹{requiredAdvance} now via GPay/PhonePe to secure booking. Pay balance ₹{payToDriverAmount} to driver.</span>
+                      </div>
+                    </div>
+
+                    {/* Pay full online */}
+                    <div
+                      className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`}
+                      onClick={() => setPaymentMethod("full")}
+                    >
+                      <input
+                        type="radio"
+                        id="radio-full"
+                        name="payment-preference"
+                        checked={paymentMethod === "full"}
+                        onChange={() => {}}
+                        className="payment-radio"
+                      />
+                      <div className="payment-method-info">
+                        <label htmlFor="radio-full" className="payment-method-name">
+                          Pay Full Online (₹{totalPrice})
+                          <span className="payment-badge">Zero Fees</span>
+                        </label>
+                        <span className="payment-method-desc">Pay full ₹{totalPrice} online now using GPay/PhonePe/UPI.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* QR Scan / Mobile App pay */}
+                  {paymentMethod !== "arrival" && (
+                    <div className="upi-gateway-container">
+                      <div className="upi-brands">
+                        <img src={getAssetPath("/icons/upi.svg")} alt="UPI Logo" className="upi-brand-icon" style={{ height: 16 }} />
+                        <span style={{ fontWeight: 700, fontSize: "0.8rem", color: "#5f259f" }}>GPay/PhonePe Gateway</span>
+                      </div>
+                      
+                      <div className="qr-instructions">
+                        <span style={{ display: "block", fontWeight: 700, fontSize: "1.05rem", color: "var(--primary-navy)" }}>
+                          Amount to Pay: ₹{onlinePaymentAmount}
+                        </span>
+                        <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                          Account Holder: <strong>{siteConfig.merchantName}</strong>
+                        </span>
+                        <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                          GPay/PhonePe Number: <strong>{siteConfig.phoneDisplay}</strong>
+                        </span>
+                      </div>
+
+                      <div className="qr-code-box">
+                        <img
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(generateUpiLink())}`}
+                          alt="Scan QR"
+                          className="qr-mock-img"
+                        />
+                      </div>
+
+                      <div className="pay-btn-group">
+                        <a href={generateUpiLink()} className="btn-phonepe-pay">
+                          📱 Pay via UPI Apps
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pay-btn-group" style={{ marginTop: "1rem" }}>
+                    <button
+                      type="button"
+                      className="btn-whatsapp-confirm"
+                      onClick={handleWhatsAppRedirect}
+                    >
+                      <img src={getAssetPath("/icons/whatsapp.svg")} alt="" className="whatsapp-icon-white" />
+                      Send Booking Request on WhatsApp
+                    </button>
+                    
                     <button
                       type="button"
                       className="btn-primary"
-                      style={{
-                        marginTop: "0.5rem",
-                        backgroundColor: isSelected ? "var(--primary-navy)" : "var(--accent-yellow)",
-                        color: isSelected ? "var(--text-white)" : "var(--primary-navy-dark)"
-                      }}
-                      onClick={() => handleCabSelect(cab)}
+                      onClick={() => setStep(5)}
                     >
-                      {isSelected ? "Selected (Proceed)" : "Choose This Car"}
+                      Confirm Booking (Pay on Arrival)
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => setStep(3)}
+                    >
+                      Back
                     </button>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              </div>
+            )}
 
-            {/* Interstate Permits Table for reference */}
-            {tripType === "daily" && (
-              <div className="booking-card" style={{ marginTop: "1.5rem" }}>
-                <h3 className="quick-routes-title" style={{ marginBottom: "0.5rem" }}>
-                  {siteConfig.interstatePermits.title}
-                </h3>
-                <p className="cab-price-subtext" style={{ marginBottom: "0.75rem" }}>
-                  {siteConfig.interstatePermits.note}
+            {/* Step 5: Booking Success */}
+            {step === 5 && (
+              <div className="booking-card success-card">
+                <div className="success-badge">
+                  <img src={getAssetPath("/icons/verified.svg")} alt="" className="success-icon-svg" />
+                </div>
+                
+                <h2 className="success-title">Trip Registered!</h2>
+                <p className="success-desc">
+                  Thank you, {name}! Your trip has been registered. We are preparing your allotment details.
                 </p>
-                <div style={{ overflowX: "auto" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem", textAlign: "left" }}>
-                    <thead>
-                      <tr style={{ borderBottom: "2px solid var(--border-color)", color: "var(--text-primary)", fontWeight: 700 }}>
-                        <th style={{ padding: "0.5rem 0.25rem" }}>Vehicle</th>
-                        <th style={{ padding: "0.5rem 0.25rem" }}>State Border</th>
-                        <th style={{ padding: "0.5rem 0.25rem", textAlign: "right" }}>Permit Fee</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {siteConfig.interstatePermits.details.map((p, index) => (
-                        <tr key={index} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                          <td style={{ padding: "0.5rem 0.25rem", color: "var(--text-primary)" }}>{p.vehicle}</td>
-                          <td style={{ padding: "0.5rem 0.25rem", color: "var(--text-muted)" }}>{p.state}</td>
-                          <td style={{ padding: "0.5rem 0.25rem", color: "var(--primary-navy-dark)", fontWeight: 700, textAlign: "right" }}>₹{p.price}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+
+                <div className="booking-summary-box">
+                  <div className="booking-summary-title">Booking ID: {bookingId}</div>
+                  <div className="bill-row">
+                    <span>Passenger:</span>
+                    <span style={{ fontWeight: 600 }}>{name}</span>
+                  </div>
+                  <div className="bill-row">
+                    <span>Route:</span>
+                    <span>{pickup} to {drop}</span>
+                  </div>
+                  <div className="bill-row">
+                    <span>Date & Time:</span>
+                    <span>{date} at {time}</span>
+                  </div>
+                  <div className="bill-row">
+                    <span>Vehicle Type:</span>
+                    <span>{selectedCab.name} (AC)</span>
+                  </div>
+                  <div className="bill-row" style={{ borderTop: "1px dashed var(--border-color)", paddingTop: "0.5rem", marginTop: "0.5rem" }}>
+                    <span>Payment Mode:</span>
+                    <span style={{ fontWeight: 600, color: "var(--primary-orange)" }}>
+                      {paymentMethod === "full" ? "Paid Full Online" : 
+                       paymentMethod === "advance" ? `Paid ₹${requiredAdvance} (₹${payToDriverAmount} to Driver)` : 
+                       `Pay Driver ₹${totalPrice} at Trip End`}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="pay-btn-group">
+                  <a
+                    href={`https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(getWhatsAppMessage())}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-whatsapp-confirm"
+                  >
+                    <img src={getAssetPath("/icons/whatsapp.svg")} alt="" className="whatsapp-icon-white" />
+                    Send Details on WhatsApp
+                  </a>
+
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    onClick={() => {
+                      setStep(1);
+                      setPaymentMethod("arrival");
+                      setName("");
+                      setPhone("");
+                      setEmail("");
+                      setPickupAddress("");
+                      setFlightNumber("");
+                      setBookingId(`GAT-${Math.floor(100000 + Math.random() * 900000)}`);
+                    }}
+                  >
+                    Book Another Cab
+                  </button>
                 </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Step 3: Passenger Information */}
-        {step === 3 && (
-          <div className="booking-card">
-            <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Passenger Information</h2>
-            
-            <form onSubmit={handlePassengerSubmit} className="passenger-form">
-              {/* Traveler name */}
-              <div className="form-group">
-                <label htmlFor="traveler-name" className="form-label">Full Name</label>
-                <div className="input-wrapper">
-                  <img src={getAssetPath("/icons/driver.svg")} alt="" className="input-icon" />
-                  <input
-                    id="traveler-name"
-                    type="text"
-                    className="form-input"
-                    placeholder="Enter primary passenger's name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    autoComplete="name"
-                  />
-                </div>
+        {/* Step 1 Promo Row (Matches bottom cards on Cleartrip screen) */}
+        {step === 1 && (
+          <section className="cleartrip-promo-row" aria-label="Offers and Promotions">
+            {/* Promo 1 */}
+            <div className="promo-card">
+              <div className="promo-img-box" style={{ color: "#22A06B" }}>🎁</div>
+              <div className="promo-info">
+                <span className="promo-tag">AIRPORT SPECIAL</span>
+                <h3 className="promo-title">Flat 10% Off Drops</h3>
+                <p className="promo-desc">Get 10% off on Mysore ➔ Bangalore Airport Drops. Code: <strong>AIRPORT10</strong></p>
               </div>
+            </div>
 
-              {/* Mobile Number */}
-              <div className="form-group">
-                <label htmlFor="traveler-phone" className="form-label">Mobile Number (WhatsApp preferred)</label>
-                <div className="input-wrapper">
-                  <img src={getAssetPath("/icons/phone.svg")} alt="" className="input-icon" />
-                  <input
-                    id="traveler-phone"
-                    type="tel"
-                    className="form-input"
-                    placeholder="10-digit mobile number"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    required
-                    pattern="[6-9][0-9]{9}"
-                    inputMode="tel"
-                    autoComplete="tel"
-                  />
-                </div>
-                <span className="cab-price-subtext" style={{ paddingLeft: "0.5rem" }}>
-                  Used to send driver allotment details, phone, and car plate number.
-                </span>
+            {/* Promo 2 */}
+            <div className="promo-card">
+              <div className="promo-img-box" style={{ color: "#FF4F00" }}>🎟️</div>
+              <div className="promo-info">
+                <span className="promo-tag">NEW TRAVELER</span>
+                <h3 className="promo-title">₹150 Off First Trip</h3>
+                <p className="promo-desc">Book your first ride and get ₹150 off instantly. Code: <strong>GAT150</strong></p>
               </div>
+            </div>
 
-              {/* Email */}
-              <div className="form-group">
-                <label htmlFor="traveler-email" className="form-label">Email Address (Optional)</label>
-                <div className="input-wrapper">
-                  <img src={getAssetPath("/icons/invoice.svg")} alt="" className="input-icon" />
-                  <input
-                    id="traveler-email"
-                    type="email"
-                    className="form-input"
-                    placeholder="For booking receipts and invoices"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="email"
-                  />
-                </div>
+            {/* Promo 3 */}
+            <div className="promo-card">
+              <div className="promo-img-box" style={{ color: "#3366CC" }}>📅</div>
+              <div className="promo-info">
+                <span className="promo-tag">MULTI-DAY TOUR</span>
+                <h3 className="promo-title">Free Driver Day</h3>
+                <p className="promo-desc">Driver allowance waived off on tours longer than 3 days. Code: <strong>TOURALLOW</strong></p>
               </div>
-
-              {/* Pickup Address */}
-              <div className="form-group">
-                <label htmlFor="traveler-address" className="form-label">Detailed Pickup Address</label>
-                <div className="input-wrapper">
-                  <img src={getAssetPath("/icons/location.svg")} alt="" className="input-icon" style={{ alignSelf: "flex-start", marginTop: "1rem" }} />
-                  <textarea
-                    id="traveler-address"
-                    className="form-input"
-                    style={{ minHeight: "90px", padding: "0.75rem 0.85rem 0.75rem 2.5rem", resize: "vertical" }}
-                    placeholder="Enter street, hotel name, landmark, or specific airport terminal"
-                    value={pickupAddress}
-                    onChange={(e) => setPickupAddress(e.target.value)}
-                    required
-                    autoComplete="street-address"
-                  ></textarea>
-                </div>
-              </div>
-
-              {/* Flight details if Airport pickup */}
-              {tripType === "airport" && airportType === "pickup" && (
-                <div className="form-group">
-                  <label htmlFor="traveler-flight" className="form-label">Flight Number & Arrival Terminal</label>
-                  <div className="input-wrapper">
-                    <img src={getAssetPath("/icons/airport.svg")} alt="" className="input-icon" />
-                    <input
-                      id="traveler-flight"
-                      type="text"
-                      className="form-input"
-                      placeholder="e.g., AI-508, Terminal 2"
-                      value={flightNumber}
-                      onChange={(e) => setFlightNumber(e.target.value)}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Action buttons */}
-              <div className="form-actions">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => setStep(2)}
-                >
-                  Back
-                </button>
-                <button
-                  type="submit"
-                  className="btn-primary"
-                >
-                  Review Booking Details ➔
-                </button>
-              </div>
-            </form>
-          </div>
+            </div>
+          </section>
         )}
 
-        {/* Step 4: Checkout and UPI Details */}
-        {step === 4 && (
-          <div className="booking-card">
-            <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Confirm Your Trip Booking</h2>
-            
-            <div className="payment-section">
-              {/* Price Calculation Invoice Card */}
-              <div className="trip-bill-summary">
-                <div className="bill-title">Assured Booking Invoice</div>
-                <div className="bill-row">
-                  <span>Car Selected:</span>
-                  <span style={{ fontWeight: 600 }}>{selectedCab.name}</span>
-                </div>
-                <div className="bill-row">
-                  <span>Route:</span>
-                  <span>{pickup} to {drop}</span>
-                </div>
-                <div className="bill-row">
-                  <span>Reporting Time:</span>
-                  <span>{date} at {time}</span>
-                </div>
-                {tripType === "daily" && (
-                  <div className="bill-row">
-                    <span>Duration:</span>
-                    <span>{numDays} Day{numDays > 1 ? "s" : ""} Hire</span>
-                  </div>
-                )}
-                <div className="bill-row total">
-                  <span>Assured Fare (All Inc.):</span>
-                  <span>₹{totalPrice}</span>
-                </div>
-              </div>
+      </div>
 
-              {/* Payment selector */}
-              <h3 className="form-label" style={{ marginTop: "0.5rem" }}>Select Payment Option</h3>
-              <div className="payment-methods" role="radiogroup" aria-label="Payment Preference">
-                {/* Pay on arrival */}
-                <div
-                  className={`payment-method-card ${paymentMethod === "arrival" ? "selected" : ""}`}
-                  onClick={() => setPaymentMethod("arrival")}
-                >
-                  <input
-                    type="radio"
-                    id="pay-arrival"
-                    name="payment"
-                    checked={paymentMethod === "arrival"}
-                    onChange={() => {}}
-                    className="payment-radio"
-                  />
-                  <div className="payment-method-info">
-                    <label htmlFor="pay-arrival" className="payment-method-name">Pay to Driver</label>
-                    <span className="payment-method-desc">Pay full amount of ₹{totalPrice} directly to driver using cash or UPI at trip end.</span>
-                  </div>
-                </div>
-
-                {/* Secure booking with Rs. 500 advance per day as noted in the leaflet */}
-                <div
-                  className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`}
-                  onClick={() => setPaymentMethod("advance")}
-                >
-                  <input
-                    type="radio"
-                    id="pay-advance"
-                    name="payment"
-                    checked={paymentMethod === "advance"}
-                    onChange={() => {}}
-                    className="payment-radio"
-                  />
-                  <div className="payment-method-info">
-                    <label htmlFor="pay-advance" className="payment-method-name">
-                      Pay Booking Advance (₹{requiredAdvance})
-                      <span className="payment-badge" style={{ backgroundColor: "var(--accent-yellow-light)", color: "var(--accent-yellow-dark)" }}>Leaflet Policy</span>
-                    </label>
-                    <span className="payment-method-desc">Pay ₹{requiredAdvance} now via GPay/PhonePe to secure booking. Balance ₹{payToDriverAmount} to driver.</span>
-                  </div>
-                </div>
-
-                {/* Pay full online */}
-                <div
-                  className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`}
-                  onClick={() => setPaymentMethod("full")}
-                >
-                  <input
-                    type="radio"
-                    id="pay-full"
-                    name="payment"
-                    checked={paymentMethod === "full"}
-                    onChange={() => {}}
-                    className="payment-radio"
-                  />
-                  <div className="payment-method-info">
-                    <label htmlFor="pay-full" className="payment-method-name">
-                      Pay Full Amount (₹{totalPrice})
-                      <span className="payment-badge">Zero Charges</span>
-                    </label>
-                    <span className="payment-method-desc">100% online payment with zero processing charges via PhonePe UPI.</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* UPI QR Mock Panel */}
-              {paymentMethod !== "arrival" && (
-                <div className="upi-gateway-container">
-                  <div className="upi-brands">
-                    <img src={getAssetPath("/icons/upi.svg")} alt="UPI" className="upi-brand-icon" style={{ height: 18 }} />
-                    <span style={{ fontWeight: 700, fontSize: "0.85rem", color: "#5f259f" }}>GPay / PhonePe Merchant Payment</span>
-                  </div>
-                  
-                  <div className="qr-instructions">
-                    <span style={{ display: "block", fontWeight: 700, fontSize: "1.1rem", color: "var(--primary-navy-dark)" }}>
-                      Amount Online: ₹{onlinePaymentAmount}
-                    </span>
-                    <span style={{ display: "block", fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.1rem" }}>
-                      Payee Name: <strong>{siteConfig.merchantName}</strong>
-                    </span>
-                    <span style={{ display: "block", fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                      Phone Number: <strong>{siteConfig.phoneDisplay}</strong>
-                    </span>
-                  </div>
-
-                  {/* UPI QR Canvas API Call */}
-                  <div className="qr-code-box">
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(generateUpiLink())}`}
-                      alt="UPI QR Code"
-                      className="qr-mock-img"
-                    />
-                  </div>
-
-                  <p className="qr-instructions">
-                    Scan using PhonePe, Google Pay, or Paytm. The amount and payee details are pre-filled.
-                  </p>
-
-                  <div className="pay-btn-group">
-                    {/* Native Deep Link invocation */}
-                    <a
-                      href={generateUpiLink()}
-                      className="btn-phonepe-pay"
-                    >
-                      📱 Pay via UPI Mobile App
-                    </a>
-                  </div>
-                </div>
-              )}
-
-              {/* Submission buttons */}
-              <div className="pay-btn-group" style={{ marginTop: "1rem" }}>
-                
-                {/* Whatsapp Confirmation (Main Booking Submission) */}
-                <button
-                  type="button"
-                  className="btn-whatsapp-confirm"
-                  onClick={handleWhatsAppRedirect}
-                >
-                  <img src={getAssetPath("/icons/whatsapp.svg")} alt="" className="whatsapp-icon-white" />
-                  Confirm & Send Details to WhatsApp
-                </button>
-                
-                {/* Traditional confirm booking */}
-                <button
-                  type="button"
-                  className="btn-primary"
-                  style={{
-                    backgroundColor: "var(--primary-navy)",
-                    color: "var(--text-white)"
-                  }}
-                  onClick={() => setStep(5)}
-                >
-                  Confirm Booking (Pay on Arrival)
-                </button>
-
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => setStep(3)}
-                >
-                  Back to Passenger Info
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step 5: Booking Success */}
-        {step === 5 && (
-          <div className="booking-card success-card">
-            <div className="success-badge">
-              <img src={getAssetPath("/icons/verified.svg")} alt="" className="success-icon-svg" />
-            </div>
-            
-            <h2 className="success-title">Booking Registered!</h2>
-            <p className="success-desc">
-              Dear {name}, we have registered your booking request. We are arranging the driver and vehicle for you.
-            </p>
-
-            {/* Receipt invoice details */}
-            <div className="booking-summary-box">
-              <div className="booking-summary-title">Booking Summary: {bookingId}</div>
-              <div className="bill-row">
-                <span>Passenger:</span>
-                <span style={{ fontWeight: 600 }}>{name}</span>
-              </div>
-              <div className="bill-row">
-                <span>Mobile:</span>
-                <span>{phone}</span>
-              </div>
-              <div className="bill-row">
-                <span>Route:</span>
-                <span>{pickup} to {drop}</span>
-              </div>
-              <div className="bill-row">
-                <span>Date & Time:</span>
-                <span>{date} at {time}</span>
-              </div>
-              <div className="bill-row">
-                <span>Vehicle Class:</span>
-                <span>{selectedCab.name}</span>
-              </div>
-              <div className="bill-row" style={{ borderTop: "1px dashed var(--border-color)", paddingTop: "0.5rem", marginTop: "0.5rem" }}>
-                <span>Payment Plan:</span>
-                <span style={{ fontWeight: 600, color: "var(--primary-navy-dark)" }}>
-                  {paymentMethod === "full" ? "Paid Full Online" : 
-                   paymentMethod === "advance" ? `Paid ₹${requiredAdvance} Advance (₹${payToDriverAmount} to Driver)` : 
-                   `Pay Driver ₹${totalPrice} at end of trip`}
-                </span>
-              </div>
-            </div>
-
-            <div className="pay-btn-group">
-              <a
-                href={`https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(getWhatsAppMessage())}`}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-whatsapp-confirm"
-              >
-                <img src={getAssetPath("/icons/whatsapp.svg")} alt="" className="whatsapp-icon-white" />
-                Message Booking Details on WhatsApp
-              </a>
-
-              <button
-                type="button"
-                className="btn-primary"
-                onClick={() => {
-                  setStep(1);
-                  setPaymentMethod("arrival");
-                  setName("");
-                  setPhone("");
-                  setEmail("");
-                  setPickupAddress("");
-                  setFlightNumber("");
-                  setBookingId(`GAT-${Math.floor(100000 + Math.random() * 900000)}`);
-                }}
-              >
-                Book Another Cab
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Brand Value Trust Badges */}
-        <section className="features-grid">
-          <div className="feature-item">
-            <div className="feature-icon-box">
-              <img src={getAssetPath("/icons/verified.svg")} alt="" className="feature-icon" />
-            </div>
-            <div className="feature-info">
-              <h3 className="feature-title">Leaflet Verified Cabs</h3>
-              <p className="feature-desc">All clean vehicles driven by verified professional drivers.</p>
-            </div>
-          </div>
-          <div className="feature-item">
-            <div className="feature-icon-box">
-              <img src={getAssetPath("/icons/ontime.svg")} alt="" className="feature-icon" />
-            </div>
-            <div className="feature-info">
-              <h3 className="feature-title">Punctual Pickups</h3>
-              <p className="feature-desc">Drivers arrive early. Our commitment is comfort & safety.</p>
-            </div>
-          </div>
-          <div className="feature-item">
-            <div className="feature-icon-box">
-              <img src={getAssetPath("/icons/ac.svg")} alt="" className="feature-icon" />
-            </div>
-            <div className="feature-info">
-              <h3 className="feature-title">Chilled AC Comfort</h3>
-              <p className="feature-desc">Proper climate control and clean seating environment.</p>
-            </div>
-          </div>
-          <div className="feature-item">
-            <div className="feature-icon-box">
-              <img src={getAssetPath("/icons/fare.svg")} alt="" className="feature-icon" />
-            </div>
-            <div className="feature-info">
-              <h3 className="feature-title">Zero Hidden Surcharges</h3>
-              <p className="feature-desc">Tolls and driver allowances are included in transfer quotes.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Special Terms accordion info list */}
-        <div className="booking-card" style={{ marginTop: "1.5rem" }}>
-          <h3 className="quick-routes-title" style={{ marginBottom: "0.5rem" }}>Terms & Tour Guidelines</h3>
-          <ul style={{ paddingLeft: "1.25rem", fontSize: "0.85rem", color: "var(--text-muted)", display: "flex", flexDirection: "column", gap: "0.35rem" }}>
-            {siteConfig.notes.map((note, idx) => (
-              <li key={idx}>{note}</li>
-            ))}
-          </ul>
-        </div>
-      </main>
-
-      {/* Float WhatsApp icon */}
+      {/* Floating WhatsApp button */}
       <a
         href={`https://wa.me/${siteConfig.whatsapp}`}
         className="whatsapp-float"
         target="_blank"
         rel="noreferrer"
-        aria-label="Contact manager on WhatsApp"
+        aria-label="WhatsApp support"
       >
         <img src={getAssetPath("/icons/whatsapp.svg")} alt="WhatsApp" className="whatsapp-float-icon" />
       </a>
