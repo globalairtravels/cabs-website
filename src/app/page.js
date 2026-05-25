@@ -337,10 +337,10 @@ Please confirm my booking. Thank you!`;
           {/* Mobile action bar with call button and hamburger menu */}
           <div className="mobile-only header-mobile-actions">
             <a href={`tel:${siteConfig.phone}`} className="mobile-call-icon-btn" aria-label="Call Us">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" className="nav-icon"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              <img src={getAssetPath("/icons/call/phone-ring.svg")} alt="" className="nav-icon" width="20" height="20" />
             </a>
             <button type="button" className="mobile-menu-toggle" onClick={() => setShowMobileMenu(true)} aria-label="Open navigation menu">
-              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2.5" fill="none" className="nav-icon"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+              <img src={getAssetPath("/icons/nav/menu.svg")} alt="" className="nav-icon" width="24" height="24" />
             </button>
           </div>
 
@@ -349,19 +349,19 @@ Please confirm my booking. Thank you!`;
             <ul className="desktop-nav">
               <li>
                 <button type="button" className="nav-item-link" onClick={handleOffersClick}>
-                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" className="nav-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                  <img src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="nav-icon" width="16" height="16" />
                   <span>Offers</span>
                 </button>
               </li>
               <li>
                 <button type="button" className="nav-item-link" onClick={() => { setShowMyBookings(true); setTrackAttempted(false); setTrackedBooking(null); setTrackBookingId(""); }}>
-                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" className="nav-icon"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                  <img src={getAssetPath("/icons/booking-flow/confirmed.svg")} alt="" className="nav-icon" width="16" height="16" />
                   <span>My Bookings</span>
                 </button>
               </li>
               <li>
                 <button type="button" className="nav-item-link" onClick={() => setShowSupport(true)}>
-                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" className="nav-icon"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                  <img src={getAssetPath("/icons/nav/support-nav.svg")} alt="" className="nav-icon" width="16" height="16" />
                   <span>Support</span>
                 </button>
               </li>
@@ -396,19 +396,19 @@ Please confirm my booking. Thank you!`;
               <ul className="mobile-drawer-nav">
                 <li>
                   <button type="button" className="drawer-nav-link" onClick={() => { setShowMobileMenu(false); handleOffersClick(); }}>
-                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" className="nav-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                    <img src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="nav-icon" width="18" height="18" />
                     <span>Offers & Promos</span>
                   </button>
                 </li>
                 <li>
                   <button type="button" className="drawer-nav-link" onClick={() => { setShowMobileMenu(false); setShowMyBookings(true); setTrackAttempted(false); setTrackedBooking(null); setTrackBookingId(""); }}>
-                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" className="nav-icon"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                    <img src={getAssetPath("/icons/booking-flow/confirmed.svg")} alt="" className="nav-icon" width="18" height="18" />
                     <span>Track Bookings</span>
                   </button>
                 </li>
                 <li>
                   <button type="button" className="drawer-nav-link" onClick={() => { setShowMobileMenu(false); setShowSupport(true); }}>
-                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" className="nav-icon"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                    <img src={getAssetPath("/icons/nav/support-nav.svg")} alt="" className="nav-icon" width="18" height="18" />
                     <span>Help & Support</span>
                   </button>
                 </li>
@@ -1269,7 +1269,7 @@ Please confirm my booking. Thank you!`;
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="modal-close-btn" onClick={() => setShowMyBookings(false)}>✕</button>
             <h2 className="modal-title">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" className="nav-icon" style={{ color: "var(--primary-orange)" }}><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+              <img src={getAssetPath("/icons/booking-flow/confirmed.svg")} alt="" className="nav-icon" width="20" height="20" style={{ color: "var(--primary-orange)" }} />
               <span>Track Your Booking</span>
             </h2>
             <div className="modal-body">
@@ -1366,7 +1366,7 @@ Please confirm my booking. Thank you!`;
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="modal-close-btn" onClick={() => setShowSupport(false)}>✕</button>
             <h2 className="modal-title">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" className="nav-icon" style={{ color: "var(--primary-orange)" }}><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+              <img src={getAssetPath("/icons/nav/support-nav.svg")} alt="" className="nav-icon" width="20" height="20" style={{ color: "var(--primary-orange)" }} />
               <span>Customer Helpdesk</span>
             </h2>
             <div className="modal-body">
@@ -1395,7 +1395,7 @@ Please confirm my booking. Thank you!`;
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="modal-close-btn" onClick={() => setShowLogin(false)}>✕</button>
             <h2 className="modal-title">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" className="nav-icon" style={{ color: "var(--primary-orange)" }}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <img src={getAssetPath("/icons/nav/login.svg")} alt="" className="nav-icon" width="20" height="20" style={{ color: "var(--primary-orange)" }} />
               <span>Log in to your account</span>
             </h2>
             <div className="modal-body">
