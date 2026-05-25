@@ -449,7 +449,7 @@ body {
   height: 16px;
 }
 
-/* Checkbox filter Tags */
+/* Included service tags */
 .filter-tags-row {
   display: flex;
   flex-wrap: wrap;
@@ -467,24 +467,14 @@ body {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-gray);
-  cursor: pointer;
+  cursor: default;
   background-color: var(--bg-card);
-  transition: all 0.15s ease-in-out;
 }
 
-.filter-tag:hover {
-  border-color: #94a3b8;
-  color: var(--text-dark);
-}
-
-.filter-tag.checked {
-  background-color: var(--primary-navy-light);
-  border-color: var(--primary-navy);
-  color: var(--primary-navy);
-}
-
-.filter-checkbox {
-  accent-color: var(--primary-navy);
+.included-tag {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-gray);
 }
 
 /* Bottom Row (Toggle & Search Button) */
@@ -1774,4 +1764,3 @@ body {
     margin-top: 1.25rem;
   }
 }
-

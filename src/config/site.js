@@ -14,7 +14,7 @@ export const siteConfig = {
   popularRoutes: [
     {
       id: "mysore-blr-airport-oneway",
-      label: "One-Way Airport Transfer (Mysore ⇄ Bangalore Airport)",
+      label: "Airport Transfer (Mysore ⇄ Bangalore Airport)",
       pickup: "Mysore",
       drop: "Bangalore Airport (KIA)",
       distanceKm: 180,

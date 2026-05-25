@@ -40,9 +40,6 @@ export default function Home() {
 
   // Active filters inside search box
   const [only6Seaters, setOnly6Seaters] = useState(false);
-  const [filterToll, setFilterToll] = useState(true);
-  const [filterAc, setFilterAc] = useState(true);
-  const [filterDriver, setFilterDriver] = useState(true);
 
   // Selected Cab & Passenger Info
   const [selectedCab, setSelectedCab] = useState(siteConfig.cabTypes[0]);
@@ -75,6 +72,7 @@ export default function Home() {
   const [trackedBooking, setTrackedBooking] = useState(null);
   const [trackAttempted, setTrackAttempted] = useState(false);
   const isOutstationTrip = tripType === "daily" || tripType === "tempo";
+  const showTripModeSelector = tripType !== "airport";
   const tempoCab = siteConfig.cabTypes.find(isTempoCab);
   const tripSummaryLabel = tripType === "airport" ? "Airport Transfers" :
                            tripType === "city" ? "City Taxi Service" :
@@ -525,43 +523,45 @@ Please confirm my booking. Thank you!`;
               </div>
 
               <div className="cleartrip-card">
-                {/* Inline Selectors (One way vs Round trip / Days) */}
-                <div className="inline-selectors-row">
-                  {isOutstationTrip ? (
-                    <label className="inline-radio-label">
-                      <input
-                        type="checkbox"
-                        checked={outstationDirection === "roundtrip"}
-                        onChange={(e) => setOutstationDirection(e.target.checked ? "roundtrip" : "oneway")}
-                        className="inline-radio-input"
-                      />
-                      <span>Round Trip Outstation (1.8x Km base)</span>
-                    </label>
-                  ) : (
-                    <>
+                {/* Inline Selectors (City trip mode / Outstation duration mode) */}
+                {showTripModeSelector && (
+                  <div className="inline-selectors-row">
+                    {isOutstationTrip ? (
                       <label className="inline-radio-label">
                         <input
-                          type="radio"
-                          name="direction-mode"
-                          checked={true}
-                          readOnly
+                          type="checkbox"
+                          checked={outstationDirection === "roundtrip"}
+                          onChange={(e) => setOutstationDirection(e.target.checked ? "roundtrip" : "oneway")}
                           className="inline-radio-input"
                         />
-                        <span>One way</span>
+                        <span>Round Trip Outstation (1.8x Km base)</span>
                       </label>
-                      <label className="inline-radio-label" style={{ opacity: 0.5, cursor: "not-allowed" }}>
-                        <input
-                          type="radio"
-                          name="direction-mode"
-                          checked={false}
-                          disabled
-                          className="inline-radio-input"
-                        />
-                        <span>Round trip</span>
-                      </label>
-                    </>
-                  )}
-                </div>
+                    ) : (
+                      <>
+                        <label className="inline-radio-label">
+                          <input
+                            type="radio"
+                            name="direction-mode"
+                            checked={true}
+                            readOnly
+                            className="inline-radio-input"
+                          />
+                          <span>One way</span>
+                        </label>
+                        <label className="inline-radio-label" style={{ opacity: 0.5, cursor: "not-allowed" }}>
+                          <input
+                            type="radio"
+                            name="direction-mode"
+                            checked={false}
+                            disabled
+                            className="inline-radio-input"
+                          />
+                          <span>Round trip</span>
+                        </label>
+                      </>
+                    )}
+                  </div>
+                )}
 
                 {/* Main Booking Search Form */}
                 <form onSubmit={handleSearchSubmit}>
@@ -690,35 +690,11 @@ Please confirm my booking. Thank you!`;
                     )}
                   </div>
 
-                  {/* Quick Filters Checkbox Row (Cleartrip style tags) */}
-                  <div className="filter-tags-row">
-                    <label className={`filter-tag ${filterToll ? "checked" : ""}`}>
-                      <input
-                        type="checkbox"
-                        checked={filterToll}
-                        onChange={(e) => setFilterToll(e.target.checked)}
-                        className="filter-checkbox"
-                      />
-                      <span>Tolls Included</span>
-                    </label>
-                    <label className={`filter-tag ${filterAc ? "checked" : ""}`}>
-                      <input
-                        type="checkbox"
-                        checked={filterAc}
-                        onChange={(e) => setFilterAc(e.target.checked)}
-                        className="filter-checkbox"
-                      />
-                      <span>AC Cab</span>
-                    </label>
-                    <label className={`filter-tag ${filterDriver ? "checked" : ""}`}>
-                      <input
-                        type="checkbox"
-                        checked={filterDriver}
-                        onChange={(e) => setFilterDriver(e.target.checked)}
-                        className="filter-checkbox"
-                      />
-                      <span>Driver Allowance Incl.</span>
-                    </label>
+                  {/* Included service tags */}
+                  <div className="filter-tags-row" aria-label="Included services">
+                    <span className="filter-tag included-tag">Tolls Included</span>
+                    <span className="filter-tag included-tag">AC Cab</span>
+                    <span className="filter-tag included-tag">Driver Allowance Incl.</span>
                   </div>
 
                   {/* Bottom Action Row (Toggle Switch & Primary Button) */}
