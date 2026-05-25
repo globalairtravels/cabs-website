@@ -333,11 +333,7 @@ Please confirm my booking. Thank you!`;
             </span>
           </a>
           
-          {/* Mobile only call badge */}
-          <a href={`tel:${siteConfig.phone}`} className="call-badge mobile-only" aria-label="Call Booking Manager">
-            <img src={getAssetPath("/icons/phone.svg")} alt="" className="call-icon" />
-            <span>Call</span>
-          </a>
+
 
           {/* Desktop only navigation menu */}
           <nav className="desktop-only" aria-label="Main Navigation">
