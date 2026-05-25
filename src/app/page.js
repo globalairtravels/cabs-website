@@ -1,7 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { siteConfig } from "@/config/site";
+
+const createBookingId = () => `GAT-${Math.floor(100000 + Math.random() * 900000)}`;
+
+const getTomorrowDate = () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow.toISOString().split("T")[0];
+};
+
+const isTempoCab = (cab) => cab.id.startsWith("tempo");
 
 export default function Home() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -9,7 +19,7 @@ export default function Home() {
 
   // Booking Flow States
   const [step, setStep] = useState(1);
-  const [tripType, setTripType] = useState("airport"); // 'airport', 'city', 'daily'
+  const [tripType, setTripType] = useState("airport"); // 'airport', 'city', 'daily', 'tempo'
   
   // Airport direction options: 'drop' (Mysore to KIA) or 'pickup' (KIA to Mysore)
   const [airportType, setAirportType] = useState("drop");
@@ -23,7 +33,7 @@ export default function Home() {
   // Form Fields
   const [pickup, setPickup] = useState("Mysore");
   const [drop, setDrop] = useState("Bangalore Airport (KIA)");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(getTomorrowDate);
   const [time, setTime] = useState("10:00");
   const [showPickupSuggestions, setShowPickupSuggestions] = useState(false);
   const [showDropSuggestions, setShowDropSuggestions] = useState(false);
@@ -36,7 +46,7 @@ export default function Home() {
 
   // Selected Cab & Passenger Info
   const [selectedCab, setSelectedCab] = useState(siteConfig.cabTypes[0]);
-  const [bookingId, setBookingId] = useState("");
+  const [bookingId, setBookingId] = useState(createBookingId);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -64,16 +74,12 @@ export default function Home() {
   const [trackPhone, setTrackPhone] = useState("");
   const [trackedBooking, setTrackedBooking] = useState(null);
   const [trackAttempted, setTrackAttempted] = useState(false);
-
-  // Load defaults
-  useEffect(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    setDate(tomorrow.toISOString().split("T")[0]);
-    
-    const randomNum = Math.floor(100000 + Math.random() * 900000);
-    setBookingId(`GAT-${randomNum}`);
-  }, []);
+  const isOutstationTrip = tripType === "daily" || tripType === "tempo";
+  const tempoCab = siteConfig.cabTypes.find(isTempoCab);
+  const tripSummaryLabel = tripType === "airport" ? "Airport Transfers" :
+                           tripType === "city" ? "City Taxi Service" :
+                           tripType === "tempo" ? `Tempo Traveller (${numDays} Days)` :
+                           `Intercity Travel (${numDays} Days)`;
 
   // Sync inputs when airport transfer direction changes
   const handleAirportDirectionChange = (direction) => {
@@ -109,6 +115,12 @@ export default function Home() {
     } else if (tab === "daily") {
       setPickup("Mysore");
       setDrop("Outstation Tour / Local");
+    } else if (tab === "tempo") {
+      setPickup("Mysore");
+      setDrop("Group Tour / Outstation");
+      if (tempoCab) {
+        setSelectedCab(tempoCab);
+      }
     }
   };
 
@@ -116,7 +128,7 @@ export default function Home() {
 
   // Swap pickup & drop locations
   const handleSwapLocations = () => {
-    if (tripType === "daily") return; // No swap for daily sightseeing
+    if (isOutstationTrip) return; // No swap for outstation packages
     
     const temp = pickup;
     setPickup(drop);
@@ -173,13 +185,14 @@ export default function Home() {
   const totalPrice = calculatePrice(selectedCab);
   
   // Custom booking advance structure (₹500 per day as noted in the leaflet)
-  const requiredAdvance = tripType === "daily" ? 500 * numDays : 500;
+  const requiredAdvance = isOutstationTrip ? 500 * numDays : 500;
   
   const onlinePaymentAmount = paymentMethod === "full" ? totalPrice : paymentMethod === "advance" ? requiredAdvance : 0;
   const payToDriverAmount = totalPrice - onlinePaymentAmount;
 
   // Filtered Cabs based on search filters (Show 6+ Seater Cabs Only)
   const filteredCabs = siteConfig.cabTypes.filter((cab) => {
+    if (tripType === "tempo" && !isTempoCab(cab)) return false;
     if (only6Seaters && cab.seats < 6) return false;
     return true;
   });
@@ -222,11 +235,13 @@ export default function Home() {
   const getWhatsAppMessage = () => {
     let tripDetails = "";
     if (tripType === "airport") {
-      tripDetails = `Airport Transfer (${airportType === "drop" ? "Mysore to Airport" : "Airport to Mysore"})`;
+      tripDetails = `Airport Transfers (${airportType === "drop" ? "Mysore to Airport" : "Airport to Mysore"})`;
     } else if (tripType === "city") {
-      tripDetails = `Bangalore City Drop (${cityType === "drop" ? "Mysore to Bangalore" : "Bangalore to Mysore"})`;
+      tripDetails = `City Taxi Service (${cityType === "drop" ? "Mysore to Bangalore" : "Bangalore to Mysore"})`;
+    } else if (tripType === "tempo") {
+      tripDetails = `Tempo Traveller (${numDays} Day${numDays > 1 ? "s" : ""})`;
     } else {
-      tripDetails = `Local / Outstation Daily Hire (${numDays} Day${numDays > 1 ? "s" : ""})`;
+      tripDetails = `Intercity Travel (${numDays} Day${numDays > 1 ? "s" : ""})`;
     }
 
     const payStatus = paymentMethod === "full" ? "Paid 100% Full UPI" : 
@@ -453,7 +468,7 @@ Please confirm my booking. Thank you!`;
               <div className="product-icon-wrapper">
                 <img src={getAssetPath("/icons/nav/airport.svg")} alt="" className="product-icon" />
               </div>
-              <span>Airport Transfer</span>
+              <span>Airport Transfers</span>
             </button>
             <button
               type="button"
@@ -461,9 +476,9 @@ Please confirm my booking. Thank you!`;
               onClick={() => handleTabChange("city")}
             >
               <div className="product-icon-wrapper">
-                <img src={getAssetPath("/icons/hero/one-way.svg")} alt="" className="product-icon" />
+                <img src={getAssetPath("/icons/nav/cab.svg")} alt="" className="product-icon" />
               </div>
-              <span>Bangalore Drops</span>
+              <span>City Taxi Service</span>
             </button>
             <button
               type="button"
@@ -471,9 +486,19 @@ Please confirm my booking. Thank you!`;
               onClick={() => handleTabChange("daily")}
             >
               <div className="product-icon-wrapper">
-                <img src={getAssetPath("/icons/hero/calendar.svg")} alt="" className="product-icon" />
+                <img src={getAssetPath("/icons/nav/outstation.svg")} alt="" className="product-icon" />
               </div>
-              <span>Daily Sightseeing / Tour</span>
+              <span>Intercity Travel</span>
+            </button>
+            <button
+              type="button"
+              className={`product-pill ${tripType === "tempo" ? "active" : ""}`}
+              onClick={() => handleTabChange("tempo")}
+            >
+              <div className="product-icon-wrapper">
+                <img src={getAssetPath("/icons/nav/tempo.svg")} alt="" className="product-icon" />
+              </div>
+              <span>Tempo Traveller</span>
             </button>
           </nav>
         )}
@@ -491,7 +516,7 @@ Please confirm my booking. Thank you!`;
               <div className="cleartrip-card">
                 {/* Inline Selectors (One way vs Round trip / Days) */}
                 <div className="inline-selectors-row">
-                  {tripType === "daily" ? (
+                  {isOutstationTrip ? (
                     <label className="inline-radio-label">
                       <input
                         type="checkbox"
@@ -563,7 +588,7 @@ Please confirm my booking. Thank you!`;
                     </div>
 
                     {/* Swap Button (Absolutely centered overlapping borders) */}
-                    {tripType !== "daily" && (
+                    {!isOutstationTrip && (
                       <button
                         type="button"
                         className="swap-circle-btn"
@@ -588,7 +613,7 @@ Please confirm my booking. Thank you!`;
                         onBlur={() => setTimeout(() => setShowDropSuggestions(false), 200)}
                         placeholder="Enter destination city"
                         required
-                        disabled={tripType === "daily"}
+                        disabled={isOutstationTrip}
                       />
                       {showDropSuggestions && (
                         <div className="suggestions-dropdown">
@@ -624,7 +649,7 @@ Please confirm my booking. Thank you!`;
                     </div>
 
                     {/* Pickup Time or Duration Days input */}
-                    {tripType === "daily" ? (
+                    {isOutstationTrip ? (
                       <div className="input-col">
                         <label htmlFor="days-select" className="input-mini-label">Duration</label>
                         <select
@@ -777,7 +802,7 @@ Please confirm my booking. Thank you!`;
                       {pickup} ➔ {drop}
                     </span>
                     <span className="route-summary-details">
-                      Date: {date} at {time} • {tripType === "airport" ? "Airport Transfer" : tripType === "city" ? "Bangalore Drop" : `Daily Tour (${numDays} Days)`}
+                      Date: {date} at {time} • {tripSummaryLabel}
                     </span>
                   </div>
                   <button
@@ -829,7 +854,7 @@ Please confirm my booking. Thank you!`;
                         </div>
 
                         <div className="cab-inclusions-card">
-                          {tripType === "daily" ? (
+                          {isOutstationTrip ? (
                             <>
                               <div className="cab-inclusions-title">Outstation Per-Day Rates</div>
                               <div style={{ fontSize: "0.75rem", color: "var(--text-gray)" }}>
@@ -979,7 +1004,7 @@ Please confirm my booking. Thank you!`;
                       <span>Reporting Time:</span>
                       <span>{date} at {time}</span>
                     </div>
-                    {tripType === "daily" && (
+                    {isOutstationTrip && (
                       <div className="bill-row">
                         <span>Duration:</span>
                         <span>{numDays} Day{numDays > 1 ? "s" : ""} Tour</span>
@@ -1185,7 +1210,7 @@ Please confirm my booking. Thank you!`;
                       setEmail("");
                       setPickupAddress("");
                       setFlightNumber("");
-                      setBookingId(`GAT-${Math.floor(100000 + Math.random() * 900000)}`);
+                      setBookingId(createBookingId());
                     }}
                   >
                     Book Another Cab
