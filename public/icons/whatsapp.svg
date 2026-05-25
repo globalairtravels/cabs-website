@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-label="WhatsApp">
+  <rect width="64" height="64" rx="14" fill="'#25D366'"/>
+  <path d="M32 10 C20 10 10 20 10 32 C10 36 11 40 13 44 L10 54 L20 51 C24 53 28 54 32 54 C44 54 54 44 54 32 C54 20 44 10 32 10 Z" fill="white"/>
+      <path d="M24 22 C24 22 26 22 27 24 C28 26 30 30 30 30 C30 30 28 32 27 33 C28 36 30 38 33 40 C36 41 38 39 39 38 C39 38 43 40 45 41 C45 44 43 47 40 47 C34 47 22 41 21 28 C21 26 22 22 24 22 Z" fill="${C.greenDeep === '#178256' ? '#128C7E' : C.greenDeep}"/>
+</svg>

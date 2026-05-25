@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-label="Invoice / GST">
+  <rect width="64" height="64" rx="14" fill="#0EA5A8"/>
+  <path d="M14 8 L42 8 L50 16 L50 56 L14 56 Z" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M42 8 L42 16 L50 16" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M20 28 L44 28 M20 34 L44 34 M20 40 L38 40 M20 46 L34 46" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
