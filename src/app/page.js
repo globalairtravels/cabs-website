@@ -19,6 +19,7 @@ export default function Home() {
   // Trip Duration options
   const [outstationDirection, setOutstationDirection] = useState("oneway"); // 'oneway', 'roundtrip'
   const [numDays, setNumDays] = useState(1);
+  const [swapRotation, setSwapRotation] = useState(0);
 
   // Form Fields
   const [pickup, setPickup] = useState("Mysore");
@@ -100,6 +101,7 @@ export default function Home() {
     const temp = pickup;
     setPickup(drop);
     setDrop(temp);
+    setSwapRotation(prev => prev + 180);
 
     // Sync sub-types
     if (tripType === "airport") {
@@ -297,7 +299,7 @@ Please confirm my booking. Thank you!`;
 
         {/* Step-based view selector */}
         {step === 1 ? (
-          <div className="cleartrip-grid">
+          <div className="cleartrip-grid step-container">
             {/* Left Column: Cleartrip Search Box Card */}
             <div>
               <div className="cleartrip-heading-area">
@@ -385,6 +387,7 @@ Please confirm my booking. Thank you!`;
                         type="button"
                         className="swap-circle-btn"
                         onClick={handleSwapLocations}
+                        style={{ transform: `translate(-50%, -50%) rotate(${swapRotation}deg)` }}
                         aria-label="Swap pickup and drop locations"
                       >
                         <img src={getAssetPath("/icons/route.svg")} alt="" className="swap-circle-icon" />
@@ -575,7 +578,7 @@ Please confirm my booking. Thank you!`;
           </div>
         ) : (
           /* Multi-step screen inside center container */
-          <div className="stepper-result">
+          <div className="stepper-result step-container">
             {/* Step 2: Cab Selection */}
             {step === 2 && (
               <div>
