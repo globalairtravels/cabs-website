@@ -1,144 +1,166 @@
-// Global Air Travels site configuration
+// Global Air Travels site configuration based on official leaflet
 export const siteConfig = {
   name: "Global Air Travels",
-  tagline: "Simplest Cab Booking to & from Mysore & Bangalore",
-  phone: "+919845181118", // Dynamic telephone number
-  phoneDisplay: "+91 98451 81118",
-  whatsapp: "+919845181118",
-  whatsappDisplay: "+91 98451 81118",
+  tagline: "Simplest Cab Booking in Mysore & Bangalore",
+  phone: "+919844082581", // Contact number from leaflet
+  phoneDisplay: "+91 98440 82581",
+  whatsapp: "+919844082581",
+  whatsappDisplay: "+91 98440 82581",
   email: "booking@globalairtravels.com",
-  upiId: "9845181118@ybl", // Merchant UPI ID for PhonePe (YBL - Yes Bank/PhonePe)
-  merchantName: "Global Air Travels",
+  upiId: "9844082581@ybl", // Payee UPI ID based on the phone number
+  merchantName: "Madhusudan H G", // Name from payment details in leaflet
   
-  // Popular quick-select routes to make booking incredibly easy for all users (e.g. 40+ demographic)
+  // Service Packages based on official leaflet structure
   popularRoutes: [
     {
-      id: "mysore-blr-airport",
-      label: "Mysore to Bangalore Airport",
-      pickup: "Mysore City",
+      id: "mysore-blr-airport-oneway",
+      label: "One-Way Airport Transfer (Mysore ⇄ Bangalore Airport)",
+      pickup: "Mysore",
       drop: "Bangalore Airport (KIA)",
       distanceKm: 180,
-      description: "One-way drop to Kempegowda International Airport",
+      description: "Toll & Driver allowance included! Airport waiting up to 45 mins included.",
+      pricing: {
+        sedan: 3600,
+        suv: 4500, // Ertiga
+        innova: 4700,
+        crysta: 5400,
+        tempo: 7200 // Est. based on per km AC minimums
+      }
     },
     {
-      id: "blr-airport-mysore",
-      label: "Bangalore Airport to Mysore",
-      pickup: "Bangalore Airport (KIA)",
-      drop: "Mysore City",
-      distanceKm: 180,
-      description: "One-way pickup from Kempegowda International Airport",
-    },
-    {
-      id: "mysore-blr-city",
-      label: "Mysore to Bangalore City",
-      pickup: "Mysore City",
+      id: "mysore-blr-city-oneway",
+      label: "Mysore ⇄ Bangalore City One Way (150 Kms Limit)",
+      pickup: "Mysore",
       drop: "Bangalore City",
       distanceKm: 150,
-      description: "One-way trip to Bangalore City",
-    },
-    {
-      id: "blr-city-mysore",
-      label: "Bangalore City to Mysore",
-      pickup: "Bangalore City",
-      drop: "Mysore City",
-      distanceKm: 150,
-      description: "One-way trip to Mysore City",
+      description: "Includes Toll (₹400) + Base Fare.",
+      pricing: {
+        sedan: 3100, // 2700 + 400 toll
+        suv: 3900,   // 3500 + 400 toll (Ertiga)
+        innova: 4100, // 3700 + 400 toll
+        crysta: 4600, // 4200 + 400 toll
+        tempo: 7200  // Est. base
+      }
     }
   ],
 
-  // Cab types matching the SVGs in public/icons/
+  // Cab types matching the SVGs in public/icons/ and the official rates sheet
   cabTypes: [
     {
       id: "sedan",
-      name: "Sedan",
+      name: "Sedan AC",
       icon: "sedan.svg",
-      example: "Dzire, Etios, Aura",
+      example: "Etios, Dzire, Xcent",
       seats: 4,
       luggage: "2 Bags",
       ac: true,
-      baseRatePerKm: 14,
-      mysoreBlrAirportPrice: 2799,
-      mysoreBlrCityPrice: 2499,
-      description: "Ideal for solo travelers or small families.",
-      features: ["Professional Driver", "Neat & Clean Cars", "Toll & State Permits Included"]
+      ratePerKm: 12, // From leaflet
+      minKmPerDay: 250, // From leaflet
+      driverAllowance: 400, // From leaflet
+      airportPrice: 3600,
+      cityPrice: 3100,
+      description: "Comfortable and economical. Perfect for quick drops and small families."
     },
     {
       id: "suv",
-      name: "SUV / Ertiga",
+      name: "Ertiga AC",
       icon: "suv.svg",
-      example: "Ertiga, Triber, Carens",
+      example: "Ertiga (6+1)",
       seats: 6,
       luggage: "3 Bags",
       ac: true,
-      baseRatePerKm: 18,
-      mysoreBlrAirportPrice: 3799,
-      mysoreBlrCityPrice: 3499,
-      description: "Budget-friendly option for medium families.",
-      features: ["Professional Driver", "Ample Legroom", "Toll & State Permits Included"]
+      ratePerKm: 15, // From leaflet
+      minKmPerDay: 250, // From leaflet
+      driverAllowance: 400, // From leaflet
+      airportPrice: 4500,
+      cityPrice: 3900,
+      description: "Ideal for family travel, offering extra seats and flexible luggage space."
     },
     {
       id: "innova",
-      name: "Innova",
+      name: "Innova AC",
       icon: "innova.svg",
-      example: "Innova",
+      example: "Innova (7+1)",
       seats: 7,
       luggage: "4 Bags",
       ac: true,
-      baseRatePerKm: 22,
-      mysoreBlrAirportPrice: 4799,
-      mysoreBlrCityPrice: 4499,
-      description: "Comfortable long drives with family.",
-      features: ["Highly Professional Driver", "Premium Comfort", "Toll & State Permits Included"]
+      ratePerKm: 16, // From leaflet
+      minKmPerDay: 250, // From leaflet
+      driverAllowance: 400, // From leaflet
+      airportPrice: 4700,
+      cityPrice: 4100,
+      description: "Standard premium family ride, highly stable and comfortable for long distances."
     },
     {
       id: "crysta",
-      name: "Innova Crysta",
+      name: "Crysta AC",
       icon: "crysta.svg",
-      example: "Innova Crysta Premium",
+      example: "Innova Crysta AC",
       seats: 7,
       luggage: "4 Bags",
       ac: true,
-      baseRatePerKm: 26,
-      mysoreBlrAirportPrice: 5799,
-      mysoreBlrCityPrice: 5299,
-      description: "Ultimate luxury and safety for executive travel.",
-      features: ["Premium Audio System", "Executive Captain Seats", "Toll & State Permits Included"]
+      ratePerKm: 17, // From leaflet
+      minKmPerDay: 250, // From leaflet
+      driverAllowance: 400, // From leaflet
+      airportPrice: 5400,
+      cityPrice: 4600,
+      description: "Ultimate luxury and safety, executive ride for family or business groups."
     },
     {
       id: "tempo",
-      name: "Tempo Traveller",
+      name: "Tempo Traveller AC",
       icon: "tempo.svg",
-      example: "Tempo Traveller 12/14 Seater",
+      example: "TT (12+1 Seater)",
       seats: 12,
       luggage: "8 Bags",
       ac: true,
-      baseRatePerKm: 32,
-      mysoreBlrAirportPrice: 7999,
-      mysoreBlrCityPrice: 6999,
-      description: "Best for large groups and pilgrimage trips.",
-      features: ["Carrier for Luggage", "Pushback Seats", "Toll & State Permits Included"]
+      ratePerKm: 22, // From leaflet
+      minKmPerDay: 300, // From leaflet
+      driverAllowance: 600, // From leaflet
+      airportPrice: 7200,
+      cityPrice: 7200,
+      description: "Best for wedding groups, pilgrim groups, and large family tours."
+    },
+    {
+      id: "tempo-non-ac",
+      name: "Tempo Traveller Non-AC",
+      icon: "tempo.svg",
+      example: "TT (12+1 Seater)",
+      seats: 12,
+      luggage: "8 Bags",
+      ac: false,
+      ratePerKm: 20, // From leaflet
+      minKmPerDay: 300, // From leaflet
+      driverAllowance: 600, // From leaflet
+      airportPrice: 6600,
+      cityPrice: 6600,
+      description: "Budget-friendly option for larger group travels where AC is not needed."
     }
   ],
 
-  // Extra options configurations
-  paymentOptions: [
-    {
-      id: "arrival",
-      name: "Pay to Driver (Cash/UPI)",
-      description: "Pay the full amount directly to the driver at the end of the trip.",
-      extraCharge: 0
-    },
-    {
-      id: "advance",
-      name: "Pay Advance ₹500 (Secure Booking)",
-      description: "Pay ₹500 now via PhonePe UPI to confirm booking, pay balance to driver.",
-      extraCharge: 0
-    },
-    {
-      id: "full",
-      name: "Pay Full Amount (Zero Fee UPI)",
-      description: "Pay 100% online now using PhonePe/UPI for instant confirmation.",
-      extraCharge: 0
-    }
+  // Interstate Permits list for display/help
+  interstatePermits: {
+    title: "Interstate Permit / Tax (Valid for 7 Days)",
+    note: "Paid directly by guest if crossing state borders",
+    details: [
+      { vehicle: "Sedan", state: "All borders", price: 600 },
+      { vehicle: "Ertiga (SUV)", state: "All borders", price: 1000 },
+      { vehicle: "Innova / Crysta", state: "Tamil Nadu", price: 1250 },
+      { vehicle: "Innova / Crysta", state: "Kerala", price: 3000 },
+      { vehicle: "Innova / Crysta", state: "Andhra", price: 2500 },
+      { vehicle: "Tempo Traveller", state: "Tamil Nadu", price: 2000 },
+      { vehicle: "Tempo Traveller", state: "Kerala", price: 4000 },
+      { vehicle: "Tempo Traveller", state: "Andhra", price: 3500 },
+      { vehicle: "Tempo Traveller", state: "Goa (Special Permit)", price: 4500 }
+    ]
+  },
+
+  // Booking Rules & Notes
+  notes: [
+    "During peak season, rates may increase by ₹1 per km depending on vehicle demand.",
+    "Nice Road Toll is charged separately when applicable.",
+    "Toll & Parking charges are to be paid directly by the guest (for local/outstation daily bookings).",
+    "Night Driver Allowance (10 PM - 6 AM): ₹400 for cars, ₹600 for Tempo Traveller extra depending on vehicle.",
+    "Booking confirmation requires an advance of ₹500 per day."
   ]
 };
