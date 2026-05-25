@@ -2,13 +2,13 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  apiKey: 'AIzaSyDBlcScgmBN0fHugwPJhL5ycYg3bI5ITL0',
+  authDomain: 'globalairtravels-9651f.firebaseapp.com',
+  projectId: 'globalairtravels-9651f',
+  storageBucket: 'globalairtravels-9651f.firebasestorage.app',
+  messagingSenderId: '518478472224',
+  appId: '1:518478472224:web:baccc6770fbf6921488845',
+  measurementId: 'G-87PV86VH02',
 };
 
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
