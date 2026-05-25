@@ -1385,15 +1385,17 @@ Please confirm my booking. Thank you!`;
               <h2 className="footer-heading">Offices</h2>
               <div className="footer-office-list">
                 {siteConfig.footer.offices.map((office) => (
-                  <address key={office.title} className="footer-address">
-                    <strong>{office.title}</strong>
-                    <span>{office.name}</span>
-                    <span>{office.address}</span>
-                    <a href={`tel:${office.phone}`} className="footer-link">{office.phoneDisplay}</a>
-                    {office.email && (
-                      <a href={`mailto:${office.email}`} className="footer-link">{office.email}</a>
-                    )}
-                  </address>
+                  <details key={office.title} className="footer-office">
+                    <summary className="footer-office-summary">{office.title}</summary>
+                    <address className="footer-address">
+                      <span>{office.name}</span>
+                      <span>{office.address}</span>
+                      <a href={`tel:${office.phone}`} className="footer-link">{office.phoneDisplay}</a>
+                      {office.email && (
+                        <a href={`mailto:${office.email}`} className="footer-link">{office.email}</a>
+                      )}
+                    </address>
+                  </details>
                 ))}
               </div>
             </div>
