@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-label="Innova">
+  <rect width="64" height="64" rx="14" fill="#F26B1F"/>
+  <rect x="5" y="28" width="54" height="20" rx="5" fill="white" fill-opacity="0.25"/>
+      <path d="M8 28 L12 16 L52 16 L56 28" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M20 16 L20 28 M32 16 L32 28 M44 16 L44 28" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="18" cy="48" r="5" fill="white"/>
+      <circle cx="46" cy="48" r="5" fill="white"/>
+      <circle cx="18" cy="48" r="2" fill="#C8520F"/>
+      <circle cx="46" cy="48" r="2" fill="#C8520F"/>
+</svg>

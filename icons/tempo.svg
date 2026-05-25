@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-label="Tempo Traveller">
+  <rect width="64" height="64" rx="14" fill="#E63946"/>
+  <rect x="4" y="14" width="56" height="34" rx="4" fill="white" fill-opacity="0.25"/>
+      <path d="M4 22 L60 22" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="10" y="26" width="10" height="8" rx="1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="24" y="26" width="10" height="8" rx="1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="38" y="26" width="10" height="8" rx="1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="16" cy="50" r="5" fill="white"/>
+      <circle cx="48" cy="50" r="5" fill="white"/>
+      <circle cx="16" cy="50" r="2" fill="#B82A35"/>
+      <circle cx="48" cy="50" r="2" fill="#B82A35"/>
+</svg>

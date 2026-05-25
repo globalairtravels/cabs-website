@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-label="Crysta">
+  <rect width="64" height="64" rx="14" fill="#7B5BD3"/>
+  <rect x="4" y="28" width="56" height="20" rx="5" fill="white" fill-opacity="0.25"/>
+      <path d="M7 28 L11 14 L53 14 L57 28" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M18 14 L18 28 M32 14 L32 28 M46 14 L46 28" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="17" cy="48" r="5" fill="white"/>
+      <circle cx="47" cy="48" r="5" fill="white"/>
+      <circle cx="17" cy="48" r="2" fill="#5E3FB3"/>
+      <circle cx="47" cy="48" r="2" fill="#5E3FB3"/>
+      <rect x="50" y="34" width="6" height="2" rx="1" fill="white"/>
+</svg>
