@@ -26,7 +26,7 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   
   --border-radius: 12px;
-  --border-radius-sm: 6px;
+  --border-radius-sm: 8px;
   --border-radius-lg: 16px;
 }
 
@@ -34,7 +34,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent; /* Remove blue highlight on tap for mobile */
 }
 
 body {
@@ -46,7 +46,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Accessible hidden element pattern */
+/* Accessible screen-reader helper */
 .visually-hidden {
   position: absolute;
   clip-path: inset(50%);
@@ -63,7 +63,7 @@ body {
 .header {
   background-color: var(--primary-navy-dark);
   color: var(--text-white);
-  padding: 1rem 1.5rem;
+  padding: 0.85rem 1rem;
   box-shadow: var(--shadow-sm);
   position: sticky;
   top: 0;
@@ -76,24 +76,26 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .logo-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
   text-decoration: none;
   color: var(--text-white);
+  flex-shrink: 0;
 }
 
 .logo-icon {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   filter: brightness(0) invert(1);
 }
 
 .logo-text {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 800;
   letter-spacing: -0.5px;
 }
@@ -105,55 +107,81 @@ body {
 .call-badge {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   background-color: var(--accent-yellow);
   color: var(--primary-navy-dark);
-  padding: 0.5rem 0.85rem;
+  padding: 0.45rem 0.75rem;
   border-radius: 50px;
   font-weight: 700;
   text-decoration: none;
-  font-size: 0.875rem;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  font-size: 0.8rem;
+  transition: transform 0.15s ease, background-color 0.15s ease;
   box-shadow: var(--shadow-sm);
-}
-
-.call-badge:hover, .call-badge:focus-visible {
-  background-color: #ffda6a;
-  transform: translateY(-1px);
-}
-
-.call-badge:focus-visible {
-  outline: 3px solid var(--text-white);
-  outline-offset: 2px;
+  flex-shrink: 0;
 }
 
 .call-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
+}
+
+/* Desktop and Tablet Header Upgrades */
+@media (min-width: 480px) {
+  .header {
+    padding: 1rem 1.5rem;
+  }
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+  }
+  .logo-text {
+    font-size: 1.25rem;
+  }
+  .call-badge {
+    padding: 0.5rem 0.95rem;
+    font-size: 0.875rem;
+  }
+  .call-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Active touch feedback for mobile */
+.call-badge:active {
+  transform: scale(0.96);
+  background-color: #e5b327;
 }
 
 /* Hero Section */
 .hero-section {
   background-color: var(--primary-navy);
   color: var(--text-white);
-  padding: 2.5rem 1.5rem 6rem;
+  padding: 2rem 1rem 5rem;
   text-align: center;
 }
 
-.hero-container {
-  max-width: 900px;
-  margin: 0 auto;
+@media (min-width: 600px) {
+  .hero-section {
+    padding: 3rem 1.5rem 6rem;
+  }
 }
 
 .hero-title {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 800;
-  margin-bottom: 0.5rem;
-  line-height: 1.25;
+  margin-bottom: 0.35rem;
+  line-height: 1.2;
+}
+
+@media (min-width: 600px) {
+  .hero-title {
+    font-size: 2.25rem;
+  }
 }
 
 .hero-subtitle {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   color: #c9daf7;
   font-weight: 400;
   max-width: 600px;
@@ -163,16 +191,23 @@ body {
 /* Main Container Layout */
 .main-content {
   max-width: 768px;
-  margin: -4.5rem auto 3rem;
-  padding: 0 1rem;
+  margin: -4rem auto 2.5rem;
+  padding: 0 0.75rem;
+}
+
+@media (min-width: 600px) {
+  .main-content {
+    margin: -4.5rem auto 3rem;
+    padding: 0 1.5rem;
+  }
 }
 
 /* Stepper Indicator */
 .stepper {
   background-color: var(--bg-card);
-  padding: 0.85rem 1.5rem;
+  padding: 0.75rem 1rem;
   border-radius: var(--border-radius);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: space-between;
@@ -180,13 +215,27 @@ body {
   border: 1px solid var(--border-color);
 }
 
+@media (min-width: 480px) {
+  .stepper {
+    padding: 0.85rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
 .step-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
+  gap: 0.35rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   font-weight: 500;
+}
+
+@media (min-width: 480px) {
+  .step-item {
+    font-size: 0.85rem;
+    gap: 0.5rem;
+  }
 }
 
 .step-item.active {
@@ -199,15 +248,23 @@ body {
 }
 
 .step-number {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background-color: var(--bg-main);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
+}
+
+@media (min-width: 480px) {
+  .step-number {
+    width: 22px;
+    height: 22px;
+    font-size: 0.75rem;
+  }
 }
 
 .step-item.active .step-number {
@@ -224,43 +281,79 @@ body {
   flex-grow: 1;
   height: 2px;
   background-color: var(--border-color);
-  margin: 0 1rem;
-  max-width: 60px;
+  margin: 0 0.5rem;
+  max-width: 40px;
 }
 
-/* Primary Card container */
+@media (min-width: 480px) {
+  .step-separator {
+    margin: 0 1rem;
+    max-width: 60px;
+  }
+}
+
+/* Primary Booking Card Container */
 .booking-card {
   background-color: var(--bg-card);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
-  padding: 1.5rem;
+  padding: 1rem;
   border: 1px solid var(--border-color);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-/* Service tabs (Cleartrip style) */
+@media (min-width: 480px) {
+  .booking-card {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Service tabs (Cleartrip style - scrollable swipe layout on mobile) */
 .tabs-container {
   display: flex;
   border-bottom: 2px solid var(--border-color);
-  margin-bottom: 1.5rem;
-  gap: 0.5rem;
+  margin-bottom: 1rem;
+  gap: 0.25rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch; /* Momentum scrolling iOS */
+  scrollbar-width: none; /* Hide Firefox scrollbar */
+}
+
+.tabs-container::-webkit-scrollbar {
+  display: none; /* Hide Chrome/Safari scrollbar */
 }
 
 .tab-button {
   background: none;
   border: none;
-  padding: 0.85rem 1.25rem;
-  font-size: 0.95rem;
+  padding: 0.75rem 0.85rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-muted);
   cursor: pointer;
   border-bottom: 3px solid transparent;
   margin-bottom: -2px;
-  transition: all 0.2s ease;
-  display: flex;
+  transition: all 0.15s ease;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  min-height: 48px;
+  gap: 0.35rem;
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 480px) {
+  .tabs-container {
+    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+  }
+  .tab-button {
+    padding: 0.85rem 1.25rem;
+    font-size: 0.95rem;
+    min-height: 48px;
+    gap: 0.5rem;
+  }
 }
 
 .tab-button:hover {
@@ -273,20 +366,28 @@ body {
 }
 
 .tab-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
-/* Form Styles */
+@media (min-width: 480px) {
+  .tab-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Forms Grid Layout */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 @media (min-width: 600px) {
   .form-grid.two-cols {
     grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
   }
 }
 
@@ -297,9 +398,15 @@ body {
 }
 
 .form-label {
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+@media (min-width: 480px) {
+  .form-label {
+    font-size: 0.875rem;
+  }
 }
 
 .input-wrapper {
@@ -311,16 +418,16 @@ body {
 .input-icon {
   position: absolute;
   left: 0.85rem;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   pointer-events: none;
 }
 
 .form-input, .form-select {
   width: 100%;
-  min-height: 52px;
-  padding: 0.5rem 0.85rem 0.5rem 2.5rem;
-  font-size: 1rem;
+  min-height: 48px; /* High accessibility touch target standard */
+  padding: 0.5rem 0.85rem 0.5rem 2.25rem;
+  font-size: 0.95rem;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   background-color: var(--bg-card);
@@ -329,35 +436,48 @@ body {
   font-family: var(--font-family);
 }
 
+@media (min-width: 480px) {
+  .form-input, .form-select {
+    min-height: 52px;
+    font-size: 1rem;
+    padding: 0.5rem 0.85rem 0.5rem 2.5rem;
+  }
+  .input-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
 .form-input:focus, .form-select:focus {
   outline: none;
   border-color: var(--border-focus);
   box-shadow: 0 0 0 4px var(--primary-navy-light);
 }
 
-/* Popular Quick Links cards */
+/* Quickpreses suggestions shortcuts */
 .quick-routes-section {
-  margin-top: 1.5rem;
+  margin-top: 1.25rem;
 }
 
 .quick-routes-title {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .quick-routes-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 @media (min-width: 480px) {
   .quick-routes-grid {
     grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
   }
 }
 
@@ -365,41 +485,40 @@ body {
   background-color: var(--primary-navy-light);
   border: 1px solid #d3e4fd;
   border-radius: var(--border-radius);
-  padding: 0.85rem 1rem;
+  padding: 0.65rem 0.85rem;
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  min-height: 60px;
+  gap: 0.15rem;
+  min-height: 54px;
 }
 
-.quick-route-btn:hover, .quick-route-btn:focus-visible {
+.quick-route-btn:active {
+  transform: scale(0.98);
   background-color: #dceafc;
-  border-color: var(--primary-navy);
-  outline: none;
 }
 
 .quick-route-name {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--primary-navy-dark);
 }
 
 .quick-route-price {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--success-green);
   font-weight: 600;
 }
 
-/* Primary Button Styling */
+/* Primary Action Buttons */
 .btn-primary {
   background-color: var(--accent-yellow);
   color: var(--primary-navy-dark);
   border: none;
-  padding: 1rem 1.5rem;
-  font-size: 1.1rem;
+  padding: 0.85rem 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   border-radius: var(--border-radius);
   cursor: pointer;
@@ -408,32 +527,32 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   box-shadow: var(--shadow-sm);
-  min-height: 52px;
-  margin-top: 1rem;
+  min-height: 48px;
+  margin-top: 0.75rem;
 }
 
-.btn-primary:hover, .btn-primary:focus-visible {
-  background-color: var(--accent-yellow-dark);
-  transform: translateY(-1px);
+@media (min-width: 480px) {
+  .btn-primary {
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    min-height: 52px;
+    margin-top: 1rem;
+  }
 }
 
 .btn-primary:active {
-  transform: translateY(0);
-}
-
-.btn-primary:focus-visible {
-  outline: 3px solid var(--primary-navy-dark);
-  outline-offset: 2px;
+  transform: scale(0.98);
+  background-color: var(--accent-yellow-dark);
 }
 
 .btn-secondary {
   background-color: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-muted);
-  padding: 0.75rem 1.25rem;
-  font-size: 0.95rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   border-radius: var(--border-radius);
   cursor: pointer;
@@ -441,27 +560,40 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
-  min-height: 48px;
+  transition: all 0.15s ease;
+  min-height: 44px;
 }
 
-.btn-secondary:hover, .btn-secondary:focus-visible {
-  border-color: var(--text-primary);
-  color: var(--text-primary);
+@media (min-width: 480px) {
+  .btn-secondary {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    min-height: 48px;
+  }
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
   background-color: var(--bg-main);
-  outline: none;
 }
 
-/* Step 2: Cab Selection Styles */
+/* Step 2: Cab Grid / Lists */
 .route-summary-bar {
   background-color: var(--primary-navy-light);
   border-radius: var(--border-radius);
-  padding: 0.85rem 1rem;
+  padding: 0.65rem 0.85rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   border: 1px solid #d3e4fd;
+}
+
+@media (min-width: 480px) {
+  .route-summary-bar {
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.25rem;
+  }
 }
 
 .route-summary-info {
@@ -472,49 +604,71 @@ body {
 .route-summary-cities {
   font-weight: 700;
   color: var(--primary-navy-dark);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+}
+
+@media (min-width: 480px) {
+  .route-summary-cities {
+    font-size: 0.95rem;
+  }
 }
 
 .route-summary-details {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
 }
 
 .cab-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
+}
+
+@media (min-width: 480px) {
+  .cab-list {
+    gap: 1rem;
+  }
 }
 
 .cab-card {
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: 1.25rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   background-color: var(--bg-card);
 }
 
-.cab-card:hover, .cab-card.selected {
-  border-color: var(--primary-navy);
-  box-shadow: var(--shadow-md);
+@media (min-width: 480px) {
+  .cab-card {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
 }
 
 .cab-card.selected {
+  border-color: var(--primary-navy);
   background-color: var(--primary-navy-light);
+  box-shadow: var(--shadow-md);
 }
 
 .cab-card-header {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: flex-start;
 }
 
+@media (min-width: 480px) {
+  .cab-card-header {
+    gap: 1rem;
+  }
+}
+
 .cab-icon-box {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: var(--border-radius-sm);
   display: flex;
   align-items: center;
@@ -523,9 +677,23 @@ body {
   background-color: var(--bg-main);
 }
 
+@media (min-width: 480px) {
+  .cab-icon-box {
+    width: 60px;
+    height: 60px;
+  }
+}
+
 .cab-icon-img {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
+}
+
+@media (min-width: 480px) {
+  .cab-icon-img {
+    width: 44px;
+    height: 44px;
+  }
 }
 
 .cab-meta {
@@ -536,31 +704,46 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 0.25rem;
 }
 
 .cab-name {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
+  line-height: 1.2;
+}
+
+@media (min-width: 480px) {
+  .cab-name {
+    font-size: 1.1rem;
+  }
 }
 
 .cab-price-col {
   text-align: right;
+  flex-shrink: 0;
 }
 
 .cab-price {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--primary-navy-dark);
 }
 
+@media (min-width: 480px) {
+  .cab-price {
+    font-size: 1.25rem;
+  }
+}
+
 .cab-price-subtext {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
 }
 
 .cab-example {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   margin-top: 0.1rem;
 }
@@ -568,47 +751,34 @@ body {
 .cab-specs {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
 }
 
 .cab-spec-badge {
   background-color: #f1f5f9;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.4rem;
   border-radius: 4px;
   color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-}
-
-.cab-details-toggle {
-  background: none;
-  border: none;
-  color: var(--primary-navy);
-  font-size: 0.825rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0;
+  gap: 0.2rem;
 }
 
 .cab-inclusions-card {
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: var(--border-radius-sm);
-  padding: 0.85rem;
-  margin-top: 0.5rem;
-  font-size: 0.8rem;
+  padding: 0.75rem;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
 }
 
 .cab-inclusions-title {
   font-weight: 700;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.25rem;
   color: var(--text-primary);
 }
 
@@ -616,7 +786,7 @@ body {
   list-style: none;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 @media (min-width: 480px) {
@@ -643,60 +813,54 @@ body {
   color: var(--error-red);
 }
 
-/* Passenger Form Layout */
-.passenger-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
+/* Forms Actions Placement */
 .form-actions {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: 0.75rem;
+  margin-top: 1rem;
 }
 
 .form-actions button {
   flex: 1;
 }
 
-/* Step 4: Payment styles */
+/* Step 4: Checkout Layout */
 .payment-section {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .trip-bill-summary {
   background-color: #f8fafc;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: 1.25rem;
+  padding: 1rem;
 }
 
 .bill-title {
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.95rem;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.5rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   color: var(--primary-navy-dark);
 }
 
 .bill-row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.9rem;
-  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
   color: var(--text-muted);
 }
 
 .bill-row.total {
   font-weight: 800;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   color: var(--text-primary);
-  border-top: 1px solid var(--border-color);
+  border-top: 1px dashed var(--border-color);
   padding-top: 0.5rem;
   margin-top: 0.5rem;
   margin-bottom: 0;
@@ -705,34 +869,32 @@ body {
 .payment-methods {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.65rem;
 }
 
 .payment-method-card {
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: 1rem;
+  padding: 0.85rem;
   cursor: pointer;
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  transition: all 0.2s ease;
+  gap: 0.65rem;
+  transition: all 0.15s ease;
   background-color: var(--bg-card);
 }
 
-.payment-method-card:hover, .payment-method-card.selected {
-  border-color: var(--primary-navy);
-}
-
 .payment-method-card.selected {
+  border-color: var(--primary-navy);
   background-color: var(--primary-navy-light);
 }
 
 .payment-radio {
-  margin-top: 0.25rem;
+  margin-top: 0.2rem;
   accent-color: var(--primary-navy);
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .payment-method-info {
@@ -743,102 +905,94 @@ body {
 
 .payment-method-name {
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
+  cursor: pointer;
 }
 
 .payment-badge {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
   background-color: var(--success-green-light);
   color: var(--success-green);
-  padding: 0.1rem 0.4rem;
+  padding: 0.1rem 0.35rem;
   border-radius: 4px;
 }
 
 .payment-method-desc {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
+  line-height: 1.3;
 }
 
-/* UPI Gateway mock design */
+/* UPI Gateway Form */
 .upi-gateway-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1.5rem;
+  padding: 1.25rem;
   background-color: #f8fafc;
   border: 2px dashed #cbd5e1;
   border-radius: var(--border-radius);
-  margin-top: 1rem;
-  gap: 1rem;
+  margin-top: 0.5rem;
+  gap: 0.85rem;
 }
 
 .upi-brands {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   justify-content: center;
   align-items: center;
 }
 
-.upi-brand-icon {
-  height: 24px;
-}
-
+/* Hide QR Code on mobile viewports since scanning is physically impossible on the same screen */
 .qr-code-box {
   background-color: var(--bg-card);
-  padding: 1rem;
+  padding: 0.85rem;
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
-  display: inline-flex;
+  display: none; /* Hidden by default on mobile */
   justify-content: center;
   align-items: center;
 }
 
-.qr-placeholder {
-  width: 150px;
-  height: 150px;
-  background-color: #f1f5f9;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-radius: 4px;
-  gap: 0.5rem;
-  color: var(--text-muted);
-  font-size: 0.75rem;
+@media (min-width: 480px) {
+  .qr-code-box {
+    display: inline-flex; /* Show on desktop and tablet width */
+  }
 }
 
 .qr-mock-img {
-  width: 140px;
-  height: 140px;
+  width: 130px;
+  height: 130px;
 }
 
 .qr-instructions {
   font-size: 0.8rem;
   color: var(--text-muted);
-  max-width: 250px;
+  line-height: 1.4;
+  max-width: 280px;
 }
 
 .pay-btn-group {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.65rem;
   width: 100%;
 }
 
 .btn-phonepe-pay {
-  background-color: #5f259f; /* PhonePe Purple */
+  background-color: #5f259f;
   color: var(--text-white);
   border: none;
   font-weight: 700;
-  padding: 0.85rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.85rem 1.25rem;
+  font-size: 0.95rem;
   border-radius: var(--border-radius);
   cursor: pointer;
   display: flex;
@@ -846,20 +1000,22 @@ body {
   justify-content: center;
   gap: 0.5rem;
   min-height: 48px;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.15s ease;
+  text-decoration: none;
 }
 
-.btn-phonepe-pay:hover {
+.btn-phonepe-pay:active {
   background-color: #4a1c7e;
+  transform: scale(0.98);
 }
 
 .btn-whatsapp-confirm {
-  background-color: #25D366; /* WhatsApp Green */
+  background-color: #25D366;
   color: var(--text-white);
   border: none;
   font-weight: 700;
-  padding: 0.85rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.85rem 1.25rem;
+  font-size: 0.95rem;
   border-radius: var(--border-radius);
   cursor: pointer;
   display: flex;
@@ -867,11 +1023,12 @@ body {
   justify-content: center;
   gap: 0.5rem;
   min-height: 48px;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.15s ease;
 }
 
-.btn-whatsapp-confirm:hover {
+.btn-whatsapp-confirm:active {
   background-color: #128C7E;
+  transform: scale(0.98);
 }
 
 .whatsapp-icon-white {
@@ -880,39 +1037,59 @@ body {
   filter: brightness(0) invert(1);
 }
 
-/* Booking Success UI */
+/* Success State Screen styling */
 .success-card {
   text-align: center;
-  padding: 2.5rem 1.5rem;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 480px) {
+  .success-card {
+    padding: 2.5rem 1.5rem;
+  }
 }
 
 .success-badge {
-  width: 64px;
-  height: 64px;
+  width: 50px;
+  height: 50px;
   background-color: var(--success-green-light);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.5rem;
+  margin: 0 auto 1.25rem;
+}
+
+@media (min-width: 480px) {
+  .success-badge {
+    width: 64px;
+    height: 64px;
+  }
 }
 
 .success-icon-svg {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
+}
+
+@media (min-width: 480px) {
+  .success-icon-svg {
+    width: 36px;
+    height: 36px;
+  }
 }
 
 .success-title {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--success-green);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .success-desc {
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   color: var(--text-muted);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
@@ -922,31 +1099,33 @@ body {
   background-color: #f8fafc;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: 1.25rem;
+  padding: 1rem;
   text-align: left;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .booking-summary-title {
   font-weight: 700;
-  font-size: 0.95rem;
-  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
   color: var(--primary-navy-dark);
   border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.35rem;
 }
 
-/* Feature grid items (Clean layout) */
+/* Feature grid cards layout (Clean style) */
 .features-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
 
 @media (min-width: 480px) {
   .features-grid {
     grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
   }
 }
 
@@ -954,15 +1133,15 @@ body {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: 1rem;
+  padding: 0.85rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .feature-icon-box {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--border-radius-sm);
   display: flex;
   align-items: center;
@@ -972,8 +1151,8 @@ body {
 }
 
 .feature-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 
 .feature-info {
@@ -982,13 +1161,13 @@ body {
 }
 
 .feature-title {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .feature-desc {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
 }
 
@@ -996,7 +1175,7 @@ body {
 .footer {
   background-color: var(--primary-navy-dark);
   color: #c9daf7;
-  padding: 2.5rem 1.5rem;
+  padding: 2rem 1rem;
   text-align: center;
   margin-top: auto;
   border-top: 3px solid var(--accent-yellow);
@@ -1007,30 +1186,38 @@ body {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: center;
 }
 
 .footer-logo {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--text-white);
   letter-spacing: -0.5px;
 }
 
 .footer-contact {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
   justify-content: center;
-  margin: 0.5rem 0;
+  margin: 0.25rem 0;
+}
+
+@media (min-width: 600px) {
+  .footer-contact {
+    flex-direction: row;
+    gap: 1rem;
+    font-size: 0.875rem;
+  }
 }
 
 .footer-link {
   color: #c9daf7;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.15s ease;
 }
 
 .footer-link:hover {
@@ -1038,19 +1225,19 @@ body {
 }
 
 .footer-copy {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #8daedb;
 }
 
-/* Support float button */
+/* WhatsApp float button */
 .whatsapp-float {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 16px;
+  right: 16px;
   background-color: #25D366;
   color: white;
-  width: 56px;
-  height: 56px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1058,33 +1245,44 @@ body {
   box-shadow: var(--shadow-lg);
   z-index: 1000;
   text-decoration: none;
-  transition: transform 0.2s ease;
+  transition: transform 0.15s ease;
 }
 
-.whatsapp-float:hover, .whatsapp-float:focus-visible {
-  transform: scale(1.1);
-  outline: none;
+@media (min-width: 480px) {
+  .whatsapp-float {
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+  }
 }
 
-.whatsapp-float:focus-visible {
-  box-shadow: 0 0 0 4px white, var(--shadow-lg);
+.whatsapp-float:active {
+  transform: scale(0.92);
 }
 
 .whatsapp-float-icon {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   filter: brightness(0) invert(1);
 }
 
-/* User Input Validations visual aids */
+@media (min-width: 480px) {
+  .whatsapp-float-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Validations visual aids */
 .form-input:invalid:user-invalid, .form-select:invalid:user-invalid {
   border-color: var(--error-red);
   background-color: var(--error-red-light);
 }
 
 .error-message {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--error-red);
   font-weight: 500;
-  margin-top: 0.15rem;
+  margin-top: 0.1rem;
 }
