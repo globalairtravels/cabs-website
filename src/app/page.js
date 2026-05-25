@@ -16,6 +16,12 @@ const isTempoCab = (cab) => cab.id.startsWith("tempo");
 export default function Home() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
   const getAssetPath = (path) => `${basePath}${path}`;
+  const whatsappNumber = siteConfig.whatsapp.replace(/\D/g, "");
+  const whatsappIconPath = getAssetPath("/icons/messaging/whatsapp-chat.svg");
+  const getWhatsAppUrl = (message) => {
+    const baseUrl = `https://wa.me/${whatsappNumber}`;
+    return message ? `${baseUrl}?text=${encodeURIComponent(message)}` : baseUrl;
+  };
 
   // Booking Flow States
   const [step, setStep] = useState(1);
@@ -40,6 +46,9 @@ export default function Home() {
 
   // Active filters inside search box
   const [only6Seaters, setOnly6Seaters] = useState(false);
+
+  // Inline cab preview expansion on home screen
+  const [showInlineCabs, setShowInlineCabs] = useState(false);
 
   // Selected Cab & Passenger Info
   const [selectedCab, setSelectedCab] = useState(siteConfig.cabTypes[0]);
@@ -225,11 +234,15 @@ export default function Home() {
       alert("Please fill in all routing fields.");
       return;
     }
-    // Set default selected cab to first item in filtered list
     if (filteredCabs.length > 0) {
       setSelectedCab(filteredCabs[0]);
     }
-    setStep(2);
+    setShowInlineCabs((prev) => !prev);
+  };
+
+  const handleInlineCabSelect = (cab) => {
+    setSelectedCab(cab);
+    setStep(3);
   };
 
   const handleCabSelect = (cab) => {
@@ -290,8 +303,7 @@ Please confirm my booking. Thank you!`;
   };
 
   const handleWhatsAppRedirect = () => {
-    const encodedText = encodeURIComponent(getWhatsAppMessage());
-    window.open(`https://wa.me/${siteConfig.whatsapp}?text=${encodedText}`, "_blank");
+    window.open(getWhatsAppUrl(getWhatsAppMessage()), "_blank");
     setStep(5);
   };
 
@@ -713,10 +725,102 @@ Please confirm my booking. Thank you!`;
                       <span className="toggle-label-text">Show 6+ Seaters Only (SUV/Tempo)</span>
                     </div>
 
-                    <button type="submit" className="btn-cleartrip-search">
-                      Search Cabs ➔
+                    <button
+                      type="submit"
+                      className="btn-cleartrip-search"
+                      aria-expanded={showInlineCabs}
+                    >
+                      <span>{showInlineCabs ? "Hide Cabs" : "Show Cabs"}</span>
+                      <span
+                        className="show-cabs-chevron"
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.4rem",
+                          transition: "transform 0.25s ease",
+                          transform: showInlineCabs ? "rotate(180deg)" : "rotate(0deg)"
+                        }}
+                        aria-hidden="true"
+                      >
+                        ▾
+                      </span>
                     </button>
                   </div>
+
+                  {showInlineCabs && (
+                    <div className="inline-cab-preview" style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "0.75rem" }}>
+                        <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--primary-navy)", margin: 0 }}>
+                          Available Cabs ({filteredCabs.length})
+                        </h3>
+                        <span style={{ fontSize: "0.7rem", color: "var(--text-gray)" }}>
+                          {tripSummaryLabel} • {date}
+                        </span>
+                      </div>
+
+                      <div className="inline-cab-list" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        {filteredCabs.map((cab) => {
+                          const cabPrice = calculatePrice(cab);
+                          return (
+                            <div
+                              key={cab.id}
+                              className="inline-cab-row"
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.75rem",
+                                padding: "0.6rem 0.75rem",
+                                border: "1px solid var(--border-color)",
+                                borderRadius: "8px",
+                                backgroundColor: "#fff"
+                              }}
+                            >
+                              <img
+                                src={getAssetPath(`/icons/${cab.icon}`)}
+                                alt=""
+                                style={{ width: 36, height: 36, objectFit: "contain", flexShrink: 0 }}
+                              />
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--primary-navy)" }}>
+                                  {cab.name}
+                                </div>
+                                <div style={{ fontSize: "0.7rem", color: "var(--text-gray)" }}>
+                                  {cab.seats} Seats • {cab.luggage} {cab.ac ? "• AC" : ""}
+                                </div>
+                              </div>
+                              <div style={{ textAlign: "right", flexShrink: 0 }}>
+                                <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--primary-orange)" }}>
+                                  ₹{cabPrice}
+                                </div>
+                                <div style={{ fontSize: "0.65rem", color: "var(--text-gray)" }}>Assured</div>
+                              </div>
+                              <button
+                                type="button"
+                                className="btn-primary"
+                                style={{
+                                  minHeight: "32px",
+                                  padding: "0.35rem 0.75rem",
+                                  fontSize: "0.75rem",
+                                  flexShrink: 0
+                                }}
+                                onClick={() => handleInlineCabSelect(cab)}
+                              >
+                                Book
+                              </button>
+                            </div>
+                          );
+                        })}
+                        {filteredCabs.length === 0 && (
+                          <div style={{ textAlign: "center", padding: "1rem", fontSize: "0.8rem", color: "var(--text-gray)" }}>
+                            No vehicles match your current filters.
+                          </div>
+                        )}
+                      </div>
+
+                      <p style={{ fontSize: "0.7rem", color: "var(--text-gray)", marginTop: "0.5rem", textAlign: "center" }}>
+                        Prices include tolls, driver allowance & GST. No hidden charges.
+                      </p>
+                    </div>
+                  )}
 
                 </form>
               </div>
@@ -1118,7 +1222,7 @@ Please confirm my booking. Thank you!`;
                       className="btn-whatsapp-confirm"
                       onClick={handleWhatsAppRedirect}
                     >
-                      <img src={getAssetPath("/icons/whatsapp.svg")} alt="" className="whatsapp-icon-white" />
+                      <img src={whatsappIconPath} alt="" className="whatsapp-icon-white" />
                       Send Booking Request on WhatsApp
                     </button>
                     
@@ -1184,12 +1288,12 @@ Please confirm my booking. Thank you!`;
 
                 <div className="pay-btn-group">
                   <a
-                    href={`https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(getWhatsAppMessage())}`}
+                    href={getWhatsAppUrl(getWhatsAppMessage())}
                     target="_blank"
                     rel="noreferrer"
                     className="btn-whatsapp-confirm"
                   >
-                    <img src={getAssetPath("/icons/whatsapp.svg")} alt="" className="whatsapp-icon-white" />
+                    <img src={whatsappIconPath} alt="" className="whatsapp-icon-white" />
                     Send Details on WhatsApp
                   </a>
 
@@ -1254,28 +1358,74 @@ Please confirm my booking. Thank you!`;
 
       {/* Floating WhatsApp button */}
       <a
-        href={`https://wa.me/${siteConfig.whatsapp}`}
+        href={getWhatsAppUrl()}
         className="whatsapp-float"
         target="_blank"
         rel="noreferrer"
         aria-label="WhatsApp support"
       >
-        <img src={getAssetPath("/icons/whatsapp.svg")} alt="WhatsApp" className="whatsapp-float-icon" />
+        <img src={whatsappIconPath} alt="WhatsApp" className="whatsapp-float-icon" />
       </a>
 
       {/* Footer */}
       <footer className="footer">
         <div className="footer-container">
-          <span className="footer-logo">GLOBAL AIR TRAVELS</span>
-          <div className="footer-contact">
-            <a href={`tel:${siteConfig.phone}`} className="footer-link">📞 Call: {siteConfig.phoneDisplay}</a>
-            <span>•</span>
-            <a href={`https://wa.me/${siteConfig.whatsapp}`} className="footer-link">💬 WhatsApp: {siteConfig.whatsappDisplay}</a>
-            <span>•</span>
-            <a href={`mailto:${siteConfig.email}`} className="footer-link">✉️ Email: {siteConfig.email}</a>
+          <div className="footer-grid">
+            <div className="footer-brand-col">
+              <span className="footer-logo">{siteConfig.name.toUpperCase()}</span>
+              <p className="footer-description">{siteConfig.footer.description}</p>
+              <div className="footer-contact">
+                <a href={`tel:${siteConfig.phone}`} className="footer-link">Call: {siteConfig.phoneDisplay}</a>
+                <a href={getWhatsAppUrl()} className="footer-link">WhatsApp: {siteConfig.whatsappDisplay}</a>
+                <a href={`mailto:${siteConfig.email}`} className="footer-link">Email: {siteConfig.email}</a>
+              </div>
+            </div>
+
+            <div className="footer-section">
+              <h2 className="footer-heading">Offices</h2>
+              <div className="footer-office-list">
+                {siteConfig.footer.offices.map((office) => (
+                  <address key={office.title} className="footer-address">
+                    <strong>{office.title}</strong>
+                    <span>{office.name}</span>
+                    <span>{office.address}</span>
+                    <a href={`tel:${office.phone}`} className="footer-link">{office.phoneDisplay}</a>
+                    {office.email && (
+                      <a href={`mailto:${office.email}`} className="footer-link">{office.email}</a>
+                    )}
+                  </address>
+                ))}
+              </div>
+            </div>
+
+            <div className="footer-section">
+              <h2 className="footer-heading">{siteConfig.footer.bankDetails.title}</h2>
+              <dl className="footer-bank-list">
+                <div>
+                  <dt>Bank</dt>
+                  <dd>{siteConfig.footer.bankDetails.bank}</dd>
+                </div>
+                <div>
+                  <dt>Current A/c Number</dt>
+                  <dd>{siteConfig.footer.bankDetails.accountNumber}</dd>
+                </div>
+                <div>
+                  <dt>Name</dt>
+                  <dd>{siteConfig.footer.bankDetails.accountName}</dd>
+                </div>
+                <div>
+                  <dt>Branch</dt>
+                  <dd>{siteConfig.footer.bankDetails.branch}</dd>
+                </div>
+                <div>
+                  <dt>IFSC code</dt>
+                  <dd>{siteConfig.footer.bankDetails.ifsc}</dd>
+                </div>
+              </dl>
+            </div>
           </div>
           <div className="footer-copy">
-            &copy; {new Date().getFullYear()} Global Air Travels. All rights reserved. Registered Cab Services, Mysore, Karnataka.
+            Copyright &copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </div>
         </div>
       </footer>
@@ -1360,7 +1510,7 @@ Please confirm my booking. Thank you!`;
                   
                   <div style={{ display: "flex", gap: "0.5rem" }}>
                     <a
-                      href={`https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent("Hello Global Air Travels, please verify status of Booking ID " + trackedBooking.id)}`}
+                      href={getWhatsAppUrl("Hello Global Air Travels, please verify status of Booking ID " + trackedBooking.id)}
                       target="_blank"
                       rel="noreferrer"
                       className="btn-whatsapp-confirm"
@@ -1395,7 +1545,7 @@ Please confirm my booking. Thank you!`;
               
               <div className="booking-summary-box" style={{ margin: "0.5rem 0 1.25rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <div>📞 <strong>Call booking manager:</strong> <a href={`tel:${siteConfig.phone}`} style={{ color: "var(--primary-blue)", fontWeight: 700 }}>{siteConfig.phoneDisplay}</a></div>
-                <div>💬 <strong>WhatsApp Chat:</strong> <a href={`https://wa.me/${siteConfig.whatsapp}`} target="_blank" rel="noreferrer" style={{ color: "var(--success-green)", fontWeight: 700 }}>{siteConfig.whatsappDisplay}</a></div>
+                <div>💬 <strong>WhatsApp Chat:</strong> <a href={getWhatsAppUrl()} target="_blank" rel="noreferrer" style={{ color: "var(--success-green)", fontWeight: 700 }}>{siteConfig.whatsappDisplay}</a></div>
                 <div>✉️ <strong>Email Address:</strong> <a href={`mailto:${siteConfig.email}`} style={{ color: "var(--primary-blue)" }}>{siteConfig.email}</a></div>
                 <div>📍 <strong>Registered Office:</strong> Mysore, Karnataka, India</div>
               </div>

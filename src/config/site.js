@@ -6,9 +6,37 @@ export const siteConfig = {
   phoneDisplay: "+91 98440 82581",
   whatsapp: "+919844082581",
   whatsappDisplay: "+91 98440 82581",
-  email: "booking@globalairtravels.com",
+  email: "info@globalairtravels.com",
   upiId: "9844082581@ybl", // Payee UPI ID based on the phone number
   merchantName: "Madhusudan H G", // Name from payment details in leaflet
+  footer: {
+    description: "Founded in 1998, Global Air Travels is a Mysore travel agency known for reliable tours, ticketing, visa, forex, insurance, passport assistance and cab services.",
+    bankDetails: {
+      title: "Our Bank Details / For Net Transfers",
+      bank: "HDFC Bank",
+      accountNumber: "00652000010126",
+      accountName: "Global Air Travels",
+      branch: "Saraswatipuram, Mysore",
+      ifsc: "HDFC0000065"
+    },
+    offices: [
+      {
+        title: "Main Office / Kuvempunagar",
+        name: "GLOBAL AIR TRAVELS",
+        address: "Panchamantra road, Kumar Medicals Opp Road, No 1660, Anikethana road 7th Cross, P&T block, Kuvempunagar, Mysuru 570023 Karnataka, India",
+        phone: "+919844082581",
+        phoneDisplay: "+91 98440 82581",
+        email: "info@globalairtravels.com"
+      },
+      {
+        title: "Branch 2 / Vishweshwaranagar",
+        name: "GLOBAL AIR TRAVELS",
+        address: "Flat D 07, 3rd Floor, Shridhaara Apartment, St Thomas School Road, Opp Yashoda Natarajan Kalyanamanatapa, Industrial Suburb, Vishweshwaranagar, Mysore, Karnataka 570008",
+        phone: "+919844082581",
+        phoneDisplay: "+91 98440 82581"
+      }
+    ]
+  },
   
   // Service Packages based on official leaflet structure
   popularRoutes: [
