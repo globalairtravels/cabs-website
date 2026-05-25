@@ -44,12 +44,12 @@ export const siteConfig = {
     }
   ],
 
-  // Cab types matching the SVGs in public/icons/ and the official rates sheet
+  // Cab types — icons live in public/icons/categories/
   cabTypes: [
     {
       id: "sedan",
       name: "Sedan AC",
-      icon: "sedan.svg",
+      icon: "categories/sedan.svg",
       example: "Etios, Dzire, Xcent",
       seats: 4,
       luggage: "2 Bags",
@@ -64,7 +64,7 @@ export const siteConfig = {
     {
       id: "suv",
       name: "Ertiga AC",
-      icon: "suv.svg",
+      icon: "categories/suv.svg",
       example: "Ertiga (6+1)",
       seats: 6,
       luggage: "3 Bags",
@@ -79,7 +79,7 @@ export const siteConfig = {
     {
       id: "innova",
       name: "Innova AC",
-      icon: "innova.svg",
+      icon: "categories/innova.svg",
       example: "Innova (7+1)",
       seats: 7,
       luggage: "4 Bags",
@@ -94,7 +94,7 @@ export const siteConfig = {
     {
       id: "crysta",
       name: "Crysta AC",
-      icon: "crysta.svg",
+      icon: "categories/crysta.svg",
       example: "Innova Crysta AC",
       seats: 7,
       luggage: "4 Bags",
@@ -109,7 +109,7 @@ export const siteConfig = {
     {
       id: "tempo",
       name: "Tempo Traveller AC",
-      icon: "tempo.svg",
+      icon: "categories/tempo-cat.svg",
       example: "TT (12+1 Seater)",
       seats: 12,
       luggage: "8 Bags",
@@ -124,7 +124,7 @@ export const siteConfig = {
     {
       id: "tempo-non-ac",
       name: "Tempo Traveller Non-AC",
-      icon: "tempo.svg",
+      icon: "categories/tempo-cat.svg",
       example: "TT (12+1 Seater)",
       seats: 12,
       luggage: "8 Bags",

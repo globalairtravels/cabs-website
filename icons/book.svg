@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-label="Book now">
-  <rect width="64" height="64" rx="14" fill="#22A06B"/>
-  <circle cx="32" cy="32" r="22" fill="white"/>
-      <path d="M22 32 L30 40 L44 24" stroke="#178256" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-</svg>

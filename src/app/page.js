@@ -328,7 +328,7 @@ Please confirm my booking. Thank you!`;
       <header className="header">
         <div className="header-container">
           <a href="#" className="logo-link" onClick={() => setStep(1)}>
-            <img src={getAssetPath("/icons/taxi.svg")} alt="Taxi Logo" className="logo-icon" />
+            <img src={getAssetPath("/icons/nav/cab.svg")} alt="Taxi Logo" className="logo-icon" />
             <span className="logo-text">
               GLOBAL<span className="logo-highlight">AIR</span>TRAVELS
             </span>
@@ -451,7 +451,7 @@ Please confirm my booking. Thank you!`;
               onClick={() => handleTabChange("airport")}
             >
               <div className="product-icon-wrapper">
-                <img src={getAssetPath("/icons/airport.svg")} alt="" className="product-icon" />
+                <img src={getAssetPath("/icons/nav/airport.svg")} alt="" className="product-icon" />
               </div>
               <span>Airport Transfer</span>
             </button>
@@ -461,7 +461,7 @@ Please confirm my booking. Thank you!`;
               onClick={() => handleTabChange("city")}
             >
               <div className="product-icon-wrapper">
-                <img src={getAssetPath("/icons/route.svg")} alt="" className="product-icon" />
+                <img src={getAssetPath("/icons/hero/one-way.svg")} alt="" className="product-icon" />
               </div>
               <span>Bangalore Drops</span>
             </button>
@@ -471,7 +471,7 @@ Please confirm my booking. Thank you!`;
               onClick={() => handleTabChange("daily")}
             >
               <div className="product-icon-wrapper">
-                <img src={getAssetPath("/icons/calendar.svg")} alt="" className="product-icon" />
+                <img src={getAssetPath("/icons/hero/calendar.svg")} alt="" className="product-icon" />
               </div>
               <span>Daily Sightseeing / Tour</span>
             </button>
@@ -571,7 +571,7 @@ Please confirm my booking. Thank you!`;
                         style={{ "--swap-rotation": `${swapRotation}deg` }}
                         aria-label="Swap pickup and drop locations"
                       >
-                        <img src={getAssetPath("/icons/route.svg")} alt="" className="swap-circle-icon" />
+                        <img src={getAssetPath("/icons/hero/swap.svg")} alt="" className="swap-circle-icon" />
                       </button>
                     )}
 
@@ -881,7 +881,7 @@ Please confirm my booking. Thank you!`;
                   <div className="form-group">
                     <label htmlFor="cust-name" className="form-label">Passenger Name</label>
                     <div className="input-wrapper">
-                      <img src={getAssetPath("/icons/driver.svg")} alt="" className="input-icon" />
+                      <img src={getAssetPath("/icons/nav/login.svg")} alt="" className="input-icon" />
                       <input
                         id="cust-name"
                         type="text"
@@ -898,7 +898,7 @@ Please confirm my booking. Thank you!`;
                   <div className="form-group">
                     <label htmlFor="cust-phone" className="form-label">WhatsApp Mobile Number</label>
                     <div className="input-wrapper">
-                      <img src={getAssetPath("/icons/phone.svg")} alt="" className="input-icon" />
+                      <img src={getAssetPath("/icons/footer/phone.svg")} alt="" className="input-icon" />
                       <input
                         id="cust-phone"
                         type="tel"
@@ -917,7 +917,7 @@ Please confirm my booking. Thank you!`;
                   <div className="form-group">
                     <label htmlFor="cust-email" className="form-label">Email Address (Optional)</label>
                     <div className="input-wrapper">
-                      <img src={getAssetPath("/icons/invoice.svg")} alt="" className="input-icon" />
+                      <img src={getAssetPath("/icons/footer/email.svg")} alt="" className="input-icon" />
                       <input
                         id="cust-email"
                         type="email"
@@ -933,7 +933,7 @@ Please confirm my booking. Thank you!`;
                   <div className="form-group">
                     <label htmlFor="cust-address" className="form-label">Full Pickup Address</label>
                     <div className="input-wrapper">
-                      <img src={getAssetPath("/icons/location.svg")} alt="" className="input-icon" style={{ alignSelf: "flex-start", marginTop: "0.8rem" }} />
+                      <img src={getAssetPath("/icons/hero/pickup.svg")} alt="" className="input-icon" style={{ alignSelf: "flex-start", marginTop: "0.8rem" }} />
                       <textarea
                         id="cust-address"
                         className="form-input"

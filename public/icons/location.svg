@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-label="Location">
-  <rect width="64" height="64" rx="14" fill="#E63946"/>
-  <path d="M32 6 C22 6 14 14 14 24 C14 38 32 58 32 58 C32 58 50 38 50 24 C50 14 42 6 32 6 Z" fill="white"/>
-      <circle cx="32" cy="24" r="6" fill="#B82A35"/>
-</svg>

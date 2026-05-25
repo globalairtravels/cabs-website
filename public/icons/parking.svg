@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-label="Parking">
-  <rect width="64" height="64" rx="14" fill="#3B82F6"/>
-  <rect x="10" y="10" width="44" height="44" rx="6" fill="white"/>
-      <path d="M24 18 L24 46 M24 18 L34 18 C39 18 42 21 42 26 C42 31 39 34 34 34 L24 34" stroke="#1E5FC4" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-</svg>
