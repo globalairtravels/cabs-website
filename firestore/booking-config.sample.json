@@ -1,0 +1,555 @@
+{
+  "version": 1,
+  "updatedAt": "2026-05-26T00:00:00.000Z",
+  "updatedBy": "seed",
+
+  "cabs": {
+    "sedan": {
+      "name": "Sedan AC",
+      "example": "Etios, Dzire, Xcent",
+      "icon": "categories/sedan.svg",
+      "seats": 4,
+      "luggage": "2 Bags",
+      "ac": true,
+      "ratePerKm": 12,
+      "minKmPerDay": 250,
+      "driverAllowance": 400,
+      "nightAllowance": 400,
+      "description": "Comfortable and economical. Perfect for quick drops and small families.",
+      "sortOrder": 1,
+      "active": true
+    },
+    "suv": {
+      "name": "Ertiga AC",
+      "example": "Ertiga (6+1)",
+      "icon": "categories/suv.svg",
+      "seats": 6,
+      "luggage": "3 Bags",
+      "ac": true,
+      "ratePerKm": 15,
+      "minKmPerDay": 250,
+      "driverAllowance": 400,
+      "nightAllowance": 400,
+      "description": "Ideal for family travel, offering extra seats and flexible luggage space.",
+      "sortOrder": 2,
+      "active": true
+    },
+    "innova": {
+      "name": "Innova AC",
+      "example": "Innova (7+1)",
+      "icon": "categories/innova.svg",
+      "seats": 7,
+      "luggage": "4 Bags",
+      "ac": true,
+      "ratePerKm": 16,
+      "minKmPerDay": 250,
+      "driverAllowance": 400,
+      "nightAllowance": 400,
+      "description": "Standard premium family ride, highly stable and comfortable for long distances.",
+      "sortOrder": 3,
+      "active": true
+    },
+    "crysta": {
+      "name": "Crysta AC",
+      "example": "Innova Crysta AC",
+      "icon": "categories/crysta.svg",
+      "seats": 7,
+      "luggage": "4 Bags",
+      "ac": true,
+      "ratePerKm": 17,
+      "minKmPerDay": 250,
+      "driverAllowance": 400,
+      "nightAllowance": 400,
+      "description": "Ultimate luxury and safety, executive ride for family or business groups.",
+      "sortOrder": 4,
+      "active": true
+    },
+    "tempo": {
+      "name": "Tempo Traveller AC",
+      "example": "TT (12+1 Seater)",
+      "icon": "categories/tempo-cat.svg",
+      "seats": 12,
+      "luggage": "8 Bags",
+      "ac": true,
+      "ratePerKm": 22,
+      "minKmPerDay": 300,
+      "driverAllowance": 600,
+      "nightAllowance": 600,
+      "description": "Best for wedding groups, pilgrim groups, and large family tours.",
+      "sortOrder": 5,
+      "active": true
+    },
+    "tempo-non-ac": {
+      "name": "Tempo Traveller Non-AC",
+      "example": "TT (12+1 Seater)",
+      "icon": "categories/tempo-cat.svg",
+      "seats": 12,
+      "luggage": "8 Bags",
+      "ac": false,
+      "ratePerKm": 20,
+      "minKmPerDay": 300,
+      "driverAllowance": 600,
+      "nightAllowance": 600,
+      "description": "Budget-friendly option for larger group travels where AC is not needed.",
+      "sortOrder": 6,
+      "active": true
+    }
+  },
+
+  "cities": {
+    "mysore": {
+      "name": "Mysore",
+      "shortName": "Mysore",
+      "state": "KA",
+      "type": "city",
+      "lat": 12.2958,
+      "lng": 76.6394,
+      "validFor": ["airport", "city", "intercity", "tempo"],
+      "active": true
+    },
+    "blr-city": {
+      "name": "Bangalore City",
+      "shortName": "Bangalore",
+      "state": "KA",
+      "type": "city",
+      "lat": 12.9716,
+      "lng": 77.5946,
+      "validFor": ["city", "intercity", "tempo"],
+      "active": true
+    },
+    "blr-airport": {
+      "name": "Bangalore Airport (KIA)",
+      "shortName": "BLR Airport",
+      "state": "KA",
+      "type": "airport",
+      "lat": 13.1986,
+      "lng": 77.7066,
+      "validFor": ["airport"],
+      "active": true
+    },
+    "mangalore": {
+      "name": "Mangalore",
+      "shortName": "Mangalore",
+      "state": "KA",
+      "type": "city",
+      "lat": 12.9141,
+      "lng": 74.8560,
+      "validFor": ["city", "intercity", "tempo"],
+      "active": true
+    },
+    "mangalore-airport": {
+      "name": "Mangalore Airport",
+      "shortName": "IXE Airport",
+      "state": "KA",
+      "type": "airport",
+      "lat": 12.9612,
+      "lng": 74.8900,
+      "validFor": ["airport"],
+      "active": true
+    },
+    "coorg": {
+      "name": "Coorg (Madikeri)",
+      "shortName": "Coorg",
+      "state": "KA",
+      "type": "destination",
+      "lat": 12.4244,
+      "lng": 75.7382,
+      "validFor": ["intercity", "tempo"],
+      "active": true
+    },
+    "ooty": {
+      "name": "Ooty",
+      "shortName": "Ooty",
+      "state": "TN",
+      "type": "destination",
+      "lat": 11.4064,
+      "lng": 76.6932,
+      "validFor": ["intercity", "tempo"],
+      "active": true
+    },
+    "kabini": {
+      "name": "Kabini",
+      "shortName": "Kabini",
+      "state": "KA",
+      "type": "destination",
+      "lat": 11.9667,
+      "lng": 76.3500,
+      "validFor": ["intercity", "tempo"],
+      "active": true
+    },
+    "wayanad": {
+      "name": "Wayanad",
+      "shortName": "Wayanad",
+      "state": "KL",
+      "type": "destination",
+      "lat": 11.6854,
+      "lng": 76.1320,
+      "validFor": ["intercity", "tempo"],
+      "active": true
+    },
+    "dharmasthala": {
+      "name": "Dharmasthala",
+      "shortName": "Dharmasthala",
+      "state": "KA",
+      "type": "destination",
+      "lat": 12.9499,
+      "lng": 75.3826,
+      "validFor": ["intercity", "tempo"],
+      "active": true
+    }
+  },
+
+  "bookingTypes": {
+    "airport": {
+      "enabled": true,
+      "label": "Airport Transfer",
+      "sortOrder": 1,
+      "applicableCabs": ["sedan", "suv", "innova", "crysta", "tempo"],
+      "pricing": {
+        "model": "fixed-route",
+        "inclusions": ["toll", "driverAllowance", "45min-waiting", "flight-tracking"],
+        "extras": {
+          "waitingFreeMinutes": 45,
+          "waitingChargePerMin": 5
+        }
+      },
+      "routes": [
+        {
+          "id": "mysore-blr-airport",
+          "fromCityId": "mysore",
+          "toCityId": "blr-airport",
+          "distanceKm": 180,
+          "bidirectional": true,
+          "prices": { "sedan": 3600, "suv": 4500, "innova": 4700, "crysta": 5400, "tempo": 7200 },
+          "active": true
+        },
+        {
+          "id": "mysore-mangalore-airport",
+          "fromCityId": "mysore",
+          "toCityId": "mangalore-airport",
+          "distanceKm": 250,
+          "bidirectional": true,
+          "prices": { "sedan": 5500, "suv": 6800, "innova": 7200, "crysta": 8000, "tempo": 11000 },
+          "active": true
+        }
+      ],
+      "ui": {
+        "heading": {
+          "title": "Book Mysore ⇄ Bangalore Airport Cabs",
+          "subtitle": "Fixed price drops & pickups with toll and driver included"
+        },
+        "banner": {
+          "badge": "Special Rate",
+          "text": "Mysore ⇄ KIA Airport Drop starting at just ₹3,600/-",
+          "footer": "Includes driver allowance & toll tax!",
+          "image": "/images/airport.webp"
+        },
+        "quickSelect": {
+          "title": "Popular Airport Routes",
+          "items": [
+            { "routeId": "mysore-blr-airport", "direction": "forward", "name": "Mysore ➔ Bangalore Airport", "subtitle": "₹3,600 Sedan • Toll Incl." },
+            { "routeId": "mysore-blr-airport", "direction": "reverse", "name": "Bangalore Airport ➔ Mysore", "subtitle": "₹3,600 Sedan • Toll Incl." },
+            { "routeId": "mysore-mangalore-airport", "direction": "forward", "name": "Mysore ➔ Mangalore Airport", "subtitle": "₹5,500 Sedan • On Request" }
+          ]
+        },
+        "info": {
+          "title": "Airport Service Inclusions",
+          "items": [
+            "45 minutes free airport waiting",
+            "Flight tracking & schedule re-routing",
+            "Toll, parking & driver allowance included",
+            "Meet & greet at arrival gate"
+          ]
+        }
+      }
+    },
+
+    "city": {
+      "enabled": true,
+      "label": "City Taxi",
+      "sortOrder": 2,
+      "applicableCabs": ["sedan", "suv", "innova", "crysta"],
+      "pricing": {
+        "model": "fixed-route",
+        "inclusions": ["toll", "driverAllowance"],
+        "kmLimit": 150,
+        "extras": {
+          "extraKmCharge": { "sedan": 12, "suv": 15, "innova": 16, "crysta": 17 },
+          "waitingFreeMinutes": 30,
+          "waitingChargePerMin": 4
+        }
+      },
+      "routes": [
+        {
+          "id": "mysore-blr-city",
+          "fromCityId": "mysore",
+          "toCityId": "blr-city",
+          "distanceKm": 150,
+          "bidirectional": true,
+          "prices": { "sedan": 3100, "suv": 3900, "innova": 4100, "crysta": 4600 },
+          "active": true
+        },
+        {
+          "id": "mysore-mangalore-city",
+          "fromCityId": "mysore",
+          "toCityId": "mangalore",
+          "distanceKm": 250,
+          "bidirectional": true,
+          "prices": { "sedan": 5200, "suv": 6500, "innova": 6900, "crysta": 7700 },
+          "active": true
+        }
+      ],
+      "ui": {
+        "heading": {
+          "title": "Book Mysore ⇄ Bangalore City Taxis",
+          "subtitle": "Comfortable point-to-point intercity rides with assured fares"
+        },
+        "banner": {
+          "badge": "Best Price",
+          "text": "Mysore ⇄ Bangalore City One-Way from ₹3,100/-",
+          "footer": "Toll & driver allowance included.",
+          "image": "/images/city.webp",
+          "gradient": "linear-gradient(135deg, #0B3D91 0%, #1E5BBD 100%)"
+        },
+        "quickSelect": {
+          "title": "Popular City Routes",
+          "items": [
+            { "routeId": "mysore-blr-city", "direction": "forward", "name": "Mysore ➔ Bangalore City", "subtitle": "₹3,100 Sedan • Toll Incl." },
+            { "routeId": "mysore-blr-city", "direction": "reverse", "name": "Bangalore City ➔ Mysore", "subtitle": "₹3,100 Sedan • Toll Incl." },
+            { "routeId": "mysore-mangalore-city", "direction": "forward", "name": "Mysore ➔ Mangalore City", "subtitle": "₹5,200 Sedan • On Request" }
+          ]
+        },
+        "info": {
+          "title": "City Trip Inclusions",
+          "items": [
+            "Up to 150 km point-to-point limit",
+            "₹400 toll charges included",
+            "One pickup and one drop point",
+            "30 minutes waiting buffer free"
+          ]
+        }
+      }
+    },
+
+    "intercity": {
+      "enabled": true,
+      "label": "Intercity / Outstation",
+      "sortOrder": 3,
+      "applicableCabs": ["sedan", "suv", "innova", "crysta", "tempo"],
+      "pricing": {
+        "model": "per-day",
+        "inclusions": ["driverAllowance"],
+        "rules": {
+          "driverAllowanceWaivedAfterDays": 3,
+          "minKmPerDayOverride": {},
+          "ratePerKmOverride": {}
+        }
+      },
+      "packages": [
+        {
+          "id": "tour-coorg",
+          "name": "Coorg (Madikeri)",
+          "destinationCityId": "coorg",
+          "days": 2,
+          "estimatedKm": 560,
+          "startingFrom": { "sedan": 6800, "suv": 8400, "innova": 8900, "crysta": 9600 },
+          "active": true
+        },
+        {
+          "id": "tour-ooty",
+          "name": "Ooty Hill Station",
+          "destinationCityId": "ooty",
+          "days": 3,
+          "estimatedKm": 850,
+          "startingFrom": { "sedan": 10200, "suv": 12600, "innova": 13400, "crysta": 14400 },
+          "active": true
+        },
+        {
+          "id": "tour-kabini",
+          "name": "Kabini Wildlife",
+          "destinationCityId": "kabini",
+          "days": 2,
+          "estimatedKm": 500,
+          "startingFrom": { "sedan": 6800, "suv": 8400, "innova": 8900, "crysta": 9600 },
+          "active": true
+        },
+        {
+          "id": "tour-wayanad",
+          "name": "Wayanad Resorts",
+          "destinationCityId": "wayanad",
+          "days": 3,
+          "estimatedKm": 820,
+          "startingFrom": { "sedan": 10200, "suv": 12600, "innova": 13400, "crysta": 14400 },
+          "active": true
+        }
+      ],
+      "ui": {
+        "heading": {
+          "title": "Plan Outstation & Multi-Day Tours",
+          "subtitle": "Coorg, Ooty, Kabini, Wayanad and beyond — per-day packages with driver"
+        },
+        "banner": {
+          "badge": "Multi-Day Tour",
+          "text": "Outstation tours from ₹3,400/day in Sedan",
+          "footer": "Driver allowance waived on tours over 3 days.",
+          "image": "/images/outstation.webp",
+          "gradient": "linear-gradient(135deg, #F26B1F 0%, #FF9248 100%)"
+        },
+        "quickSelect": {
+          "title": "Popular Tour Packages",
+          "items": [
+            { "packageId": "tour-coorg",   "name": "Coorg (Madikeri)",   "subtitle": "2 Day Tour • From ₹6,800" },
+            { "packageId": "tour-ooty",    "name": "Ooty Hill Station",  "subtitle": "3 Day Tour • From ₹10,200" },
+            { "packageId": "tour-kabini",  "name": "Kabini Wildlife",    "subtitle": "2 Day Tour • From ₹6,800" },
+            { "packageId": "tour-wayanad", "name": "Wayanad Resorts",    "subtitle": "3 Day Tour • From ₹10,200" }
+          ]
+        },
+        "info": {
+          "title": "Border Permits (7 Days)",
+          "items": [
+            "Sedan (All borders): ₹600",
+            "Ertiga SUV (All borders): ₹1,000",
+            "Innova (Tamil Nadu): ₹1,250",
+            "Innova (Kerala): ₹3,000",
+            "Innova (Andhra): ₹2,500"
+          ]
+        }
+      }
+    },
+
+    "tempo": {
+      "enabled": true,
+      "label": "Tempo Traveller",
+      "sortOrder": 4,
+      "applicableCabs": ["tempo", "tempo-non-ac"],
+      "pricing": {
+        "model": "hybrid",
+        "inclusions": ["driverAllowance"],
+        "rules": {
+          "driverAllowanceWaivedAfterDays": 3
+        }
+      },
+      "packages": [
+        {
+          "id": "tempo-wedding",
+          "name": "Wedding Group Transport",
+          "destinationCityId": null,
+          "days": 2,
+          "customQuote": true,
+          "startingFrom": {},
+          "active": true
+        },
+        {
+          "id": "tempo-pilgrim",
+          "name": "Pilgrim Tour (Dharmasthala / Kukke)",
+          "destinationCityId": "dharmasthala",
+          "days": 2,
+          "estimatedKm": 600,
+          "startingFrom": { "tempo": 14400, "tempo-non-ac": 13200 },
+          "active": true
+        },
+        {
+          "id": "tempo-coorg",
+          "name": "Coorg Group Getaway",
+          "destinationCityId": "coorg",
+          "days": 2,
+          "estimatedKm": 560,
+          "startingFrom": { "tempo": 14400, "tempo-non-ac": 13200 },
+          "active": true
+        },
+        {
+          "id": "tempo-corporate",
+          "name": "Corporate Outing",
+          "destinationCityId": null,
+          "days": 1,
+          "estimatedKm": 300,
+          "startingFrom": { "tempo": 7200, "tempo-non-ac": 6600 },
+          "active": true
+        }
+      ],
+      "ui": {
+        "heading": {
+          "title": "Hire a Tempo Traveller for Groups",
+          "subtitle": "12+1 seater for weddings, pilgrim tours and corporate outings"
+        },
+        "banner": {
+          "badge": "Group Travel",
+          "text": "12+1 Tempo Traveller from ₹7,200 for group tours",
+          "footer": "Best for weddings, pilgrim groups & corporate outings.",
+          "image": "/images/tempo.webp",
+          "gradient": "linear-gradient(135deg, #0B3D91 0%, #F26B1F 100%)"
+        },
+        "quickSelect": {
+          "title": "Group Tour Ideas",
+          "items": [
+            { "packageId": "tempo-wedding",   "name": "Wedding Group Transport", "subtitle": "Local / Multi-day • Custom Quote" },
+            { "packageId": "tempo-pilgrim",   "name": "Pilgrim Tour",            "subtitle": "Dharmasthala / Kukke • 2 Day" },
+            { "packageId": "tempo-coorg",     "name": "Coorg Group Getaway",     "subtitle": "2 Day Tour • From ₹14,400" },
+            { "packageId": "tempo-corporate", "name": "Corporate Outing",        "subtitle": "1 Day Local • From ₹7,200" }
+          ]
+        },
+        "info": {
+          "title": "Tempo Border Permits (7 Days)",
+          "items": [
+            "Tempo (Tamil Nadu): ₹2,000",
+            "Tempo (Kerala): ₹4,000",
+            "Tempo (Andhra): ₹3,500",
+            "Tempo (Goa Special): ₹4,500"
+          ]
+        }
+      }
+    }
+  },
+
+  "promos": {
+    "FIRSTRIDE": {
+      "code": "FIRSTRIDE",
+      "type": "percent",
+      "value": 10,
+      "maxDiscount": 500,
+      "minFare": 2000,
+      "validFrom": "2026-01-01T00:00:00.000Z",
+      "validTo": "2026-12-31T23:59:59.000Z",
+      "appliesTo": ["airport", "city"],
+      "applicableCabs": [],
+      "applicableRoutes": [],
+      "perUserLimit": 1,
+      "totalLimit": 1000,
+      "usedCount": 0,
+      "active": true,
+      "description": "10% off your first ride (max ₹500)"
+    },
+    "FESTIVE300": {
+      "code": "FESTIVE300",
+      "type": "flat",
+      "value": 300,
+      "minFare": 3000,
+      "validFrom": "2026-05-01T00:00:00.000Z",
+      "validTo": "2026-07-31T23:59:59.000Z",
+      "appliesTo": ["intercity", "tempo"],
+      "applicableCabs": [],
+      "applicableRoutes": [],
+      "perUserLimit": 2,
+      "totalLimit": 500,
+      "usedCount": 0,
+      "active": true,
+      "description": "Flat ₹300 off outstation & tempo trips"
+    },
+    "AIRPORT200": {
+      "code": "AIRPORT200",
+      "type": "flat",
+      "value": 200,
+      "minFare": 0,
+      "validFrom": "2026-05-01T00:00:00.000Z",
+      "validTo": "2026-12-31T23:59:59.000Z",
+      "appliesTo": ["airport"],
+      "applicableCabs": ["sedan", "suv"],
+      "applicableRoutes": ["mysore-blr-airport"],
+      "perUserLimit": 1,
+      "totalLimit": null,
+      "usedCount": 0,
+      "active": true,
+      "description": "₹200 off Mysore ⇄ Bangalore Airport (Sedan/Ertiga)"
+    }
+  }
+}
