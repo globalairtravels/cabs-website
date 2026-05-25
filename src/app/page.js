@@ -387,19 +387,13 @@ Please confirm my booking. Thank you!`;
             <ul className="desktop-nav">
               <li>
                 <button type="button" className="nav-item-link" onClick={handleOffersClick}>
-                  <img src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="nav-icon" width="16" height="16" />
+                  <img src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="nav-icon" width="20" height="20" />
                   <span>Offers</span>
                 </button>
               </li>
               <li>
-                <button type="button" className="nav-item-link" onClick={() => { setShowMyBookings(true); setTrackAttempted(false); setTrackedBooking(null); setTrackBookingId(""); }}>
-                  <img src={getAssetPath("/icons/booking-flow/confirmed.svg")} alt="" className="nav-icon" width="16" height="16" />
-                  <span>My Bookings</span>
-                </button>
-              </li>
-              <li>
                 <button type="button" className="nav-item-link" onClick={() => setShowSupport(true)}>
-                  <img src={getAssetPath("/icons/nav/support-nav.svg")} alt="" className="nav-icon" width="16" height="16" />
+                  <img src={getAssetPath("/icons/nav/support-nav.svg")} alt="" className="nav-icon" width="20" height="20" />
                   <span>Support</span>
                 </button>
               </li>
@@ -436,12 +430,6 @@ Please confirm my booking. Thank you!`;
                   <button type="button" className="drawer-nav-link" onClick={() => { setShowMobileMenu(false); handleOffersClick(); }}>
                     <img src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="nav-icon" width="18" height="18" />
                     <span>Offers & Promos</span>
-                  </button>
-                </li>
-                <li>
-                  <button type="button" className="drawer-nav-link" onClick={() => { setShowMobileMenu(false); setShowMyBookings(true); setTrackAttempted(false); setTrackedBooking(null); setTrackBookingId(""); }}>
-                    <img src={getAssetPath("/icons/booking-flow/confirmed.svg")} alt="" className="nav-icon" width="18" height="18" />
-                    <span>Track Bookings</span>
                   </button>
                 </li>
                 <li>
