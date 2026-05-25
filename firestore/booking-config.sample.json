@@ -1,7 +1,6 @@
 {
   "version": 1,
   "updatedAt": "2026-05-26T00:00:00.000Z",
-
   "cabs": {
     "sedan": {
       "name": "Sedan AC",
@@ -76,92 +75,222 @@
       "active": true
     }
   },
-
   "cities": {
-    "mysore":            { "name": "Mysore",                  "validFor": ["airport", "city", "intercity", "tempo"], "active": true },
-    "blr-city":          { "name": "Bangalore City",          "validFor": ["city", "intercity", "tempo"],            "active": true },
-    "blr-airport":       { "name": "Bangalore Airport (KIA)", "validFor": ["airport"],                                "active": true },
-    "mangalore":         { "name": "Mangalore",               "validFor": ["city", "intercity", "tempo"],            "active": true },
-    "mangalore-airport": { "name": "Mangalore Airport",       "validFor": ["airport"],                                "active": true },
-    "coorg":             { "name": "Coorg (Madikeri)",        "validFor": ["intercity", "tempo"],                    "active": true },
-    "ooty":              { "name": "Ooty",                    "validFor": ["intercity", "tempo"],                    "active": true },
-    "kabini":            { "name": "Kabini",                  "validFor": ["intercity", "tempo"],                    "active": true },
-    "wayanad":           { "name": "Wayanad",                 "validFor": ["intercity", "tempo"],                    "active": true },
-    "dharmasthala":      { "name": "Dharmasthala",            "validFor": ["intercity", "tempo"],                    "active": true }
+    "mysore": {
+      "name": "Mysore",
+      "validFor": [
+        "airport",
+        "city",
+        "intercity",
+        "tempo"
+      ],
+      "active": true
+    },
+    "blr-city": {
+      "name": "Bangalore City",
+      "validFor": [
+        "city",
+        "intercity",
+        "tempo"
+      ],
+      "active": true
+    },
+    "blr-airport": {
+      "name": "Bangalore Airport (KIA)",
+      "validFor": [
+        "airport"
+      ],
+      "active": true
+    },
+    "mangalore": {
+      "name": "Mangalore",
+      "validFor": [
+        "city",
+        "intercity",
+        "tempo"
+      ],
+      "active": true
+    },
+    "mangalore-airport": {
+      "name": "Mangalore Airport",
+      "validFor": [
+        "airport"
+      ],
+      "active": true
+    },
+    "coorg": {
+      "name": "Coorg (Madikeri)",
+      "validFor": [
+        "intercity",
+        "tempo"
+      ],
+      "active": true
+    },
+    "ooty": {
+      "name": "Ooty",
+      "validFor": [
+        "intercity",
+        "tempo"
+      ],
+      "active": true
+    },
+    "kabini": {
+      "name": "Kabini",
+      "validFor": [
+        "intercity",
+        "tempo"
+      ],
+      "active": true
+    },
+    "wayanad": {
+      "name": "Wayanad",
+      "validFor": [
+        "intercity",
+        "tempo"
+      ],
+      "active": true
+    },
+    "dharmasthala": {
+      "name": "Dharmasthala",
+      "validFor": [
+        "intercity",
+        "tempo"
+      ],
+      "active": true
+    }
   },
-
   "bookingTypes": {
     "airport": {
       "label": "Airport Transfer",
-      "applicableCabs": ["sedan", "suv", "innova", "crysta", "tempo"],
-      "pricing": { "model": "fixed-route" },
+      "applicableCabs": [
+        "sedan",
+        "suv",
+        "innova",
+        "crysta",
+        "tempo"
+      ],
+      "pricing": {
+        "model": "fixed-route"
+      },
       "routes": [
         {
           "id": "mysore-blr-airport",
           "fromCityId": "mysore",
           "toCityId": "blr-airport",
-          "prices": { "sedan": 3600, "suv": 4500, "innova": 4700, "crysta": 5400, "tempo": 7200 },
+          "prices": {
+            "sedan": 3600,
+            "suv": 4500,
+            "innova": 4700,
+            "crysta": 5400,
+            "tempo": 7200
+          },
           "active": true
         },
         {
           "id": "blr-airport-mysore",
           "fromCityId": "blr-airport",
           "toCityId": "mysore",
-          "prices": { "sedan": 3600, "suv": 4500, "innova": 4700, "crysta": 5400, "tempo": 7200 },
+          "prices": {
+            "sedan": 3600,
+            "suv": 4500,
+            "innova": 4700,
+            "crysta": 5400,
+            "tempo": 7200
+          },
           "active": true
         },
         {
           "id": "mysore-mangalore-airport",
           "fromCityId": "mysore",
           "toCityId": "mangalore-airport",
-          "prices": { "sedan": 5500, "suv": 6800, "innova": 7200, "crysta": 8000, "tempo": 11000 },
+          "prices": {
+            "sedan": 5500,
+            "suv": 6800,
+            "innova": 7200,
+            "crysta": 8000,
+            "tempo": 11000
+          },
           "active": true
         }
       ],
       "active": true
     },
-
     "city": {
       "label": "City Taxi",
-      "applicableCabs": ["sedan", "suv", "innova", "crysta"],
-      "pricing": { "model": "fixed-route", "kmLimit": 150 },
+      "applicableCabs": [
+        "sedan",
+        "suv",
+        "innova",
+        "crysta"
+      ],
+      "pricing": {
+        "model": "fixed-route",
+        "kmLimit": 150
+      },
       "routes": [
         {
           "id": "mysore-blr-city",
           "fromCityId": "mysore",
           "toCityId": "blr-city",
-          "prices": { "sedan": 3100, "suv": 3900, "innova": 4100, "crysta": 4600 },
+          "prices": {
+            "sedan": 3100,
+            "suv": 3900,
+            "innova": 4100,
+            "crysta": 4600
+          },
           "active": true
         },
         {
           "id": "blr-city-mysore",
           "fromCityId": "blr-city",
           "toCityId": "mysore",
-          "prices": { "sedan": 3100, "suv": 3900, "innova": 4100, "crysta": 4600 },
+          "prices": {
+            "sedan": 3100,
+            "suv": 3900,
+            "innova": 4100,
+            "crysta": 4600
+          },
           "active": true
         },
         {
           "id": "mysore-mangalore-city",
           "fromCityId": "mysore",
           "toCityId": "mangalore",
-          "prices": { "sedan": 5200, "suv": 6500, "innova": 6900, "crysta": 7700 },
+          "prices": {
+            "sedan": 5200,
+            "suv": 6500,
+            "innova": 6900,
+            "crysta": 7700
+          },
           "active": true
         }
       ],
       "active": true
     },
-
     "intercity": {
       "label": "Intercity / Outstation",
-      "applicableCabs": ["sedan", "suv", "innova", "crysta", "tempo"],
-      "pricing": { "model": "per-day" },
+      "applicableCabs": [
+        "sedan",
+        "suv",
+        "innova",
+        "crysta",
+        "tempo"
+      ],
+      "pricing": {
+        "model": "per-day"
+      },
       "packages": [
         {
           "id": "tour-coorg",
           "name": "Coorg (Madikeri)",
           "destinationCityId": "coorg",
           "days": 2,
-          "startingFrom": { "sedan": 6800, "suv": 8400, "innova": 8900, "crysta": 9600 },
+          "startingFrom": {
+            "sedan": 6800,
+            "suv": 8400,
+            "innova": 8900,
+            "crysta": 9600
+          },
           "active": true
         },
         {
@@ -169,7 +298,12 @@
           "name": "Ooty Hill Station",
           "destinationCityId": "ooty",
           "days": 3,
-          "startingFrom": { "sedan": 10200, "suv": 12600, "innova": 13400, "crysta": 14400 },
+          "startingFrom": {
+            "sedan": 10200,
+            "suv": 12600,
+            "innova": 13400,
+            "crysta": 14400
+          },
           "active": true
         },
         {
@@ -177,7 +311,12 @@
           "name": "Kabini Wildlife",
           "destinationCityId": "kabini",
           "days": 2,
-          "startingFrom": { "sedan": 6800, "suv": 8400, "innova": 8900, "crysta": 9600 },
+          "startingFrom": {
+            "sedan": 6800,
+            "suv": 8400,
+            "innova": 8900,
+            "crysta": 9600
+          },
           "active": true
         },
         {
@@ -185,24 +324,36 @@
           "name": "Wayanad Resorts",
           "destinationCityId": "wayanad",
           "days": 3,
-          "startingFrom": { "sedan": 10200, "suv": 12600, "innova": 13400, "crysta": 14400 },
+          "startingFrom": {
+            "sedan": 10200,
+            "suv": 12600,
+            "innova": 13400,
+            "crysta": 14400
+          },
           "active": true
         }
       ],
       "active": true
     },
-
     "tempo": {
       "label": "Tempo Traveller",
-      "applicableCabs": ["tempo", "tempo-non-ac"],
-      "pricing": { "model": "hybrid" },
+      "applicableCabs": [
+        "tempo",
+        "tempo-non-ac"
+      ],
+      "pricing": {
+        "model": "hybrid"
+      },
       "packages": [
         {
           "id": "tempo-pilgrim",
           "name": "Pilgrim Tour (Dharmasthala / Kukke)",
           "destinationCityId": "dharmasthala",
           "days": 2,
-          "startingFrom": { "tempo": 14400, "tempo-non-ac": 13200 },
+          "startingFrom": {
+            "tempo": 14400,
+            "tempo-non-ac": 13200
+          },
           "active": true
         },
         {
@@ -210,7 +361,10 @@
           "name": "Coorg Group Getaway",
           "destinationCityId": "coorg",
           "days": 2,
-          "startingFrom": { "tempo": 14400, "tempo-non-ac": 13200 },
+          "startingFrom": {
+            "tempo": 14400,
+            "tempo-non-ac": 13200
+          },
           "active": true
         },
         {
@@ -218,7 +372,10 @@
           "name": "Corporate Outing",
           "destinationCityId": null,
           "days": 1,
-          "startingFrom": { "tempo": 7200, "tempo-non-ac": 6600 },
+          "startingFrom": {
+            "tempo": 7200,
+            "tempo-non-ac": 6600
+          },
           "active": true
         },
         {
@@ -233,7 +390,6 @@
       "active": true
     }
   },
-
   "promos": {
     "FIRSTRIDE": {
       "label": "10% off your first ride (max ₹500)",
@@ -241,7 +397,10 @@
       "value": 10,
       "maxDiscount": 500,
       "minFare": 2000,
-      "appliesTo": ["airport", "city"],
+      "appliesTo": [
+        "airport",
+        "city"
+      ],
       "active": true
     },
     "FESTIVE300": {
@@ -249,14 +408,19 @@
       "type": "flat",
       "value": 300,
       "minFare": 3000,
-      "appliesTo": ["intercity", "tempo"],
+      "appliesTo": [
+        "intercity",
+        "tempo"
+      ],
       "active": true
     },
     "AIRPORT200": {
       "label": "₹200 off airport rides",
       "type": "flat",
       "value": 200,
-      "appliesTo": ["airport"],
+      "appliesTo": [
+        "airport"
+      ],
       "active": true
     }
   }
