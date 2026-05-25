@@ -11,7 +11,7 @@ export default function Home() {
   const [step, setStep] = useState(1);
   const [tripType, setTripType] = useState("airport"); // 'airport', 'city', 'daily'
   
-  // Airport direction options: 'drop' (Mysore to Airport) or 'pickup' (Airport to Mysore)
+  // Airport direction options: 'drop' (Mysore to KIA) or 'pickup' (KIA to Mysore)
   const [airportType, setAirportType] = useState("drop");
   // City direction options: 'drop' (Mysore to Blr City) or 'pickup' (Blr City to Mysore)
   const [cityType, setCityType] = useState("drop");
@@ -19,7 +19,6 @@ export default function Home() {
   // Trip Duration options
   const [outstationDirection, setOutstationDirection] = useState("oneway"); // 'oneway', 'roundtrip'
   const [numDays, setNumDays] = useState(1);
-  const [swapRotation, setSwapRotation] = useState(0);
 
   // Form Fields
   const [pickup, setPickup] = useState("Mysore");
@@ -46,6 +45,24 @@ export default function Home() {
   
   // Payment Options: 'arrival', 'advance', 'full'
   const [paymentMethod, setPaymentMethod] = useState("arrival");
+
+  // Navigation / Modal Display States
+  const [showMyBookings, setShowMyBookings] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState("");
+
+  // OTP Login Flow States
+  const [loginPhone, setLoginPhone] = useState("");
+  const [loginOtp, setLoginOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+
+  // Tracking Bookings Flow States
+  const [trackBookingId, setTrackBookingId] = useState("");
+  const [trackPhone, setTrackPhone] = useState("");
+  const [trackedBooking, setTrackedBooking] = useState(null);
+  const [trackAttempted, setTrackAttempted] = useState(false);
 
   // Load defaults
   useEffect(() => {
@@ -94,6 +111,8 @@ export default function Home() {
     }
   };
 
+  const [swapRotation, setSwapRotation] = useState(0);
+
   // Swap pickup & drop locations
   const handleSwapLocations = () => {
     if (tripType === "daily") return; // No swap for daily sightseeing
@@ -129,7 +148,6 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Common suggestions lists
   const suggestions = {
     pickup: ["Mysore", "Bangalore Airport (KIA)", "Bangalore City", "Ooty", "Coorg (Madikeri)", "Kabini", "Bandipur"],
     drop: ["Bangalore Airport (KIA)", "Bangalore City", "Mysore", "Ooty", "Coorg (Madikeri)", "Kabini", "Bandipur"]
@@ -240,6 +258,69 @@ Please confirm my booking. Thank you!`;
     setStep(5);
   };
 
+  // Click Offers link handler
+  const handleOffersClick = () => {
+    if (step !== 1) {
+      setStep(1);
+    }
+    // Wait for step render, scroll to promos
+    setTimeout(() => {
+      const promoSection = document.getElementById("promos");
+      if (promoSection) {
+        promoSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+  };
+
+  // Mock OTP Signin verification
+  const handleSendOtp = (e) => {
+    e.preventDefault();
+    if (!loginPhone || loginPhone.length < 10) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+    setOtpSent(true);
+  };
+
+  const handleVerifyOtp = (e) => {
+    e.preventDefault();
+    if (loginOtp === "1234" || loginOtp.length === 4) {
+      setIsLoggedIn(true);
+      setLoggedInUser(loginPhone);
+      setShowLogin(false);
+      setOtpSent(false);
+      setLoginPhone("");
+      setLoginOtp("");
+    } else {
+      alert("Invalid OTP code. Please enter 1234 to log in.");
+    }
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setLoggedInUser("");
+  };
+
+  // Mock Booking Status Tracker search
+  const handleTrackBooking = (e) => {
+    e.preventDefault();
+    setTrackAttempted(true);
+    // If the ID matches current active reservation or standard test keys
+    if (trackBookingId.toUpperCase() === bookingId || trackBookingId.toUpperCase() === "GAT-123456" || trackBookingId.toUpperCase() === "GAT-987654") {
+      setTrackedBooking({
+        id: trackBookingId.toUpperCase(),
+        route: "Mysore ➔ Bangalore Airport KIA",
+        car: selectedCab.name,
+        date: date || "Tomorrow",
+        time: time || "10:00 AM",
+        price: totalPrice,
+        status: "Confirmed (Driver details assigning 15 mins before reporting)"
+      });
+    } else {
+      setTrackedBooking(null);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Pure White Header matching Cleartrip */}
@@ -251,17 +332,55 @@ Please confirm my booking. Thank you!`;
               GLOBAL<span className="logo-highlight">AIR</span>TRAVELS
             </span>
           </a>
-          <a href={`tel:${siteConfig.phone}`} className="call-badge" aria-label="Call Booking Manager">
+          
+          {/* Mobile only call badge */}
+          <a href={`tel:${siteConfig.phone}`} className="call-badge mobile-only" aria-label="Call Booking Manager">
             <img src={getAssetPath("/icons/phone.svg")} alt="" className="call-icon" />
-            <span>Call: {siteConfig.phoneDisplay}</span>
+            <span>Call</span>
           </a>
+
+          {/* Desktop only navigation menu */}
+          <nav className="desktop-only" aria-label="Main Navigation">
+            <ul className="desktop-nav">
+              <li>
+                <button type="button" className="nav-item-link" onClick={handleOffersClick}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" className="nav-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                  <span>Offers</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" className="nav-item-link" onClick={() => { setShowMyBookings(true); setTrackAttempted(false); setTrackedBooking(null); setTrackBookingId(""); }}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" className="nav-icon"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                  <span>My Bookings</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" className="nav-item-link" onClick={() => setShowSupport(true)}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" className="nav-icon"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                  <span>Support</span>
+                </button>
+              </li>
+              <li>
+                {isLoggedIn ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--primary-navy)" }}>👤 +91 {loggedInUser.slice(0,5)}...</span>
+                    <button type="button" className="nav-item-link" style={{ fontSize: "0.75rem", textDecoration: "underline", padding: 0 }} onClick={handleLogout}>Logout</button>
+                  </div>
+                ) : (
+                  <button type="button" className="btn-login" onClick={() => { setShowLogin(true); setOtpSent(false); setLoginPhone(""); setLoginOtp(""); }}>
+                    Log in
+                  </button>
+                )}
+              </li>
+            </ul>
+          </nav>
         </div>
       </header>
 
       {/* Main Wrapper Layout */}
       <div className="main-wrapper">
         
-        {/* Product Switcher Pills (Flights, Hotels, Buses style) */}
+        {/* Product Switcher Pills */}
         {step === 1 && (
           <nav className="product-switcher-bar" aria-label="Service Type">
             <button
@@ -1009,7 +1128,7 @@ Please confirm my booking. Thank you!`;
 
         {/* Step 1 Promo Row (Matches bottom cards on Cleartrip screen) */}
         {step === 1 && (
-          <section className="cleartrip-promo-row" aria-label="Offers and Promotions">
+          <section className="cleartrip-promo-row" id="promos" aria-label="Offers and Promotions">
             {/* Promo 1 */}
             <div className="promo-card">
               <div className="promo-img-box" style={{ color: "#22A06B" }}>🎁</div>
@@ -1071,6 +1190,206 @@ Please confirm my booking. Thank you!`;
           </div>
         </div>
       </footer>
+
+      {/* ================= MODALS SYSTEM ================= */}
+      
+      {/* 1. Track Bookings / My Bookings Modal */}
+      {showMyBookings && (
+        <div className="modal-backdrop" onClick={() => setShowMyBookings(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="modal-close-btn" onClick={() => setShowMyBookings(false)}>✕</button>
+            <h2 className="modal-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" className="nav-icon" style={{ color: "var(--primary-orange)" }}><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+              <span>Track Your Booking</span>
+            </h2>
+            <div className="modal-body">
+              {!trackedBooking ? (
+                <form onSubmit={handleTrackBooking}>
+                  <p style={{ marginBottom: "0.85rem", fontSize: "0.85rem", color: "var(--text-gray)" }}>
+                    Enter your booking reference ID to check current status and allotment.
+                  </p>
+                  
+                  <label htmlFor="track-id" className="form-label" style={{ fontWeight: 600 }}>Booking ID</label>
+                  <input
+                    id="track-id"
+                    type="text"
+                    className="modal-input"
+                    placeholder="e.g. GAT-123456"
+                    value={trackBookingId}
+                    onChange={(e) => setTrackBookingId(e.target.value)}
+                    required
+                  />
+
+                  <label htmlFor="track-tel" className="form-label" style={{ fontWeight: 600 }}>Mobile Number</label>
+                  <input
+                    id="track-tel"
+                    type="tel"
+                    className="modal-input"
+                    placeholder="10-digit number"
+                    value={trackPhone}
+                    onChange={(e) => setTrackPhone(e.target.value)}
+                    required
+                  />
+
+                  <button type="submit" className="btn-primary" style={{ marginTop: "0.5rem" }}>
+                    Search Trip Status ➔
+                  </button>
+                  
+                  {trackAttempted && (
+                    <p style={{ color: "var(--error-red)", fontSize: "0.75rem", marginTop: "0.5rem", fontWeight: 600 }}>
+                      No active bookings found for ID: {trackBookingId}. Try typing your active ID: {bookingId}
+                    </p>
+                  )}
+                </form>
+              ) : (
+                <div>
+                  <div className="booking-summary-box" style={{ margin: "0.5rem 0 1rem" }}>
+                    <div className="booking-summary-title" style={{ color: "var(--success-green)" }}>
+                      Status: {trackedBooking.status}
+                    </div>
+                    <div className="bill-row" style={{ fontSize: "0.8rem", marginBlock: "0.2rem" }}>
+                      <span>Booking ID:</span>
+                      <strong>{trackedBooking.id}</strong>
+                    </div>
+                    <div className="bill-row" style={{ fontSize: "0.8rem", marginBlock: "0.2rem" }}>
+                      <span>Route:</span>
+                      <span>{trackedBooking.route}</span>
+                    </div>
+                    <div className="bill-row" style={{ fontSize: "0.8rem", marginBlock: "0.2rem" }}>
+                      <span>Vehicle:</span>
+                      <span>{trackedBooking.car}</span>
+                    </div>
+                    <div className="bill-row" style={{ fontSize: "0.8rem", marginBlock: "0.2rem" }}>
+                      <span>Reporting:</span>
+                      <span>{trackedBooking.date} at {trackedBooking.time}</span>
+                    </div>
+                    <div className="bill-row" style={{ fontSize: "0.8rem", marginBlock: "0.2rem" }}>
+                      <span>Assured Cost:</span>
+                      <strong>₹{trackedBooking.price}</strong>
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <a
+                      href={`https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent("Hello Global Air Travels, please verify status of Booking ID " + trackedBooking.id)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn-whatsapp-confirm"
+                      style={{ flex: 1, textDecoration: "none" }}
+                    >
+                      Verify on WhatsApp
+                    </a>
+                    <button type="button" className="btn-secondary" style={{ flex: 1 }} onClick={() => setTrackedBooking(null)}>
+                      Search Another
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Customer Support Modal */}
+      {showSupport && (
+        <div className="modal-backdrop" onClick={() => setShowSupport(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="modal-close-btn" onClick={() => setShowSupport(false)}>✕</button>
+            <h2 className="modal-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" className="nav-icon" style={{ color: "var(--primary-orange)" }}><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+              <span>Customer Helpdesk</span>
+            </h2>
+            <div className="modal-body">
+              <p style={{ marginBottom: "1rem", fontSize: "0.85rem", color: "var(--text-gray)" }}>
+                Need help with your booking? Contact our Mysore booking office directly:
+              </p>
+              
+              <div className="booking-summary-box" style={{ margin: "0.5rem 0 1.25rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <div>📞 <strong>Call booking manager:</strong> <a href={`tel:${siteConfig.phone}`} style={{ color: "var(--primary-blue)", fontWeight: 700 }}>{siteConfig.phoneDisplay}</a></div>
+                <div>💬 <strong>WhatsApp Chat:</strong> <a href={`https://wa.me/${siteConfig.whatsapp}`} target="_blank" rel="noreferrer" style={{ color: "var(--success-green)", fontWeight: 700 }}>{siteConfig.whatsappDisplay}</a></div>
+                <div>✉️ <strong>Email Address:</strong> <a href={`mailto:${siteConfig.email}`} style={{ color: "var(--primary-blue)" }}>{siteConfig.email}</a></div>
+                <div>📍 <strong>Registered Office:</strong> Mysore, Karnataka, India</div>
+              </div>
+
+              <button type="button" className="btn-primary" onClick={() => setShowSupport(false)}>
+                Back to Website
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Login Modal */}
+      {showLogin && (
+        <div className="modal-backdrop" onClick={() => setShowLogin(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="modal-close-btn" onClick={() => setShowLogin(false)}>✕</button>
+            <h2 className="modal-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" className="nav-icon" style={{ color: "var(--primary-orange)" }}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <span>Log in to your account</span>
+            </h2>
+            <div className="modal-body">
+              {!otpSent ? (
+                <form onSubmit={handleSendOtp}>
+                  <p style={{ marginBottom: "0.85rem", fontSize: "0.85rem", color: "var(--text-gray)" }}>
+                    Enter your phone number to receive a secure login code.
+                  </p>
+                  
+                  <label htmlFor="login-tel" className="form-label" style={{ fontWeight: 600 }}>Mobile Number</label>
+                  <input
+                    id="login-tel"
+                    type="tel"
+                    className="modal-input"
+                    placeholder="Enter 10-digit mobile number"
+                    value={loginPhone}
+                    onChange={(e) => setLoginPhone(e.target.value)}
+                    required
+                    pattern="[6-9][0-9]{9}"
+                    inputMode="tel"
+                  />
+
+                  <button type="submit" className="btn-primary" style={{ marginTop: "0.5rem" }}>
+                    Send One-Time OTP ➔
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleVerifyOtp}>
+                  <p style={{ marginBottom: "0.85rem", fontSize: "0.85rem", color: "var(--text-gray)" }}>
+                    We sent a mock SMS OTP verification code to <strong>+91 {loginPhone}</strong>.
+                  </p>
+
+                  <label htmlFor="login-otp" className="form-label" style={{ fontWeight: 600 }}>Enter 4-Digit OTP Code</label>
+                  <input
+                    id="login-otp"
+                    type="text"
+                    className="modal-input"
+                    placeholder="Enter OTP (type 1234)"
+                    value={loginOtp}
+                    onChange={(e) => setLoginOtp(e.target.value)}
+                    required
+                    maxLength={4}
+                    pattern="\d{4}"
+                    inputMode="numeric"
+                  />
+
+                  <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.85rem", textAlign: "right" }}>
+                    Hint: Enter code <strong>1234</strong> to verify.
+                  </span>
+
+                  <button type="submit" className="btn-primary">
+                    Verify & Sign In
+                  </button>
+                  
+                  <button type="button" className="btn-secondary" style={{ marginTop: "0.5rem", width: "100%" }} onClick={() => setOtpSent(false)}>
+                    Back
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
