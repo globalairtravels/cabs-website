@@ -143,8 +143,10 @@ export default function Home() {
     }
   };
 
-  // Quick route presets selection
-  const handleQuickRouteSelect = (routeId) => {
+  // Quick route presets selection — handles both fixed routes and tour package items
+  const handleQuickRouteSelect = (item) => {
+    const routeId = typeof item === "string" ? item : item.id;
+
     if (routeId === "mysore-blr-airport") {
       setTripType("airport");
       handleAirportDirectionChange("drop");
@@ -157,6 +159,27 @@ export default function Home() {
     } else if (routeId === "blr-city-mysore") {
       setTripType("city");
       handleCityDirectionChange("pickup");
+    } else if (routeId === "mysore-mangalore-airport") {
+      setTripType("airport");
+      setPickup("Mysore");
+      setDrop("Mangalore Airport");
+      setAirportType("drop");
+    } else if (routeId === "mysore-mangalore-city") {
+      setTripType("city");
+      setPickup("Mysore");
+      setDrop("Mangalore City");
+      setCityType("drop");
+    } else if (routeId.startsWith("tour-")) {
+      setTripType("daily");
+      setPickup("Mysore");
+      if (item.destination) setDrop(item.destination);
+      if (item.days) setNumDays(item.days);
+    } else if (routeId.startsWith("tempo-")) {
+      setTripType("tempo");
+      setPickup("Mysore");
+      if (item.destination) setDrop(item.destination);
+      if (item.days) setNumDays(item.days);
+      if (tempoCab) setSelectedCab(tempoCab);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -509,8 +532,8 @@ Please confirm my booking. Thank you!`;
             {/* Left Column: Cleartrip Search Box Card */}
             <div>
               <div className="cleartrip-heading-area">
-                <h1 className="cleartrip-title">Book Domestic & Outstation Cabs</h1>
-                <p className="cleartrip-subtitle">Enjoy hassle free cab bookings at lowest rates</p>
+                <h1 className="cleartrip-title">{siteConfig.sidebarByTripType[tripType].heading.title}</h1>
+                <p className="cleartrip-subtitle">{siteConfig.sidebarByTripType[tripType].heading.subtitle}</p>
               </div>
 
               <div className="cleartrip-card">
@@ -735,59 +758,66 @@ Please confirm my booking. Thank you!`;
               </div>
             </div>
 
-            {/* Right Column: Cleartrip Sidebar */}
+            {/* Right Column: Cleartrip Sidebar — content varies by tripType */}
             <aside className="cleartrip-sidebar">
-              {/* Gradient Ad Banner */}
-              <div
-                className="cleartrip-ad-card"
-                style={{
-                  backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.45)), url(${getAssetPath("/images/airport.webp")})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  color: "#ffffff"
-                }}
-              >
-                <span className="ad-badge" style={{ backgroundColor: "var(--primary-orange)", color: "#ffffff" }}>Special Rate</span>
-                <p className="ad-text" style={{ color: "#ffffff", textShadow: "0 1px 3px rgba(0, 0, 0, 0.6)" }}>Mysore ⇄ KIA Airport Drop starting at just ₹3,600/-</p>
-                <span className="ad-footer" style={{ color: "#e2e8f0" }}>Includes driver allowance & toll tax!</span>
-              </div>
+              {(() => {
+                const sidebar = siteConfig.sidebarByTripType[tripType];
+                const bannerStyle = sidebar.banner.image
+                  ? {
+                      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.45)), url(${getAssetPath(sidebar.banner.image)}), ${sidebar.banner.gradient || "linear-gradient(135deg, #0B3D91 0%, #F26B1F 100%)"}`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      color: "#ffffff"
+                    }
+                  : {
+                      backgroundImage: sidebar.banner.gradient || "linear-gradient(135deg, #0B3D91 0%, #F26B1F 100%)",
+                      color: "#ffffff"
+                    };
 
-              {/* Quick Route Shortcuts */}
-              <div className="cleartrip-sidebar-card">
-                <div className="sidebar-title-row">
-                  <h2 className="sidebar-title">Popular Routes</h2>
-                  <span className="sidebar-link">Quick Select</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  <button type="button" className="quick-route-btn" onClick={() => handleQuickRouteSelect("mysore-blr-airport")}>
-                    <span className="quick-route-name">Mysore ➔ Bangalore Airport</span>
-                    <span className="quick-route-price">₹3,600 Sedan • Toll Incl.</span>
-                  </button>
-                  <button type="button" className="quick-route-btn" onClick={() => handleQuickRouteSelect("blr-airport-mysore")}>
-                    <span className="quick-route-name">Bangalore Airport ➔ Mysore</span>
-                    <span className="quick-route-price">₹3,600 Sedan • Toll Incl.</span>
-                  </button>
-                  <button type="button" className="quick-route-btn" onClick={() => handleQuickRouteSelect("mysore-blr-city")}>
-                    <span className="quick-route-name">Mysore ➔ Bangalore City</span>
-                    <span className="quick-route-price">₹3,100 Sedan • Toll Incl.</span>
-                  </button>
-                </div>
-              </div>
+                return (
+                  <>
+                    {/* Dynamic Ad Banner */}
+                    <div className="cleartrip-ad-card" style={bannerStyle}>
+                      <span className="ad-badge" style={{ backgroundColor: "var(--primary-orange)", color: "#ffffff" }}>{sidebar.banner.badge}</span>
+                      <p className="ad-text" style={{ color: "#ffffff", textShadow: "0 1px 3px rgba(0, 0, 0, 0.6)" }}>{sidebar.banner.text}</p>
+                      <span className="ad-footer" style={{ color: "#e2e8f0" }}>{sidebar.banner.footer}</span>
+                    </div>
 
-              {/* Interstate permits summary */}
-              <div className="cleartrip-sidebar-card">
-                <div className="sidebar-title-row">
-                  <h2 className="sidebar-title">Border Permits (7 Days)</h2>
-                </div>
-                <ul style={{ paddingLeft: "1rem", fontSize: "0.75rem", color: "var(--text-gray)", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                  <li>Sedan (All borders): <strong>₹600</strong></li>
-                  <li>Ertiga SUV (All borders): <strong>₹1,000</strong></li>
-                  <li>Innova (Tamil Nadu): <strong>₹1,250</strong></li>
-                  <li>Innova (Kerala): <strong>₹3,000</strong></li>
-                  <li>TT AC (Tamil Nadu): <strong>₹2,000</strong></li>
-                  <li>TT AC (Kerala): <strong>₹4,000</strong></li>
-                </ul>
-              </div>
+                    {/* Quick Select — routes or tour packages depending on trip type */}
+                    <div className="cleartrip-sidebar-card">
+                      <div className="sidebar-title-row">
+                        <h2 className="sidebar-title">{sidebar.quickSelect.title}</h2>
+                        <span className="sidebar-link">Quick Select</span>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        {sidebar.quickSelect.items.map((item) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            className="quick-route-btn"
+                            onClick={() => handleQuickRouteSelect(item)}
+                          >
+                            <span className="quick-route-name">{item.name}</span>
+                            <span className="quick-route-price">{item.subtitle}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Info card — inclusions or border permits depending on trip type */}
+                    <div className="cleartrip-sidebar-card">
+                      <div className="sidebar-title-row">
+                        <h2 className="sidebar-title">{sidebar.info.title}</h2>
+                      </div>
+                      <ul style={{ paddingLeft: "1rem", fontSize: "0.75rem", color: "var(--text-gray)", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                        {sidebar.info.items.map((line, idx) => (
+                          <li key={idx} dangerouslySetInnerHTML={{ __html: line.replace(/(₹[\d,]+)/g, "<strong>$1</strong>") }} />
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                );
+              })()}
             </aside>
           </div>
         ) : (

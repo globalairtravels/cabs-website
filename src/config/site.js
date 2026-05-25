@@ -155,6 +155,133 @@ export const siteConfig = {
     ]
   },
 
+  // Sidebar content varies by booking type. Banner image paths point to public/images/.
+  // Drop in city.webp / outstation.webp / tempo.webp later; missing files fall back to a gradient.
+  sidebarByTripType: {
+    airport: {
+      heading: {
+        title: "Book Mysore ⇄ Bangalore Airport Cabs",
+        subtitle: "Fixed price drops & pickups with toll and driver included"
+      },
+      banner: {
+        badge: "Special Rate",
+        text: "Mysore ⇄ KIA Airport Drop starting at just ₹3,600/-",
+        footer: "Includes driver allowance & toll tax!",
+        image: "/images/airport.webp"
+      },
+      quickSelect: {
+        title: "Popular Airport Routes",
+        items: [
+          { id: "mysore-blr-airport", name: "Mysore ➔ Bangalore Airport", subtitle: "₹3,600 Sedan • Toll Incl." },
+          { id: "blr-airport-mysore", name: "Bangalore Airport ➔ Mysore", subtitle: "₹3,600 Sedan • Toll Incl." },
+          { id: "mysore-mangalore-airport", name: "Mysore ➔ Mangalore Airport", subtitle: "₹5,500 Sedan • On Request" }
+        ]
+      },
+      info: {
+        title: "Airport Service Inclusions",
+        items: [
+          "45 minutes free airport waiting",
+          "Flight tracking & schedule re-routing",
+          "Toll, parking & driver allowance included",
+          "Meet & greet at arrival gate"
+        ]
+      }
+    },
+    city: {
+      heading: {
+        title: "Book Mysore ⇄ Bangalore City Taxis",
+        subtitle: "Comfortable point-to-point intercity rides with assured fares"
+      },
+      banner: {
+        badge: "Best Price",
+        text: "Mysore ⇄ Bangalore City One-Way from ₹3,100/-",
+        footer: "Toll & driver allowance included.",
+        image: "/images/city.webp",
+        gradient: "linear-gradient(135deg, #0B3D91 0%, #1E5BBD 100%)"
+      },
+      quickSelect: {
+        title: "Popular City Routes",
+        items: [
+          { id: "mysore-blr-city", name: "Mysore ➔ Bangalore City", subtitle: "₹3,100 Sedan • Toll Incl." },
+          { id: "blr-city-mysore", name: "Bangalore City ➔ Mysore", subtitle: "₹3,100 Sedan • Toll Incl." },
+          { id: "mysore-mangalore-city", name: "Mysore ➔ Mangalore City", subtitle: "₹5,200 Sedan • On Request" }
+        ]
+      },
+      info: {
+        title: "City Trip Inclusions",
+        items: [
+          "Up to 150 km point-to-point limit",
+          "₹400 toll charges included",
+          "One pickup and one drop point",
+          "30 minutes waiting buffer free"
+        ]
+      }
+    },
+    daily: {
+      heading: {
+        title: "Plan Outstation & Multi-Day Tours",
+        subtitle: "Coorg, Ooty, Kabini, Wayanad and beyond — per-day packages with driver"
+      },
+      banner: {
+        badge: "Multi-Day Tour",
+        text: "Outstation tours from ₹3,400/day in Sedan",
+        footer: "Driver allowance waived on tours over 3 days.",
+        image: "/images/outstation.webp",
+        gradient: "linear-gradient(135deg, #F26B1F 0%, #FF9248 100%)"
+      },
+      quickSelect: {
+        title: "Popular Tour Packages",
+        items: [
+          { id: "tour-coorg", name: "Coorg (Madikeri)", subtitle: "2 Day Tour • From ₹6,800", destination: "Coorg (Madikeri)", days: 2 },
+          { id: "tour-ooty", name: "Ooty Hill Station", subtitle: "3 Day Tour • From ₹10,200", destination: "Ooty", days: 3 },
+          { id: "tour-kabini", name: "Kabini Wildlife", subtitle: "2 Day Tour • From ₹6,800", destination: "Kabini", days: 2 },
+          { id: "tour-wayanad", name: "Wayanad Resorts", subtitle: "3 Day Tour • From ₹10,200", destination: "Wayanad", days: 3 }
+        ]
+      },
+      info: {
+        title: "Border Permits (7 Days)",
+        items: [
+          "Sedan (All borders): ₹600",
+          "Ertiga SUV (All borders): ₹1,000",
+          "Innova (Tamil Nadu): ₹1,250",
+          "Innova (Kerala): ₹3,000",
+          "Innova (Andhra): ₹2,500"
+        ]
+      }
+    },
+    tempo: {
+      heading: {
+        title: "Hire a Tempo Traveller for Groups",
+        subtitle: "12+1 seater for weddings, pilgrim tours and corporate outings"
+      },
+      banner: {
+        badge: "Group Travel",
+        text: "12+1 Tempo Traveller from ₹7,200 for group tours",
+        footer: "Best for weddings, pilgrim groups & corporate outings.",
+        image: "/images/tempo.webp",
+        gradient: "linear-gradient(135deg, #0B3D91 0%, #F26B1F 100%)"
+      },
+      quickSelect: {
+        title: "Group Tour Ideas",
+        items: [
+          { id: "tempo-wedding", name: "Wedding Group Transport", subtitle: "Local / Multi-day • Custom Quote", destination: "Wedding Group Travel", days: 2 },
+          { id: "tempo-pilgrim", name: "Pilgrim Tour", subtitle: "Dharmasthala / Kukke • 2 Day", destination: "Dharmasthala-Kukke Pilgrim", days: 2 },
+          { id: "tempo-coorg", name: "Coorg Group Getaway", subtitle: "2 Day Tour • From ₹14,400", destination: "Coorg (Madikeri)", days: 2 },
+          { id: "tempo-corporate", name: "Corporate Outing", subtitle: "1 Day Local • From ₹7,200", destination: "Corporate Outing", days: 1 }
+        ]
+      },
+      info: {
+        title: "Tempo Border Permits (7 Days)",
+        items: [
+          "Tempo (Tamil Nadu): ₹2,000",
+          "Tempo (Kerala): ₹4,000",
+          "Tempo (Andhra): ₹3,500",
+          "Tempo (Goa Special): ₹4,500"
+        ]
+      }
+    }
+  },
+
   // Booking Rules & Notes
   notes: [
     "During peak season, rates may increase by ₹1 per km depending on vehicle demand.",
