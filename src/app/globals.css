@@ -1553,8 +1553,8 @@ body {
   right: calc(18px + env(safe-area-inset-right));
   background-color: #25D366;
   color: white;
-  width: 46px;
-  height: 46px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1577,21 +1577,21 @@ body {
   .whatsapp-float {
     bottom: 24px;
     right: 24px;
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
   }
 }
 
 .whatsapp-float-icon {
-  width: 27px;
-  height: 27px;
+  width: 40px;
+  height: 40px;
   filter: brightness(0) invert(1);
 }
 
 @media (min-width: 480px) {
   .whatsapp-float-icon {
-    width: 29px;
-    height: 29px;
+    width: 44px;
+    height: 44px;
   }
 }
 
