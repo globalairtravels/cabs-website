@@ -56,8 +56,8 @@ export default function Home() {
   const [showPickupSuggestions, setShowPickupSuggestions] = useState(false);
   const [showDropSuggestions, setShowDropSuggestions] = useState(false);
 
-  // Active filters inside search box
-  const [minSeats, setMinSeats] = useState(3);
+  // Active filters inside search box (0 = no filter / none selected by default)
+  const [minSeats, setMinSeats] = useState(0);
 
   // Inline cab preview expansion on home screen
   const [showInlineCabs, setShowInlineCabs] = useState(false);
@@ -755,7 +755,7 @@ Please confirm my booking. Thank you!`;
                           key={seatCount}
                           type="button"
                           className={`seat-filter-btn ${minSeats === seatCount ? "active" : ""}`}
-                          onClick={() => setMinSeats(seatCount)}
+                          onClick={() => setMinSeats(minSeats === seatCount ? 0 : seatCount)}
                           aria-pressed={minSeats === seatCount}
                         >
                           {seatCount}+
@@ -1053,7 +1053,7 @@ Please confirm my booking. Thank you!`;
                   {filteredCabs.length === 0 && (
                     <div className="booking-card" style={{ textAlign: "center", padding: "2rem" }}>
                       <p style={{ fontWeight: 600 }}>No vehicles match your active filters.</p>
-                      <button type="button" className="btn-secondary" style={{ marginTop: "1rem", display: "inline-flex" }} onClick={() => setMinSeats(3)}>
+                      <button type="button" className="btn-secondary" style={{ marginTop: "1rem", display: "inline-flex" }} onClick={() => setMinSeats(0)}>
                         Clear Seating Filter
                       </button>
                     </div>
