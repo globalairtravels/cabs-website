@@ -189,7 +189,7 @@ export const siteConfig = {
     airport: {
       heading: {
         title: "Book Mysore ⇄ Bangalore Airport Cabs",
-        subtitle: "Fixed price drops & pickups with toll and driver included"
+        subtitle: "One-way transfers from fixed places to the airport. Toll and driver allowance included."
       },
       banner: {
         badge: "Special Rate",
