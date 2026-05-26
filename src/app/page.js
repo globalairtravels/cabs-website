@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { siteConfig } from "@/config/site";
-import { loadBookingConfig } from "@/lib/booking-config";
+import { bookingConfig } from "@/lib/booking-config";
 
 const createBookingId = () => `GAT-${Math.floor(100000 + Math.random() * 900000)}`;
 
@@ -14,7 +14,7 @@ const getTomorrowDate = () => {
 
 const isTempoCab = (cab) => cab.id.startsWith("tempo");
 
-// UI tab id → Firestore bookingTypes id
+// UI tab id → bookingTypes id in firestore/config.booking.json
 const TRIP_TYPE_TO_BOOKING_TYPE = {
   airport: "airport",
   city: "city",
@@ -22,52 +22,7 @@ const TRIP_TYPE_TO_BOOKING_TYPE = {
   tempo: "tempo",
 };
 
-export default function Page() {
-  const [bookingConfig, setBookingConfig] = useState(null);
-  const [loadError, setLoadError] = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    loadBookingConfig()
-      .then((config) => {
-        if (!cancelled) setBookingConfig(config);
-      })
-      .catch((err) => {
-        if (!cancelled) setLoadError(err?.message || String(err));
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  if (loadError) {
-    return (
-      <div className="flex flex-col min-h-screen bg-slate-50" style={{ alignItems: "center", justifyContent: "center", padding: "2rem", textAlign: "center" }}>
-        <h1 style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--primary-navy)", marginBottom: "0.5rem" }}>
-          Booking configuration unavailable
-        </h1>
-        <p style={{ fontSize: "0.9rem", color: "var(--text-gray)", maxWidth: 520 }}>
-          We could not load live pricing from Firestore. Please retry in a moment or contact support.
-        </p>
-        <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.75rem", fontFamily: "monospace" }}>
-          {loadError}
-        </p>
-      </div>
-    );
-  }
-
-  if (!bookingConfig) {
-    return (
-      <div className="flex flex-col min-h-screen bg-slate-50" style={{ alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-        <p style={{ fontSize: "0.9rem", color: "var(--text-gray)" }}>Loading live pricing…</p>
-      </div>
-    );
-  }
-
-  return <BookingApp bookingConfig={bookingConfig} />;
-}
-
-function BookingApp({ bookingConfig }) {
+export default function Home() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
   const getAssetPath = (path) => `${basePath}${path}`;
   const whatsappNumber = siteConfig.whatsapp.replace(/\D/g, "");

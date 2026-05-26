@@ -1,21 +1,6 @@
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "./firebase";
-
-const BOOKING_CONFIG_DOC = "configs/booking";
-
-export async function loadBookingConfig() {
-  const snap = await getDoc(doc(db, "configs", "booking"));
-  if (!snap.exists()) {
-    throw new Error(`Firestore document ${BOOKING_CONFIG_DOC} does not exist.`);
-  }
-  return normalizeBookingConfig(snap.data());
-}
+import rawConfig from "../../firestore/config.booking.json";
 
 function normalizeBookingConfig(raw) {
-  if (!raw || typeof raw !== "object") {
-    throw new Error(`Firestore document ${BOOKING_CONFIG_DOC} returned no data.`);
-  }
-
   const rawCabs = raw.cabs && typeof raw.cabs === "object" ? raw.cabs : {};
   const bookingTypes = raw.bookingTypes && typeof raw.bookingTypes === "object" ? raw.bookingTypes : {};
 
@@ -40,7 +25,7 @@ function normalizeBookingConfig(raw) {
     }));
 
   if (cabTypes.length === 0) {
-    throw new Error(`Firestore document ${BOOKING_CONFIG_DOC} has no active cabs.`);
+    throw new Error("firestore/config.booking.json has no active cabs.");
   }
 
   const rawPromos = raw.promos && typeof raw.promos === "object" ? raw.promos : {};
@@ -83,3 +68,5 @@ function firstRoutePrices(bookingType) {
   const active = routes.find((route) => route && route.active !== false);
   return active?.prices && typeof active.prices === "object" ? active.prices : {};
 }
+
+export const bookingConfig = normalizeBookingConfig(rawConfig);
