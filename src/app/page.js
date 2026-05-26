@@ -68,7 +68,7 @@ export default function Home() {
   const handlePickupLocationChange = (val) => {
     setPickup(val);
     const normalize = (loc) => (loc || "").trim().toLowerCase();
-    if (tripType === "airport" && val && normalize(val) === normalize(drop)) {
+    if ((tripType === "airport" || tripType === "daily" || tripType === "tempo") && val && normalize(val) === normalize(drop)) {
       setDrop("");
     }
   };
@@ -76,7 +76,7 @@ export default function Home() {
   const handleDropLocationChange = (val) => {
     setDrop(val);
     const normalize = (loc) => (loc || "").trim().toLowerCase();
-    if (tripType === "airport" && val && normalize(val) === normalize(pickup)) {
+    if ((tripType === "airport" || tripType === "daily" || tripType === "tempo") && val && normalize(val) === normalize(pickup)) {
       setPickup("");
     }
   };
