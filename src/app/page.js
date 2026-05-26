@@ -67,8 +67,12 @@ export default function Home() {
 
   const handlePickupLocationChange = (val) => {
     setPickup(val);
+    if (tripType === "city" || tripType === "tempo") {
+      setDrop(val);
+      return;
+    }
     const normalize = (loc) => (loc || "").trim().toLowerCase();
-    if ((tripType === "airport" || tripType === "daily" || tripType === "tempo") && val && normalize(val) === normalize(drop)) {
+    if ((tripType === "airport" || tripType === "daily") && val && normalize(val) === normalize(drop)) {
       setDrop("");
     }
   };
@@ -76,7 +80,7 @@ export default function Home() {
   const handleDropLocationChange = (val) => {
     setDrop(val);
     const normalize = (loc) => (loc || "").trim().toLowerCase();
-    if ((tripType === "airport" || tripType === "daily" || tripType === "tempo") && val && normalize(val) === normalize(pickup)) {
+    if ((tripType === "airport" || tripType === "daily") && val && normalize(val) === normalize(pickup)) {
       setPickup("");
     }
   };
@@ -102,7 +106,7 @@ export default function Home() {
   const [trackAttempted, setTrackAttempted] = useState(false);
 
   const isOutstationTrip = tripType === "tempo";
-  const showTripModeSelector = tripType === "tempo";
+  const showTripModeSelector = tripType === "tempo" || tripType === "city";
   const cityDayCount = normalizePositiveInteger(cityDays, { max: 30 });
   const tempoDayCount = normalizePositiveInteger(tempoDays, { max: 30 });
   const tempoKmCount = normalizePositiveInteger(tempoEstKm);
@@ -157,20 +161,20 @@ export default function Home() {
       handleAirportDirectionChange("drop");
     } else if (tab === "city") {
       setPickup("Mysore");
-      setDrop("Local / Outstation Daily running");
+      setDrop("Mysore");
     } else if (tab === "daily") {
       setPickup("Mysore");
       setDrop("Bangalore City");
       setOutstationDirection("oneway");
     } else if (tab === "tempo") {
       setPickup("Mysore");
-      setDrop("Outstation Tour / Local");
+      setDrop("Mysore");
       if (TEMPO_CAB) setSelectedCab(TEMPO_CAB);
     }
   };
 
   const handleSwapLocations = () => {
-    if (isOutstationTrip) return;
+    if (tripType === "city" || tripType === "tempo") return;
     setPickup(drop);
     setDrop(pickup);
     setSwapRotation((prev) => prev + 180);
@@ -203,11 +207,11 @@ export default function Home() {
     } else if (routeId === "local-mysore") {
       setTripType("city");
       setPickup("Mysore");
-      setDrop("Local / Outstation Daily running");
+      setDrop("Mysore");
     } else if (routeId === "local-bangalore") {
       setTripType("city");
       setPickup("Bangalore");
-      setDrop("Local / Outstation Daily running");
+      setDrop("Bangalore");
     } else if (routeId === "mysore-mangalore-airport") {
       setTripType("airport");
       setPickup("Mysore");
@@ -216,7 +220,7 @@ export default function Home() {
     } else if (routeId === "mysore-mangalore-city") {
       setTripType("city");
       setPickup("Mysore");
-      setDrop("Mangalore City");
+      setDrop("Mysore");
       setCityType("drop");
     } else if (routeId.startsWith("tour-")) {
       setTripType("daily");
@@ -228,7 +232,7 @@ export default function Home() {
       setTripType("tempo");
       setOutstationDirection("oneway");
       setPickup("Mysore");
-      if (item.destination) setDrop(item.destination);
+      setDrop("Mysore");
       if (item.days) setTempoDays(item.days);
       if (TEMPO_CAB) setSelectedCab(TEMPO_CAB);
     }
@@ -532,8 +536,21 @@ Please confirm my booking. Thank you!`;
 
               <div className="cleartrip-card">
                 {showTripModeSelector && (
-                  <div className="inline-selectors-row">
-                    {isOutstationTrip && tripType !== "tempo" ? (
+                  <div className="inline-selectors-row" style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
+                    {tripType === "city" || tripType === "tempo" ? (
+                      <>
+                        <label className="inline-radio-label">
+                          <input
+                            type="checkbox"
+                            checked={true}
+                            readOnly
+                            disabled
+                            className="inline-radio-input"
+                          />
+                          <span>Round Trip</span>
+                        </label>
+                      </>
+                    ) : isOutstationTrip && tripType !== "tempo" ? (
                       <label className="inline-radio-label">
                         <input
                           type="checkbox"
@@ -549,10 +566,6 @@ Please confirm my booking. Thank you!`;
                         />
                         <span>Round Trip Outstation (1.8x Km base)</span>
                       </label>
-                    ) : tripType === "tempo" ? (
-                      <span className="inline-radio-label" style={{ fontSize: "0.78rem", color: "var(--text-gray)" }}>
-                        Priced at ₹{TEMPO_CAB?.ratePerKm ?? 22}/km · min {TEMPO_CAB?.minKmPerDay ?? 300} km/day · ₹{TEMPO_CAB?.driverAllowance ?? 600}/day driver
-                      </span>
                     ) : (
                       <>
                         <label className="inline-radio-label">
@@ -569,70 +582,80 @@ Please confirm my booking. Thank you!`;
                 )}
 
                 <div>
-                  {tripType !== "city" && (
-                    <div className="cleartrip-input-row">
-                      <div className="input-col" style={{ position: "relative" }}>
-                        <label htmlFor="pickup-input" className="input-mini-label">From</label>
-                        <input
-                          id="pickup-input"
-                          type="text"
-                          className="input-field"
-                          value={pickup}
-                          onChange={(e) => handlePickupLocationChange(e.target.value)}
-                          onFocus={() => setShowPickupSuggestions(true)}
-                          onBlur={() => setTimeout(() => setShowPickupSuggestions(false), 200)}
-                          placeholder="Enter pickup city"
-                          required
-                        />
-                        {showPickupSuggestions && (
-                          <div className="suggestions-dropdown">
-                            {suggestions.pickup.map((s) => (
-                              <button key={s} type="button" className="suggestion-item" onMouseDown={() => handlePickupLocationChange(s)}>
-                                {s}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {!isOutstationTrip && (
-                        <button
-                          type="button"
-                          className="swap-circle-btn"
-                          onClick={handleSwapLocations}
-                          style={{ "--swap-rotation": `${swapRotation}deg` }}
-                          aria-label="Swap pickup and drop locations"
-                        >
-                          <img src={getAssetPath("/icons/hero/swap.svg")} alt="" className="swap-circle-icon" />
-                        </button>
+                  <div className="cleartrip-input-row">
+                    <div className="input-col" style={{ position: "relative" }}>
+                      <label htmlFor="pickup-input" className="input-mini-label">From</label>
+                      <input
+                        id="pickup-input"
+                        type="text"
+                        className="input-field"
+                        value={pickup}
+                        onChange={(e) => handlePickupLocationChange(e.target.value)}
+                        onFocus={() => setShowPickupSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowPickupSuggestions(false), 200)}
+                        placeholder="Enter pickup city"
+                        required
+                      />
+                      {showPickupSuggestions && (
+                        <div className="suggestions-dropdown">
+                          {suggestions.pickup.map((s) => (
+                            <button key={s} type="button" className="suggestion-item" onMouseDown={() => handlePickupLocationChange(s)}>
+                              {s}
+                            </button>
+                          ))}
+                        </div>
                       )}
-
-                      <div className="input-col" style={{ position: "relative" }}>
-                        <label htmlFor="drop-input" className="input-mini-label">To</label>
-                        <input
-                          id="drop-input"
-                          type="text"
-                          className="input-field"
-                          value={drop}
-                          onChange={(e) => handleDropLocationChange(e.target.value)}
-                          onFocus={() => setShowDropSuggestions(true)}
-                          onBlur={() => setTimeout(() => setShowDropSuggestions(false), 200)}
-                          placeholder="Enter destination city"
-                          required
-                          disabled={tripType === "daily" && outstationDirection === "roundtrip"}
-                        />
-                        {showDropSuggestions && (
-                          <div className="suggestions-dropdown">
-                            {suggestions.drop.map((s) => (
-                              <button key={s} type="button" className="suggestion-item" onMouseDown={() => handleDropLocationChange(s)}>
-                                {s}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
                     </div>
-                  )}
+
+                    {tripType !== "city" && tripType !== "tempo" && (
+                      <button
+                        type="button"
+                        className="swap-circle-btn"
+                        onClick={handleSwapLocations}
+                        style={{ "--swap-rotation": `${swapRotation}deg` }}
+                        aria-label="Swap pickup and drop locations"
+                      >
+                        <img src={getAssetPath("/icons/hero/swap.svg")} alt="" className="swap-circle-icon" />
+                      </button>
+                    )}
+
+                    <div
+                      className="input-col"
+                      style={{
+                        position: "relative",
+                        backgroundColor: (tripType === "city" || tripType === "tempo") ? "#f8fafc" : "transparent",
+                        cursor: (tripType === "city" || tripType === "tempo") ? "not-allowed" : "default"
+                      }}
+                    >
+                      <label htmlFor="drop-input" className="input-mini-label">To</label>
+                      <input
+                        id="drop-input"
+                        type="text"
+                        className="input-field"
+                        value={tripType === "city" || tripType === "tempo" ? pickup : drop}
+                        onChange={(e) => handleDropLocationChange(e.target.value)}
+                        onFocus={() => setShowDropSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowDropSuggestions(false), 200)}
+                        placeholder="Enter destination city"
+                        required
+                        disabled={tripType === "city" || tripType === "tempo" || (tripType === "daily" && outstationDirection === "roundtrip")}
+                        style={
+                          (tripType === "city" || tripType === "tempo")
+                            ? { color: "var(--text-gray)", opacity: 0.8, cursor: "not-allowed" }
+                            : {}
+                        }
+                      />
+                      {showDropSuggestions && (
+                        <div className="suggestions-dropdown">
+                          {suggestions.drop.map((s) => (
+                            <button key={s} type="button" className="suggestion-item" onMouseDown={() => handleDropLocationChange(s)}>
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
                   {(tripType === "city" || isOutstationTrip) && (
                     <div className="cleartrip-input-row">
