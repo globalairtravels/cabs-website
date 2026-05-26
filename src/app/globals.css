@@ -892,18 +892,23 @@ body {
 
 .toast-notification {
   position: fixed;
-  left: 50%;
-  bottom: 1.5rem;
-  transform: translateX(-50%);
-  background-color: rgba(11, 61, 145, 0.95);
-  color: white;
-  padding: 0.95rem 1.25rem;
-  border-radius: 999px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-  font-weight: 700;
+  top: 68px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: calc(100% - 2rem);
+  background: rgba(11, 61, 145, 0.96);
+  color: #fff;
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  font-size: 0.85rem;
+  font-weight: 600;
   letter-spacing: 0.01em;
   z-index: 1400;
-  animation: fadeIn 0.2s ease-out;
+  pointer-events: none;
+  animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .modal-close-btn {

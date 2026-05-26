@@ -62,7 +62,7 @@ export default function Home() {
   const [showPickupSuggestions, setShowPickupSuggestions] = useState(false);
   const [showDropSuggestions, setShowDropSuggestions] = useState(false);
   const [minSeats, setMinSeats] = useState(0);
-  const [showInlineCabs, setShowInlineCabs] = useState(false);
+
   const [swapRotation, setSwapRotation] = useState(0);
 
   const [selectedCab, setSelectedCab] = useState(bookingConfig.cabTypes[0]);
@@ -255,7 +255,6 @@ export default function Home() {
       return;
     }
     if (filteredCabs.length > 0) setSelectedCab(filteredCabs[0]);
-    setShowInlineCabs((prev) => !prev);
   };
 
   const handleCabSelect = (cab) => {
@@ -695,25 +694,12 @@ Please confirm my booking. Thank you!`;
                       ))}
                     </div>
 
-                    <button type="submit" className="btn-cleartrip-search" aria-expanded={showInlineCabs}>
-                      <span>{showInlineCabs ? "Hide Cabs" : "Show Cabs"}</span>
-                      <span
-                        className="show-cabs-chevron"
-                        style={{
-                          display: "inline-block",
-                          marginLeft: "0.4rem",
-                          transition: "transform 0.25s ease",
-                          transform: showInlineCabs ? "rotate(180deg)" : "rotate(0deg)",
-                        }}
-                        aria-hidden="true"
-                      >
-                        ▾
-                      </span>
+                    <button type="submit" className="btn-cleartrip-search">
+                      Search Cabs
                     </button>
                   </div>
 
-                  {showInlineCabs && (
-                    <div className="inline-cab-preview" style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }}>
+                  <div className="inline-cab-preview" style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "0.75rem" }}>
                         <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--primary-navy)", margin: 0 }}>
                           Available Cabs ({filteredCabs.length})
@@ -776,7 +762,6 @@ Please confirm my booking. Thank you!`;
                         Prices include tolls, driver allowance & GST. No hidden charges.
                       </p>
                     </div>
-                  )}
                 </form>
               </div>
             </div>
