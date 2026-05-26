@@ -539,12 +539,12 @@ Please confirm my booking. Thank you!`;
                   <div className="inline-selectors-row" style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
                     {tripType === "city" || tripType === "tempo" ? (
                       <>
-                        <label className="inline-radio-label">
+                        <label className="inline-radio-label" style={{ pointerEvents: "none" }}>
                           <input
                             type="checkbox"
                             checked={true}
                             readOnly
-                            disabled
+                            tabIndex={-1}
                             className="inline-radio-input"
                           />
                           <span>Round Trip</span>
