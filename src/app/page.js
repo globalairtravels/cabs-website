@@ -314,7 +314,7 @@ export default function Home() {
       const effectiveKm = getTempoEffectiveKm(selectedCab);
       tripDetails = `Tempo Travellers (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
     } else if (tripType === "daily") {
-      tripDetails = "Intercity Travel (One Way)";
+      tripDetails = "Intercity Travels (One Way)";
     } else {
       tripDetails = `Intercity Travels (${numDays} Day${plural(numDays)})`;
     }
