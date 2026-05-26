@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { siteConfig } from "@/config/site";
+import { loadBookingConfig } from "@/lib/booking-config";
 
 const createBookingId = () => `GAT-${Math.floor(100000 + Math.random() * 900000)}`;
 
@@ -13,7 +14,52 @@ const getTomorrowDate = () => {
 
 const isTempoCab = (cab) => cab.id.startsWith("tempo");
 
-export default function Home() {
+export default function Page() {
+  const [bookingConfig, setBookingConfig] = useState(null);
+  const [loadError, setLoadError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadBookingConfig()
+      .then((config) => {
+        if (!cancelled) setBookingConfig(config);
+      })
+      .catch((err) => {
+        if (!cancelled) setLoadError(err?.message || String(err));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loadError) {
+    return (
+      <div className="flex flex-col min-h-screen bg-slate-50" style={{ alignItems: "center", justifyContent: "center", padding: "2rem", textAlign: "center" }}>
+        <h1 style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--primary-navy)", marginBottom: "0.5rem" }}>
+          Booking configuration unavailable
+        </h1>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-gray)", maxWidth: 520 }}>
+          We could not load live pricing from Firestore. Please retry in a moment or contact support.
+        </p>
+        <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.75rem", fontFamily: "monospace" }}>
+          {loadError}
+        </p>
+      </div>
+    );
+  }
+
+  if (!bookingConfig) {
+    return (
+      <div className="flex flex-col min-h-screen bg-slate-50" style={{ alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-gray)" }}>Loading live pricing…</p>
+      </div>
+    );
+  }
+
+  return <BookingApp bookingConfig={bookingConfig} />;
+}
+
+function BookingApp({ bookingConfig }) {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
   const getAssetPath = (path) => `${basePath}${path}`;
   const whatsappNumber = siteConfig.whatsapp.replace(/\D/g, "");
@@ -51,7 +97,7 @@ export default function Home() {
   const [showInlineCabs, setShowInlineCabs] = useState(false);
 
   // Selected Cab & Passenger Info
-  const [selectedCab, setSelectedCab] = useState(siteConfig.cabTypes[0]);
+  const [selectedCab, setSelectedCab] = useState(bookingConfig.cabTypes[0]);
   const [bookingId, setBookingId] = useState(createBookingId);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -82,7 +128,7 @@ export default function Home() {
   const [trackAttempted, setTrackAttempted] = useState(false);
   const isOutstationTrip = tripType === "daily" || tripType === "tempo";
   const showTripModeSelector = tripType !== "airport";
-  const tempoCab = siteConfig.cabTypes.find(isTempoCab);
+  const tempoCab = bookingConfig.cabTypes.find(isTempoCab);
   const tripSummaryLabel = tripType === "airport" ? "Airport Transfers" :
                            tripType === "city" ? "City Taxi Service" :
                            tripType === "tempo" ? `Tempo Traveller (${numDays} Days)` :
@@ -221,7 +267,7 @@ export default function Home() {
   const payToDriverAmount = totalPrice - onlinePaymentAmount;
 
   // Filtered Cabs based on search filters (Show 6+ Seater Cabs Only)
-  const filteredCabs = siteConfig.cabTypes.filter((cab) => {
+  const filteredCabs = bookingConfig.cabTypes.filter((cab) => {
     if (tripType === "tempo" && !isTempoCab(cab)) return false;
     if (only6Seaters && cab.seats < 6) return false;
     return true;
@@ -1320,37 +1366,31 @@ Please confirm my booking. Thank you!`;
         )}
 
         {/* Step 1 Promo Row (Matches bottom cards on Cleartrip screen) */}
-        {step === 1 && (
+        {step === 1 && bookingConfig.promos.length > 0 && (
           <section className="cleartrip-promo-row" id="promos" aria-label="Offers and Promotions">
-            {/* Promo 1 */}
-            <div className="promo-card">
-              <div className="promo-img-box" style={{ color: "#22A06B" }}>🎁</div>
-              <div className="promo-info">
-                <span className="promo-tag">AIRPORT SPECIAL</span>
-                <h3 className="promo-title">Flat 10% Off Drops</h3>
-                <p className="promo-desc">Get 10% off on Mysore ➔ Bangalore Airport Drops. Code: <strong>AIRPORT10</strong></p>
-              </div>
-            </div>
-
-            {/* Promo 2 */}
-            <div className="promo-card">
-              <div className="promo-img-box" style={{ color: "#FF4F00" }}>🎟️</div>
-              <div className="promo-info">
-                <span className="promo-tag">NEW TRAVELER</span>
-                <h3 className="promo-title">₹150 Off First Trip</h3>
-                <p className="promo-desc">Book your first ride and get ₹150 off instantly. Code: <strong>GAT150</strong></p>
-              </div>
-            </div>
-
-            {/* Promo 3 */}
-            <div className="promo-card">
-              <div className="promo-img-box" style={{ color: "#3366CC" }}>📅</div>
-              <div className="promo-info">
-                <span className="promo-tag">MULTI-DAY TOUR</span>
-                <h3 className="promo-title">Free Driver Day</h3>
-                <p className="promo-desc">Driver allowance waived off on tours longer than 3 days. Code: <strong>TOURALLOW</strong></p>
-              </div>
-            </div>
+            {bookingConfig.promos.map((promo, idx) => {
+              const palette = ["#22A06B", "#FF4F00", "#3366CC", "#7A3FFF"];
+              const icons = ["🎁", "🎟️", "📅", "🏷️"];
+              const tag = (promo.appliesTo || []).join(" • ").toUpperCase() || "OFFER";
+              const title = promo.type === "percent"
+                ? `${promo.value}% Off${promo.maxDiscount ? ` (max ₹${promo.maxDiscount})` : ""}`
+                : `Flat ₹${promo.value} Off`;
+              return (
+                <div key={promo.code} className="promo-card">
+                  <div className="promo-img-box" style={{ color: palette[idx % palette.length] }}>
+                    {icons[idx % icons.length]}
+                  </div>
+                  <div className="promo-info">
+                    <span className="promo-tag">{tag}</span>
+                    <h3 className="promo-title">{title}</h3>
+                    <p className="promo-desc">
+                      {promo.label}
+                      {promo.minFare ? ` Min fare ₹${promo.minFare}.` : ""} Code: <strong>{promo.code}</strong>
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </section>
         )}
 
