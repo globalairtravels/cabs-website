@@ -144,7 +144,7 @@
       "active": true
     },
     "city": {
-      "label": "City Taxi",
+      "label": "Local Taxi",
       "applicableCabs": [
         "sedan",
         "suv",

@@ -109,7 +109,7 @@ export default function Home() {
 
   const tripSummaryLabel =
     tripType === "airport" ? "Airport Transfers" :
-    tripType === "city" ? `City Taxi (${cityDayCount} Day${plural(cityDayCount)})` :
+    tripType === "city" ? `Local Taxi (${cityDayCount} Day${plural(cityDayCount)})` :
     tripType === "tempo" ? `Tempo Traveller (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount}km)` :
     `Intercity Travel (${numDays} Day${plural(numDays)})`;
 
@@ -298,7 +298,7 @@ export default function Home() {
     if (tripType === "airport") {
       tripDetails = `Airport Transfers (${airportType === "drop" ? "Mysore to Airport" : "Airport to Mysore"})`;
     } else if (tripType === "city") {
-      tripDetails = `City Taxi Service (${cityDayCount} Day${plural(cityDayCount)} · 250 km/day included)`;
+      tripDetails = `Local Taxi Service (${cityDayCount} Day${plural(cityDayCount)} · 250 km/day included)`;
     } else if (tripType === "tempo") {
       const effectiveKm = getTempoEffectiveKm(selectedCab);
       tripDetails = `Tempo Traveller (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
@@ -484,7 +484,7 @@ Please confirm my booking. Thank you!`;
               <div className="product-icon-wrapper">
                 <img src={getAssetPath("/images/city-taxi-service.svg")} alt="" className="product-icon" />
               </div>
-              <span>City Taxi Service</span>
+              <span>Local Taxi Service</span>
             </button>
             <button
               type="button"
@@ -911,7 +911,7 @@ Please confirm my booking. Thank you!`;
                             </>
                           ) : tripType === "city" ? (
                             <>
-                              <div className="cab-inclusions-title">City Taxi Per-Day Rate Breakdown</div>
+                              <div className="cab-inclusions-title">Local Taxi Per-Day Rate Breakdown</div>
                               <div style={{ fontSize: "0.75rem", color: "var(--text-gray)" }}>
                                 {cityDayCount > 1
                                   ? `(₹${cab.ratePerKm}/km × ${cab.minKmPerDay} km/day + ₹${cab.driverAllowance}/day driver) × ${cityDayCount} days = ₹${cabPrice}`

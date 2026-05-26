@@ -217,7 +217,7 @@ export const siteConfig = {
     },
     city: {
       heading: {
-        title: "Book Mysore ⇄ Bangalore City Taxis",
+        title: "Book Mysore ⇄ Bangalore Local Taxis",
         subtitle: "Comfortable point-to-point intercity rides with assured fares"
       },
       banner: {
@@ -227,7 +227,7 @@ export const siteConfig = {
         image: "/images/local-taxi.webp",
       },
       quickSelect: {
-        title: "Popular City Routes",
+        title: "Popular Local Routes",
         items: [
           { id: "mysore-blr-city", name: "Mysore ➔ Bangalore City", subtitle: "₹3,100 Sedan • Toll Incl." },
           { id: "blr-city-mysore", name: "Bangalore City ➔ Mysore", subtitle: "₹3,100 Sedan • Toll Incl." },
@@ -235,7 +235,7 @@ export const siteConfig = {
         ]
       },
       info: {
-        title: "City Trip Inclusions",
+        title: "Local Trip Inclusions",
         items: [
           "Up to 150 km point-to-point limit",
           "₹400 toll charges included",
