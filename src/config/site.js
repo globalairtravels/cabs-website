@@ -224,8 +224,7 @@ export const siteConfig = {
         badge: "Best Price",
         text: "Mysore ⇄ Bangalore City One-Way from ₹3,100/-",
         footer: "Toll & driver allowance included.",
-        image: "/images/city.webp",
-        gradient: "linear-gradient(135deg, #0B3D91 0%, #1E5BBD 100%)"
+        image: "/images/local-taxi.webp",
       },
       quickSelect: {
         title: "Popular City Routes",
