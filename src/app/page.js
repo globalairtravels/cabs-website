@@ -49,8 +49,8 @@ export default function Home() {
   const [numDays, setNumDays] = useState(1);
 
   // Tempo-specific inputs
-  const [tempoHours, setTempoHours] = useState(8);
-  const [tempoEstKm, setTempoEstKm] = useState(200);
+  const [tempoDays, setTempoDays] = useState(1);
+  const [tempoEstKm, setTempoEstKm] = useState(300);
 
   // Form Fields
   const [pickup, setPickup] = useState("Mysore");
@@ -99,10 +99,9 @@ export default function Home() {
   const isOutstationTrip = tripType === "daily" || tripType === "tempo";
   const showTripModeSelector = tripType !== "airport";
   const tempoCab = bookingConfig.cabTypes.find(isTempoCab);
-  const tempoDays = Math.ceil(tempoHours / 24);
   const tripSummaryLabel = tripType === "airport" ? "Airport Transfers" :
                            tripType === "city" ? "City Taxi Service" :
-                           tripType === "tempo" ? `Tempo Traveller (${tempoHours}h / ~${tempoEstKm}km)` :
+                           tripType === "tempo" ? `Tempo Traveller (${tempoDays} Day${tempoDays > 1 ? "s" : ""} / ~${tempoEstKm}km)` :
                            `Intercity Travel (${numDays} Days)`;
 
   // Sync inputs when airport transfer direction changes
@@ -321,7 +320,7 @@ export default function Home() {
       tripDetails = `City Taxi Service (${cityType === "drop" ? "Mysore to Bangalore" : "Bangalore to Mysore"})`;
     } else if (tripType === "tempo") {
       const effectiveKm = Math.max(tempoEstKm, tempoDays * selectedCab.minKmPerDay);
-      tripDetails = `Tempo Traveller (${tempoHours}h / ~${tempoEstKm} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
+      tripDetails = `Tempo Traveller (${tempoDays} Day${tempoDays > 1 ? "s" : ""} / ~${tempoEstKm} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
     } else {
       tripDetails = `Intercity Travel (${numDays} Day${numDays > 1 ? "s" : ""})`;
     }
@@ -713,15 +712,15 @@ Please confirm my booking. Thank you!`;
                       {tripType === "tempo" ? (
                         <>
                           <div className="input-col">
-                            <label htmlFor="tempo-hours-input" className="input-mini-label">Hours Required</label>
+                            <label htmlFor="tempo-days-input" className="input-mini-label">Number of Days</label>
                             <input
-                              id="tempo-hours-input"
+                              id="tempo-days-input"
                               type="number"
                               className="input-field"
-                              value={tempoHours}
-                              onChange={(e) => setTempoHours(Math.max(1, Number(e.target.value)))}
+                              value={tempoDays}
+                              onChange={(e) => setTempoDays(Math.max(1, Number(e.target.value)))}
                               min="1"
-                              max="240"
+                              max="30"
                               style={{ border: "none" }}
                             />
                           </div>
@@ -1046,7 +1045,7 @@ Please confirm my booking. Thank you!`;
                                 })()}
                               </div>
                               <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", marginTop: "0.2rem" }}>
-                                Min {cab.minKmPerDay} km/day applies · {tempoDays} day{tempoDays > 1 ? "s" : ""} ({tempoHours}h)
+                                Min {cab.minKmPerDay} km/day applies · {tempoDays} day{tempoDays > 1 ? "s" : ""}
                               </div>
                             </>
                           ) : isOutstationTrip ? (
@@ -1203,7 +1202,7 @@ Please confirm my booking. Thank you!`;
                       <>
                         <div className="bill-row">
                           <span>Duration / Est. Km:</span>
-                          <span>{tempoHours}h · ~{tempoEstKm} km</span>
+                          <span>{tempoDays} Day{tempoDays > 1 ? "s" : ""} · ~{tempoEstKm} km</span>
                         </div>
                         <div className="bill-row">
                           <span>Rate:</span>
