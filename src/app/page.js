@@ -854,9 +854,18 @@ Please confirm my booking. Thank you!`;
                       <div className="sidebar-title-row">
                         <h2 className="sidebar-title">{sidebar.info.title}</h2>
                       </div>
-                      <ul style={{ paddingLeft: "1rem", fontSize: "0.75rem", color: "var(--text-gray)", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                        {sidebar.info.items.map((line, idx) => (
-                          <li key={idx} dangerouslySetInnerHTML={{ __html: line.replace(/(₹[\d,]+)/g, "<strong>$1</strong>") }} />
+                      <ul className="inc-exc-list">
+                        {sidebar.info.inclusions && sidebar.info.inclusions.map((line, idx) => (
+                          <li key={`inc-${idx}`} className="inc-exc-item">
+                            <span className="inc-exc-icon inclusion">+</span>
+                            <span className="inc-exc-text" dangerouslySetInnerHTML={{ __html: line.replace(/(₹[\d,]+)/g, "<strong>$1</strong>") }} />
+                          </li>
+                        ))}
+                        {sidebar.info.exclusions && sidebar.info.exclusions.map((line, idx) => (
+                          <li key={`exc-${idx}`} className="inc-exc-item">
+                            <span className="inc-exc-icon exclusion">−</span>
+                            <span className="inc-exc-text" dangerouslySetInnerHTML={{ __html: line.replace(/(₹[\d,]+)/g, "<strong>$1</strong>") }} />
+                          </li>
                         ))}
                       </ul>
                     </div>

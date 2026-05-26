@@ -713,6 +713,46 @@ body {
   text-decoration: underline;
 }
 
+/* Sidebar Inclusions and Exclusions List */
+.inc-exc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inc-exc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-gray);
+  line-height: 1.4;
+}
+
+.inc-exc-icon {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 14px;
+  text-align: center;
+}
+
+.inc-exc-icon.inclusion {
+  color: var(--text-muted);
+}
+
+.inc-exc-icon.exclusion {
+  color: var(--text-muted);
+}
+
+.inc-exc-text {
+  flex: 1;
+}
+
 /* Sidebar Presets Buttons */
 .quick-route-btn {
   background-color: var(--primary-navy-light);

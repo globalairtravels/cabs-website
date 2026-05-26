@@ -206,12 +206,16 @@ export const siteConfig = {
         ]
       },
       info: {
-        title: "Airport Service Inclusions",
-        items: [
+        title: "Inclusions & Exclusions",
+        inclusions: [
           "45 minutes free airport waiting",
           "Flight tracking & schedule re-routing",
           "Toll, parking & driver allowance included",
           "Meet & greet at arrival gate"
+        ],
+        exclusions: [
+          "Multiple pickups/drops or route deviations",
+          "Interstate border permit charges"
         ]
       }
     },
@@ -234,14 +238,16 @@ export const siteConfig = {
         ]
       },
       info: {
-        title: "Local & Outstation Daily Trip Inclusions",
-        items: [
-          "Flexible daily travel: go within or outside the city limits",
-          "Booked in number of days with unlimited stops & flexible daily routing",
-          "Each day includes a fixed minimum kilometer limit (250 km for cars)",
-          "Driver allowance & fuel charges included in the per-day fare",
-          "Ideal for multi-day sightseeing, shopping, or outstation tours",
-          "Parking, toll fees, and state border permits extra (paid directly as actuals)"
+        title: "Inclusions & Exclusions",
+        inclusions: [
+          "Flexible daily travel within or outside city limits",
+          "Unlimited stops & flexible daily routing",
+          "Fixed minimum kilometer limit (250 km/day for cars)",
+          "Driver allowance & fuel charges included"
+        ],
+        exclusions: [
+          "Parking charges & toll fees (paid as actuals)",
+          "State border permits & tax (if crossing border)"
         ]
       }
     },
@@ -265,12 +271,16 @@ export const siteConfig = {
         ]
       },
       info: {
-        title: "Intercity Drop Inclusions",
-        items: [
+        title: "Inclusions & Exclusions",
+        inclusions: [
           "Toll taxes and driver allowance included",
           "One-way direct transfer to destination",
-          "No extra helper/state permits charge for standard route",
+          "No extra helper/permit charge for standard route",
           "Dedicated clean AC cab just for your group"
+        ],
+        exclusions: [
+          "Multiple pickups/drops or local sightseeing run",
+          "Nice Road Toll (charged separately if used)"
         ]
       }
     },
@@ -296,12 +306,15 @@ export const siteConfig = {
         ]
       },
       info: {
-        title: "Tempo Border Permits (7 Days)",
-        items: [
-          "Tempo (Tamil Nadu): ₹2,000",
-          "Tempo (Kerala): ₹4,000",
-          "Tempo (Andhra): ₹3,500",
-          "Tempo (Goa Special): ₹4,500"
+        title: "Inclusions & Exclusions",
+        inclusions: [
+          "12+1 seaters AC or Non-AC vehicles",
+          "Fuel charges included in per-km base",
+          "Flexible routing and multiple tourist stops"
+        ],
+        exclusions: [
+          "Tolls & parking charges (paid as actuals)",
+          "State permits: TN ₹2000, KL ₹4000, AP ₹3500 (if crossing borders)"
         ]
       }
     }
