@@ -48,6 +48,10 @@ export default function Home() {
   const [outstationDirection, setOutstationDirection] = useState("oneway"); // 'oneway', 'roundtrip'
   const [numDays, setNumDays] = useState(1);
 
+  // Tempo-specific inputs
+  const [tempoHours, setTempoHours] = useState(8);
+  const [tempoEstKm, setTempoEstKm] = useState(200);
+
   // Form Fields
   const [pickup, setPickup] = useState("Mysore");
   const [drop, setDrop] = useState("Bangalore Airport (KIA)");
@@ -95,9 +99,10 @@ export default function Home() {
   const isOutstationTrip = tripType === "daily" || tripType === "tempo";
   const showTripModeSelector = tripType !== "airport";
   const tempoCab = bookingConfig.cabTypes.find(isTempoCab);
+  const tempoDays = Math.ceil(tempoHours / 24);
   const tripSummaryLabel = tripType === "airport" ? "Airport Transfers" :
                            tripType === "city" ? "City Taxi Service" :
-                           tripType === "tempo" ? `Tempo Traveller (${numDays} Days)` :
+                           tripType === "tempo" ? `Tempo Traveller (${tempoHours}h / ~${tempoEstKm}km)` :
                            `Intercity Travel (${numDays} Days)`;
 
   // Sync inputs when airport transfer direction changes
@@ -236,6 +241,10 @@ export default function Home() {
       return cab.airportPrice;
     } else if (tripType === "city") {
       return cab.cityPrice;
+    } else if (tripType === "tempo") {
+      // Tempo: max(estKm, days × minKmPerDay) × ratePerKm + days × driverAllowance
+      const effectiveKm = Math.max(tempoEstKm, tempoDays * cab.minKmPerDay);
+      return effectiveKm * cab.ratePerKm + tempoDays * cab.driverAllowance;
     } else {
       // Daily / Outstation package: (baseRatePerKm * minKmPerDay + driverAllowance) * numDays
       const baseFare = cab.ratePerKm * cab.minKmPerDay;
@@ -247,9 +256,9 @@ export default function Home() {
 
   // Calculate pricing values
   const totalPrice = calculatePrice(selectedCab);
-  
+
   // Custom booking advance structure (₹500 per day as noted in the leaflet)
-  const requiredAdvance = isOutstationTrip ? 500 * numDays : 500;
+  const requiredAdvance = isOutstationTrip ? 500 * (tripType === "tempo" ? tempoDays : numDays) : 500;
   
   const onlinePaymentAmount = paymentMethod === "full" ? totalPrice : paymentMethod === "advance" ? requiredAdvance : 0;
   const payToDriverAmount = totalPrice - onlinePaymentAmount;
@@ -311,7 +320,8 @@ export default function Home() {
     } else if (tripType === "city") {
       tripDetails = `City Taxi Service (${cityType === "drop" ? "Mysore to Bangalore" : "Bangalore to Mysore"})`;
     } else if (tripType === "tempo") {
-      tripDetails = `Tempo Traveller (${numDays} Day${numDays > 1 ? "s" : ""})`;
+      const effectiveKm = Math.max(tempoEstKm, tempoDays * selectedCab.minKmPerDay);
+      tripDetails = `Tempo Traveller (${tempoHours}h / ~${tempoEstKm} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
     } else {
       tripDetails = `Intercity Travel (${numDays} Day${numDays > 1 ? "s" : ""})`;
     }
@@ -576,7 +586,7 @@ Please confirm my booking. Thank you!`;
                 {/* Inline Selectors (City trip mode / Outstation duration mode) */}
                 {showTripModeSelector && (
                   <div className="inline-selectors-row">
-                    {isOutstationTrip ? (
+                    {isOutstationTrip && tripType !== "tempo" ? (
                       <label className="inline-radio-label">
                         <input
                           type="checkbox"
@@ -586,6 +596,10 @@ Please confirm my booking. Thank you!`;
                         />
                         <span>Round Trip Outstation (1.8x Km base)</span>
                       </label>
+                    ) : tripType === "tempo" ? (
+                      <span className="inline-radio-label" style={{ fontSize: "0.78rem", color: "var(--text-gray)" }}>
+                        Priced at ₹{tempoCab?.ratePerKm ?? 22}/km · min {tempoCab?.minKmPerDay ?? 300} km/day · ₹{tempoCab?.driverAllowance ?? 600}/day driver
+                      </span>
                     ) : (
                       <>
                         <label className="inline-radio-label">
@@ -696,20 +710,50 @@ Please confirm my booking. Thank you!`;
                   {/* Row 2: Duration selector (Outstation / Tempo only — drives per-day pricing) */}
                   {isOutstationTrip && (
                     <div className="cleartrip-input-row">
-                      <div className="input-col">
-                        <label htmlFor="days-select" className="input-mini-label">Duration</label>
-                        <select
-                          id="days-select"
-                          className="input-field"
-                          value={numDays}
-                          onChange={(e) => setNumDays(Number(e.target.value))}
-                          style={{ border: "none", appearance: "none" }}
-                        >
-                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((d) => (
-                            <option key={d} value={d}>{d} Day{d > 1 ? "s" : ""} Tour</option>
-                          ))}
-                        </select>
-                      </div>
+                      {tripType === "tempo" ? (
+                        <>
+                          <div className="input-col">
+                            <label htmlFor="tempo-hours-input" className="input-mini-label">Hours Required</label>
+                            <input
+                              id="tempo-hours-input"
+                              type="number"
+                              className="input-field"
+                              value={tempoHours}
+                              onChange={(e) => setTempoHours(Math.max(1, Number(e.target.value)))}
+                              min="1"
+                              max="240"
+                              style={{ border: "none" }}
+                            />
+                          </div>
+                          <div className="input-col">
+                            <label htmlFor="tempo-km-input" className="input-mini-label">Estimated Km</label>
+                            <input
+                              id="tempo-km-input"
+                              type="number"
+                              className="input-field"
+                              value={tempoEstKm}
+                              onChange={(e) => setTempoEstKm(Math.max(1, Number(e.target.value)))}
+                              min="1"
+                              style={{ border: "none" }}
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <div className="input-col">
+                          <label htmlFor="days-select" className="input-mini-label">Duration</label>
+                          <select
+                            id="days-select"
+                            className="input-field"
+                            value={numDays}
+                            onChange={(e) => setNumDays(Number(e.target.value))}
+                            style={{ border: "none", appearance: "none" }}
+                          >
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((d) => (
+                              <option key={d} value={d}>{d} Day{d > 1 ? "s" : ""} Tour</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -992,7 +1036,20 @@ Please confirm my booking. Thank you!`;
                         </div>
 
                         <div className="cab-inclusions-card">
-                          {isOutstationTrip ? (
+                          {tripType === "tempo" ? (
+                            <>
+                              <div className="cab-inclusions-title">Tempo Per-Km Rate Breakdown</div>
+                              <div style={{ fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                                {(() => {
+                                  const effectiveKm = Math.max(tempoEstKm, tempoDays * cab.minKmPerDay);
+                                  return `₹${cab.ratePerKm}/km × ${effectiveKm} km + ₹${cab.driverAllowance} × ${tempoDays} day${tempoDays > 1 ? "s" : ""} driver = ₹${cabPrice}`;
+                                })()}
+                              </div>
+                              <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", marginTop: "0.2rem" }}>
+                                Min {cab.minKmPerDay} km/day applies · {tempoDays} day{tempoDays > 1 ? "s" : ""} ({tempoHours}h)
+                              </div>
+                            </>
+                          ) : isOutstationTrip ? (
                             <>
                               <div className="cab-inclusions-title">Outstation Per-Day Rates</div>
                               <div style={{ fontSize: "0.75rem", color: "var(--text-gray)" }}>
@@ -1142,7 +1199,24 @@ Please confirm my booking. Thank you!`;
                       <span>Reporting Time:</span>
                       <span>{date} at {time}</span>
                     </div>
-                    {isOutstationTrip && (
+                    {tripType === "tempo" && (
+                      <>
+                        <div className="bill-row">
+                          <span>Duration / Est. Km:</span>
+                          <span>{tempoHours}h · ~{tempoEstKm} km</span>
+                        </div>
+                        <div className="bill-row">
+                          <span>Rate:</span>
+                          <span>
+                            {(() => {
+                              const effectiveKm = Math.max(tempoEstKm, tempoDays * selectedCab.minKmPerDay);
+                              return `₹${selectedCab.ratePerKm}/km × ${effectiveKm} km + ₹${selectedCab.driverAllowance} × ${tempoDays}d driver`;
+                            })()}
+                          </span>
+                        </div>
+                      </>
+                    )}
+                    {tripType === "daily" && (
                       <div className="bill-row">
                         <span>Duration:</span>
                         <span>{numDays} Day{numDays > 1 ? "s" : ""} Tour</span>
