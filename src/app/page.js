@@ -114,7 +114,7 @@ export default function Home() {
   const tripSummaryLabel =
     tripType === "airport" ? "Airport Transfers" :
     tripType === "city" ? `Local/Outstation Taxi (${cityDayCount} Day${plural(cityDayCount)})` :
-    tripType === "tempo" ? `Tempo Travellers (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount}km)` :
+    tripType === "tempo" ? `Tempo Travellers (${tempoDayCount} Day${plural(tempoDayCount)})` :
     "Intercity Travels";
 
   const getTempoEffectiveKm = (cab) =>
