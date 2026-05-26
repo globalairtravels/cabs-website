@@ -57,7 +57,7 @@ export default function Home() {
   const [showDropSuggestions, setShowDropSuggestions] = useState(false);
 
   // Active filters inside search box
-  const [minSeats, setMinSeats] = useState(4);
+  const [minSeats, setMinSeats] = useState(3);
 
   // Inline cab preview expansion on home screen
   const [showInlineCabs, setShowInlineCabs] = useState(false);
@@ -249,8 +249,6 @@ export default function Home() {
   
   const onlinePaymentAmount = paymentMethod === "full" ? totalPrice : paymentMethod === "advance" ? requiredAdvance : 0;
   const payToDriverAmount = totalPrice - onlinePaymentAmount;
-
-  const minSeatsLabel = minSeats >= 7 ? "7+" : String(minSeats);
 
   // Filtered Cabs based on search filters
   const filteredCabs = bookingConfig.cabTypes.filter((cab) => {
@@ -745,30 +743,20 @@ Please confirm my booking. Thank you!`;
                     <span className="filter-tag included-tag">Driver Allowance Incl.</span>
                   </div>
 
-                  {/* Bottom Action Row (Seat Slider & Primary Button) */}
+                  {/* Bottom Action Row (Seat Filter & Primary Button) */}
                   <div className="cleartrip-bottom-row">
-                    <div className="seat-filter">
-                      <div className="seat-filter-header">
-                        <label htmlFor="min-seats-slider" className="seat-filter-label">Minimum seats</label>
-                        <span className="seat-filter-value">{minSeatsLabel}</span>
-                      </div>
-                      <input
-                        id="min-seats-slider"
-                        type="range"
-                        min="4"
-                        max="7"
-                        step="1"
-                        value={minSeats}
-                        onChange={(e) => setMinSeats(Number(e.target.value))}
-                        className="seat-filter-slider"
-                        aria-valuetext={`${minSeatsLabel} seats`}
-                      />
-                      <div className="seat-filter-marks" aria-hidden="true">
-                        <span>4</span>
-                        <span>5</span>
-                        <span>6</span>
-                        <span>7+</span>
-                      </div>
+                    <div className="seat-filter" aria-label="Minimum seats">
+                      {[3, 5, 7].map((seatCount) => (
+                        <button
+                          key={seatCount}
+                          type="button"
+                          className={`seat-filter-btn ${minSeats === seatCount ? "active" : ""}`}
+                          onClick={() => setMinSeats(seatCount)}
+                          aria-pressed={minSeats === seatCount}
+                        >
+                          {seatCount}+
+                        </button>
+                      ))}
                     </div>
 
                     <button
@@ -1061,7 +1049,7 @@ Please confirm my booking. Thank you!`;
                   {filteredCabs.length === 0 && (
                     <div className="booking-card" style={{ textAlign: "center", padding: "2rem" }}>
                       <p style={{ fontWeight: 600 }}>No vehicles match your active filters.</p>
-                      <button type="button" className="btn-secondary" style={{ marginTop: "1rem", display: "inline-flex" }} onClick={() => setMinSeats(4)}>
+                      <button type="button" className="btn-secondary" style={{ marginTop: "1rem", display: "inline-flex" }} onClick={() => setMinSeats(3)}>
                         Clear Seating Filter
                       </button>
                     </div>

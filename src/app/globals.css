@@ -556,49 +556,43 @@ body {
 }
 
 .seat-filter {
-  width: min(100%, 220px);
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.seat-filter-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.35rem;
 }
 
-.seat-filter-label {
-  font-size: 0.82rem;
-  font-weight: 700;
+.seat-filter-btn {
+  width: 34px;
+  height: 34px;
+  border: 1.2px solid #cbd5e1;
+  border-radius: 50%;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: var(--bg-card);
   color: var(--text-gray);
-}
-
-.seat-filter-value {
-  min-width: 34px;
-  border-radius: 50px;
-  padding: 0.15rem 0.5rem;
-  background-color: var(--primary-navy-light);
-  color: var(--primary-navy);
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-align: center;
-}
-
-.seat-filter-slider {
-  width: 100%;
-  accent-color: var(--primary-orange);
   cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
 }
 
-.seat-filter-marks {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 0.1rem;
-  color: var(--text-light);
-  font-size: 0.68rem;
-  font-weight: 700;
+.seat-filter-btn:hover {
+  border-color: var(--primary-orange);
+  color: var(--primary-orange);
+}
+
+.seat-filter-btn.active {
+  border-color: var(--primary-orange);
+  background-color: #fff7ed;
+  color: var(--primary-orange);
+}
+
+.seat-filter-btn:active {
+  transform: scale(0.96);
 }
 
 .btn-cleartrip-search {
