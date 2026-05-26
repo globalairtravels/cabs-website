@@ -261,22 +261,15 @@ body {
 }
 
 .product-icon-wrapper {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: #f1f5f9;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.product-pill.active .product-icon-wrapper {
-  background-color: var(--primary-navy-light);
+  flex-shrink: 0;
 }
 
 .product-icon {
-  width: 15px;
-  height: 15px;
+  width: 28px;
+  height: 28px;
 }
 
 /* Cleartrip Layout Grid */
@@ -1836,24 +1829,67 @@ body {
   transform: scale(0.98);
 }
 
-/* Category Tabs Sizing and Layout */
+/* Category Tabs — Instagram Reels / Story ring style on mobile */
 @media (max-width: 640px) {
   .product-switcher-bar {
     justify-content: flex-start;
     overflow-x: auto;
-    padding: 0.25rem 0.25rem 0.75rem;
-    gap: 0.5rem;
-    scrollbar-width: none; /* Hide scrollbar on Firefox */
-    -ms-overflow-style: none; /* Hide scrollbar on IE/Edge */
-    margin-bottom: 1.25rem;
+    padding: 0.75rem 1rem 1rem;
+    gap: 1.25rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    margin-bottom: 1rem;
   }
   .product-switcher-bar::-webkit-scrollbar {
-    display: none; /* Hide scrollbar on Chrome/Safari */
+    display: none;
   }
   .product-pill {
+    flex-direction: column;
+    align-items: center;
     flex-shrink: 0;
-    padding: 0.4rem 0.85rem;
-    font-size: 0.8rem;
+    width: 72px;
+    height: auto;
+    border-radius: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 0.25rem 0;
+    font-size: 0.65rem;
+    font-weight: 700;
+    gap: 0.5rem;
+    text-align: center;
+    color: var(--text-gray);
+    line-height: 1.3;
+  }
+  .product-pill:hover {
+    background: transparent;
+    border-color: transparent;
+    transform: none;
+  }
+  .product-pill.active {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    transform: none;
+    color: var(--primary-navy);
+  }
+  .product-icon-wrapper {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background-color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2.5px #e2e8f0;
+  }
+  .product-pill.active .product-icon-wrapper {
+    background-color: #eef2ff;
+    box-shadow: 0 0 0 2.5px #fff, 0 0 0 5px var(--primary-navy);
+  }
+  .product-icon {
+    width: 44px;
+    height: 44px;
   }
 }
 

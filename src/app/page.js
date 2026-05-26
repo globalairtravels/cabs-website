@@ -514,7 +514,7 @@ Please confirm my booking. Thank you!`;
               onClick={() => handleTabChange("airport")}
             >
               <div className="product-icon-wrapper">
-                <img src={getAssetPath("/icons/nav/airport.svg")} alt="" className="product-icon" />
+                <img src={getAssetPath("/images/airport-transfers.svg")} alt="" className="product-icon" />
               </div>
               <span>Airport Transfers</span>
             </button>
@@ -524,7 +524,7 @@ Please confirm my booking. Thank you!`;
               onClick={() => handleTabChange("city")}
             >
               <div className="product-icon-wrapper">
-                <img src={getAssetPath("/icons/nav/cab.svg")} alt="" className="product-icon" />
+                <img src={getAssetPath("/images/city-taxi-service.svg")} alt="" className="product-icon" />
               </div>
               <span>City Taxi Service</span>
             </button>
@@ -534,7 +534,7 @@ Please confirm my booking. Thank you!`;
               onClick={() => handleTabChange("daily")}
             >
               <div className="product-icon-wrapper">
-                <img src={getAssetPath("/icons/nav/outstation.svg")} alt="" className="product-icon" />
+                <img src={getAssetPath("/images/intercity-travel.svg")} alt="" className="product-icon" />
               </div>
               <span>Intercity Travel</span>
             </button>
@@ -544,7 +544,7 @@ Please confirm my booking. Thank you!`;
               onClick={() => handleTabChange("tempo")}
             >
               <div className="product-icon-wrapper">
-                <img src={getAssetPath("/icons/nav/tempo.svg")} alt="" className="product-icon" />
+                <img src={getAssetPath("/images/tempo-traveller.svg")} alt="" className="product-icon" />
               </div>
               <span>Tempo Traveller</span>
             </button>
@@ -732,7 +732,7 @@ Please confirm my booking. Thank you!`;
                   {/* Included service tags */}
                   <div className="filter-tags-row" aria-label="Included services">
                     <span className="filter-tag included-tag">Tolls Included</span>
-                    <span className="filter-tag included-tag">AC Cab</span>
+                    <span className="filter-tag included-tag">AC Cabs</span>
                     <span className="filter-tag included-tag">Driver Allowance Incl.</span>
                   </div>
 
