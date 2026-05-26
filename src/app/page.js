@@ -491,16 +491,6 @@ Please confirm my booking. Thank you!`;
             </button>
             <button
               type="button"
-              className={`product-pill ${tripType === "city" ? "active" : ""}`}
-              onClick={() => handleTabChange("city")}
-            >
-              <div className="product-icon-wrapper">
-                <img src={getAssetPath("/images/city-taxi-service.svg")} alt="" className="product-icon" />
-              </div>
-              <span>Local Taxi Services</span>
-            </button>
-            <button
-              type="button"
               className={`product-pill ${tripType === "daily" ? "active" : ""}`}
               onClick={() => handleTabChange("daily")}
             >
@@ -508,6 +498,16 @@ Please confirm my booking. Thank you!`;
                 <img src={getAssetPath("/images/intercity-travel.svg")} alt="" className="product-icon" />
               </div>
               <span>Intercity Travels</span>
+            </button>
+            <button
+              type="button"
+              className={`product-pill ${tripType === "city" ? "active" : ""}`}
+              onClick={() => handleTabChange("city")}
+            >
+              <div className="product-icon-wrapper">
+                <img src={getAssetPath("/images/city-taxi-service.svg")} alt="" className="product-icon" />
+              </div>
+              <span>Local Taxi Services</span>
             </button>
             <button
               type="button"
