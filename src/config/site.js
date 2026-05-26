@@ -86,7 +86,7 @@ export const siteConfig = {
       minKmPerDay: 250, // From leaflet
       driverAllowance: 400, // From leaflet
       airportPrice: 3600,
-      cityPrice: 3100,
+      intercityPrice: 3100,
       description: "Comfortable and economical. Perfect for quick drops and small families."
     },
     {
@@ -101,7 +101,7 @@ export const siteConfig = {
       minKmPerDay: 250, // From leaflet
       driverAllowance: 400, // From leaflet
       airportPrice: 4500,
-      cityPrice: 3900,
+      intercityPrice: 3900,
       description: "Ideal for family travel, offering extra seats and flexible luggage space."
     },
     {
@@ -116,7 +116,7 @@ export const siteConfig = {
       minKmPerDay: 250, // From leaflet
       driverAllowance: 400, // From leaflet
       airportPrice: 4700,
-      cityPrice: 4100,
+      intercityPrice: 4100,
       description: "Standard premium family ride, highly stable and comfortable for long distances."
     },
     {
@@ -131,7 +131,7 @@ export const siteConfig = {
       minKmPerDay: 250, // From leaflet
       driverAllowance: 400, // From leaflet
       airportPrice: 5400,
-      cityPrice: 4600,
+      intercityPrice: 4600,
       description: "Ultimate luxury and safety, executive ride for family or business groups."
     },
     {
@@ -146,7 +146,7 @@ export const siteConfig = {
       minKmPerDay: 300, // From leaflet
       driverAllowance: 600, // From leaflet
       airportPrice: 7200,
-      cityPrice: 7200,
+      intercityPrice: 7200,
       description: "Best for wedding groups, pilgrim groups, and large family tours."
     },
     {
@@ -161,7 +161,7 @@ export const siteConfig = {
       minKmPerDay: 300, // From leaflet
       driverAllowance: 600, // From leaflet
       airportPrice: 6600,
-      cityPrice: 6600,
+      intercityPrice: 6600,
       description: "Budget-friendly option for larger group travels where AC is not needed."
     }
   ],
@@ -217,7 +217,7 @@ export const siteConfig = {
     },
     city: {
       heading: {
-        title: "Book Local & Outstation Taxi Service",
+        title: "Book Local & Outstation Taxi Services",
         subtitle: "Flat per-day pricing for travel within or outside city limits. Book for any number of days with a fixed daily kilometer limit and driver allowance included, allowing you to go anywhere and make unlimited stops."
       },
       banner: {
@@ -247,33 +247,30 @@ export const siteConfig = {
     },
     daily: {
       heading: {
-        title: "Plan Outstation & Multi-Day Tours",
-        subtitle: "Coorg, Ooty, Kabini, Wayanad and beyond — per-day packages with driver"
+        title: "Book Mysore ⇄ Bangalore City Cabs",
+        subtitle: "One-way intercity drops between Mysore and Bangalore. Toll and driver allowance included."
       },
       banner: {
-        badge: "Multi-Day Tour",
-        text: "Outstation tours from ₹3,400/day in Sedan",
-        footer: "Driver allowance waived on tours over 3 days.",
-        image: "/images/outstation.webp",
+        badge: "Special Rate",
+        text: "Mysore ⇄ Bangalore City Drop starting at just ₹3,100/-",
+        footer: "Includes toll tax & driver allowance!",
+        image: "/images/local-taxi.webp",
         gradient: "linear-gradient(135deg, #F26B1F 0%, #FF9248 100%)"
       },
       quickSelect: {
-        title: "Popular Tour Packages",
+        title: "Popular Intercity Routes",
         items: [
-          { id: "tour-coorg", name: "Coorg (Madikeri)", subtitle: "2 Day Tour • From ₹6,800", destination: "Coorg (Madikeri)", days: 2 },
-          { id: "tour-ooty", name: "Ooty Hill Station", subtitle: "3 Day Tour • From ₹10,200", destination: "Ooty", days: 3 },
-          { id: "tour-kabini", name: "Kabini Wildlife", subtitle: "2 Day Tour • From ₹6,800", destination: "Kabini", days: 2 },
-          { id: "tour-wayanad", name: "Wayanad Resorts", subtitle: "3 Day Tour • From ₹10,200", destination: "Wayanad", days: 3 }
+          { id: "mysore-blr-city", name: "Mysore ➔ Bangalore City", subtitle: "₹3,100 Sedan • Toll Incl." },
+          { id: "blr-city-mysore", name: "Bangalore City ➔ Mysore", subtitle: "₹3,100 Sedan • Toll Incl." }
         ]
       },
       info: {
-        title: "Border Permits (7 Days)",
+        title: "Intercity Drop Inclusions",
         items: [
-          "Sedan (All borders): ₹600",
-          "Ertiga SUV (All borders): ₹1,000",
-          "Innova (Tamil Nadu): ₹1,250",
-          "Innova (Kerala): ₹3,000",
-          "Innova (Andhra): ₹2,500"
+          "Toll taxes and driver allowance included",
+          "One-way direct transfer to destination",
+          "No extra helper/state permits charge for standard route",
+          "Dedicated clean AC cab just for your group"
         ]
       }
     },

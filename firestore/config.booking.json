@@ -145,7 +145,7 @@
   },
   "bookingTypes": {
     "airport": {
-      "label": "Airport Transfer",
+      "label": "Airport Transfers",
       "applicableCabs": [
         "sedan",
         "suv",
@@ -184,7 +184,20 @@
       "active": true
     },
     "city": {
-      "label": "Local Taxi",
+      "label": "Local Taxi Services",
+      "applicableCabs": [
+        "sedan",
+        "suv",
+        "innova",
+        "crysta"
+      ],
+      "pricing": {
+        "model": "per-day"
+      },
+      "active": true
+    },
+    "intercity": {
+      "label": "Intercity Travels",
       "applicableCabs": [
         "sedan",
         "suv",
@@ -224,21 +237,8 @@
       ],
       "active": true
     },
-    "intercity": {
-      "label": "Intercity / Outstation",
-      "applicableCabs": [
-        "sedan",
-        "suv",
-        "innova",
-        "crysta"
-      ],
-      "pricing": {
-        "model": "per-day"
-      },
-      "active": true
-    },
     "tempo": {
-      "label": "Tempo Traveller",
+      "label": "Tempo Travellers",
       "applicableCabs": [
         "tempo",
         "tempo-non-ac"

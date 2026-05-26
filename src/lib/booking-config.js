@@ -5,7 +5,7 @@ function normalizeBookingConfig(raw) {
   const bookingTypes = raw.bookingTypes && typeof raw.bookingTypes === "object" ? raw.bookingTypes : {};
 
   const airportPrices = firstRoutePrices(bookingTypes.airport);
-  const cityPrices = firstRoutePrices(bookingTypes.city);
+  const intercityPrices = firstRoutePrices(bookingTypes.intercity);
 
   const cabTypes = Object.entries(rawCabs)
     .filter(([, cab]) => cab && cab.active !== false)
@@ -21,7 +21,7 @@ function normalizeBookingConfig(raw) {
       minKmPerDay: cab.minKmPerDay,
       driverAllowance: cab.driverAllowance,
       airportPrice: airportPrices[id] ?? null,
-      cityPrice: cityPrices[id] ?? null,
+      intercityPrice: intercityPrices[id] ?? null,
     }));
 
   if (cabTypes.length === 0) {

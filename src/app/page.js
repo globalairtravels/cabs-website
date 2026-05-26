@@ -101,7 +101,7 @@ export default function Home() {
   const [trackedBooking, setTrackedBooking] = useState(null);
   const [trackAttempted, setTrackAttempted] = useState(false);
 
-  const isOutstationTrip = tripType === "daily" || tripType === "tempo";
+  const isOutstationTrip = tripType === "tempo";
   const showTripModeSelector = tripType !== "airport" && tripType !== "city";
   const cityDayCount = normalizePositiveInteger(cityDays, { max: 30 });
   const tempoDayCount = normalizePositiveInteger(tempoDays, { max: 30 });
@@ -110,8 +110,8 @@ export default function Home() {
   const tripSummaryLabel =
     tripType === "airport" ? "Airport Transfers" :
     tripType === "city" ? `Local/Outstation Taxi (${cityDayCount} Day${plural(cityDayCount)})` :
-    tripType === "tempo" ? `Tempo Traveller (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount}km)` :
-    `Intercity Travel (${numDays} Day${plural(numDays)})`;
+    tripType === "tempo" ? `Tempo Travellers (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount}km)` :
+    "Intercity Travels";
 
   const getTempoEffectiveKm = (cab) =>
     Math.max(tempoKmCount, tempoDayCount * cab.minKmPerDay);
@@ -160,7 +160,7 @@ export default function Home() {
       setDrop("Local / Outstation Daily running");
     } else if (tab === "daily") {
       setPickup("Mysore");
-      setDrop("Outstation Tour / Local");
+      setDrop("Bangalore City");
       setOutstationDirection("oneway");
     } else if (tab === "tempo") {
       setPickup("Mysore");
@@ -191,11 +191,15 @@ export default function Home() {
       setTripType("airport");
       handleAirportDirectionChange("pickup");
     } else if (routeId === "mysore-blr-city") {
-      setTripType("city");
-      handleCityDirectionChange("drop");
+      setTripType("daily");
+      setPickup("Mysore");
+      setDrop("Bangalore City");
+      setOutstationDirection("oneway");
     } else if (routeId === "blr-city-mysore") {
-      setTripType("city");
-      handleCityDirectionChange("pickup");
+      setTripType("daily");
+      setPickup("Bangalore City");
+      setDrop("Mysore");
+      setOutstationDirection("oneway");
     } else if (routeId === "local-mysore") {
       setTripType("city");
       setPickup("Mysore");
@@ -242,12 +246,12 @@ export default function Home() {
 
   const calculatePrice = (cab) => {
     if (tripType === "airport") return cab.airportPrice;
+    if (tripType === "daily") return cab.intercityPrice;
     if (tripType === "city") return (cab.ratePerKm * cab.minKmPerDay + cab.driverAllowance) * cityDayCount;
     if (tripType === "tempo") {
       return getTempoEffectiveKm(cab) * cab.ratePerKm + tempoDayCount * cab.driverAllowance;
     }
-    const dayTotal = cab.ratePerKm * cab.minKmPerDay + cab.driverAllowance;
-    return outstationDirection === "roundtrip" ? Math.round(dayTotal * numDays * 1.8) : dayTotal * numDays;
+    return 0;
   };
 
   const formatFareFormula = (cab) => {
@@ -265,8 +269,7 @@ export default function Home() {
 
   const advanceDays =
     tripType === "city" ? cityDayCount :
-    tripType === "tempo" ? tempoDayCount :
-    tripType === "daily" ? numDays : 1;
+    tripType === "tempo" ? tempoDayCount : 1;
   const requiredAdvance = 500 * advanceDays;
 
   const onlinePaymentAmount = paymentMethod === "full" ? totalPrice : paymentMethod === "advance" ? requiredAdvance : 0;
@@ -309,9 +312,11 @@ export default function Home() {
       tripDetails = `Local & Outstation Taxi (${cityDayCount} Day${plural(cityDayCount)} · ${selectedCab.minKmPerDay} km/day & driver allowance included)`;
     } else if (tripType === "tempo") {
       const effectiveKm = getTempoEffectiveKm(selectedCab);
-      tripDetails = `Tempo Traveller (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
+      tripDetails = `Tempo Travellers (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
+    } else if (tripType === "daily") {
+      tripDetails = "Intercity Travel (One Way)";
     } else {
-      tripDetails = `Intercity Travel (${numDays} Day${plural(numDays)})`;
+      tripDetails = `Intercity Travels (${numDays} Day${plural(numDays)})`;
     }
 
     const payStatus =
@@ -492,7 +497,7 @@ Please confirm my booking. Thank you!`;
               <div className="product-icon-wrapper">
                 <img src={getAssetPath("/images/city-taxi-service.svg")} alt="" className="product-icon" />
               </div>
-              <span>Local Taxi Service</span>
+              <span>Local Taxi Services</span>
             </button>
             <button
               type="button"
@@ -502,7 +507,7 @@ Please confirm my booking. Thank you!`;
               <div className="product-icon-wrapper">
                 <img src={getAssetPath("/images/intercity-travel.svg")} alt="" className="product-icon" />
               </div>
-              <span>Intercity Travel</span>
+              <span>Intercity Travels</span>
             </button>
             <button
               type="button"
@@ -512,7 +517,7 @@ Please confirm my booking. Thank you!`;
               <div className="product-icon-wrapper">
                 <img src={getAssetPath("/images/tempo-traveller.svg")} alt="" className="product-icon" />
               </div>
-              <span>Tempo Traveller</span>
+              <span>Tempo Travellers</span>
             </button>
           </nav>
         )}
@@ -1123,8 +1128,8 @@ Please confirm my booking. Thank you!`;
                     })()}
                     {tripType === "daily" && (
                       <div className="bill-row">
-                        <span>Duration:</span>
-                        <span>{numDays} Day{plural(numDays)} Tour</span>
+                        <span>Trip Type:</span>
+                        <span>One Way Drop</span>
                       </div>
                     )}
                     <div className="bill-row total">
