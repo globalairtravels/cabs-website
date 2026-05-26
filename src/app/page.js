@@ -1414,7 +1414,6 @@ Please confirm my booking. Thank you!`;
                 <div>✉️ <strong>Email Address:</strong> <a href={`mailto:${siteConfig.email}`} style={{ color: "var(--primary-blue)" }}>{siteConfig.email}</a></div>
                 <div>📍 <strong>Registered Office:</strong> Mysore, Karnataka, India</div>
               </div>
-              <button type="button" className="btn-primary" onClick={() => setShowSupport(false)}>Back to Website</button>
             </div>
           </div>
         </div>
