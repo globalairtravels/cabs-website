@@ -128,7 +128,6 @@ export default function Home() {
 
   const handleTabChange = (tab) => {
     setTripType(tab);
-    setShowInlineCabs(false);
     setMinSeats(0);
 
     const nextBookingTypeId = TRIP_TYPE_TO_BOOKING_TYPE[tab];
@@ -247,15 +246,6 @@ export default function Home() {
   const applicablePromos = bookingConfig.promos.filter(
     (promo) => !promo.appliesTo || promo.appliesTo.length === 0 || promo.appliesTo.includes(bookingTypeId)
   );
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (tripType !== "city" && (!pickup || !drop)) {
-      alert("Please fill in pickup and drop locations.");
-      return;
-    }
-    if (filteredCabs.length > 0) setSelectedCab(filteredCabs[0]);
-  };
 
   const handleCabSelect = (cab) => {
     setSelectedCab(cab);
@@ -532,7 +522,7 @@ Please confirm my booking. Thank you!`;
                   </div>
                 )}
 
-                <form onSubmit={handleSearchSubmit}>
+                <div>
                   {tripType !== "city" && (
                     <div className="cleartrip-input-row">
                       <div className="input-col" style={{ position: "relative" }}>
@@ -694,9 +684,6 @@ Please confirm my booking. Thank you!`;
                       ))}
                     </div>
 
-                    <button type="submit" className="btn-cleartrip-search">
-                      Search Cabs
-                    </button>
                   </div>
 
                   <div className="inline-cab-preview" style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }}>
@@ -762,7 +749,7 @@ Please confirm my booking. Thank you!`;
                         Prices include tolls, driver allowance & GST. No hidden charges.
                       </p>
                     </div>
-                </form>
+                </div>
               </div>
             </div>
 
