@@ -217,30 +217,31 @@ export const siteConfig = {
     },
     city: {
       heading: {
-        title: "Book Local City Taxis",
-        subtitle: "Flat per-day pricing for travel within city limits. Packages include set time and kilometer limits, allowing you to go anywhere and make unlimited stops."
+        title: "Book Local & Outstation Taxi Service",
+        subtitle: "Flat per-day pricing for travel within or outside city limits. Book for any number of days with a fixed daily kilometer limit and driver allowance included, allowing you to go anywhere and make unlimited stops."
       },
       banner: {
-        badge: "Local Run",
-        text: "Local City packages with 250 km/day included",
-        footer: "Unlimited stops & flexible daily routing.",
+        badge: "Daily Run",
+        text: "Local & Outstation packages with fixed daily km limits & driver allowance included",
+        footer: "Book in number of days. Go anywhere within or outside city.",
         image: "/images/local-taxi.webp",
       },
       quickSelect: {
-        title: "Popular Local Packages",
+        title: "Popular Daily Packages",
         items: [
-          { id: "local-mysore", name: "Mysore Local running", subtitle: "₹3,400 Sedan • 250 km limit" },
-          { id: "local-bangalore", name: "Bangalore Local running", subtitle: "₹3,400 Sedan • 250 km limit" }
+          { id: "local-mysore", name: "Mysore Local / Outstation", subtitle: "₹3,400/day Sedan • 250 km/day & driver incl." },
+          { id: "local-bangalore", name: "Bangalore Local / Outstation", subtitle: "₹3,400/day Sedan • 250 km/day & driver incl." }
         ]
       },
       info: {
-        title: "Local Trip Inclusions",
+        title: "Local & Outstation Daily Trip Inclusions",
         items: [
-          "Up to 250 km running per day",
-          "Go anywhere and make any number of stops",
-          "Driver allowance & fuel charges included",
-          "Ideal for sightseeing, shopping, or business runs",
-          "Parking and toll fees extra (paid directly as actuals)"
+          "Flexible daily travel: go within or outside the city limits",
+          "Booked in number of days with unlimited stops & flexible daily routing",
+          "Each day includes a fixed minimum kilometer limit (250 km for cars)",
+          "Driver allowance & fuel charges included in the per-day fare",
+          "Ideal for multi-day sightseeing, shopping, or outstation tours",
+          "Parking, toll fees, and state border permits extra (paid directly as actuals)"
         ]
       }
     },

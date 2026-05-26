@@ -109,7 +109,7 @@ export default function Home() {
 
   const tripSummaryLabel =
     tripType === "airport" ? "Airport Transfers" :
-    tripType === "city" ? `Local Taxi (${cityDayCount} Day${plural(cityDayCount)})` :
+    tripType === "city" ? `Local/Outstation Taxi (${cityDayCount} Day${plural(cityDayCount)})` :
     tripType === "tempo" ? `Tempo Traveller (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount}km)` :
     `Intercity Travel (${numDays} Day${plural(numDays)})`;
 
@@ -157,14 +157,14 @@ export default function Home() {
       handleAirportDirectionChange("drop");
     } else if (tab === "city") {
       setPickup("Mysore");
-      setDrop("Local Sightseeing / Running");
+      setDrop("Local / Outstation Daily running");
     } else if (tab === "daily") {
       setPickup("Mysore");
       setDrop("Outstation Tour / Local");
       setOutstationDirection("oneway");
     } else if (tab === "tempo") {
       setPickup("Mysore");
-      setDrop("Group Tour / Outstation");
+      setDrop("Outstation Tour / Local");
       if (TEMPO_CAB) setSelectedCab(TEMPO_CAB);
     }
   };
@@ -199,11 +199,11 @@ export default function Home() {
     } else if (routeId === "local-mysore") {
       setTripType("city");
       setPickup("Mysore");
-      setDrop("Local Sightseeing / Running");
+      setDrop("Local / Outstation Daily running");
     } else if (routeId === "local-bangalore") {
       setTripType("city");
       setPickup("Bangalore");
-      setDrop("Local Sightseeing / Running");
+      setDrop("Local / Outstation Daily running");
     } else if (routeId === "mysore-mangalore-airport") {
       setTripType("airport");
       setPickup("Mysore");
@@ -306,7 +306,7 @@ export default function Home() {
     if (tripType === "airport") {
       tripDetails = `Airport Transfers (${airportType === "drop" ? "Mysore to Airport" : "Airport to Mysore"})`;
     } else if (tripType === "city") {
-      tripDetails = `Local Taxi Service (${cityDayCount} Day${plural(cityDayCount)} · 250 km/day included)`;
+      tripDetails = `Local & Outstation Taxi (${cityDayCount} Day${plural(cityDayCount)} · ${selectedCab.minKmPerDay} km/day & driver allowance included)`;
     } else if (tripType === "tempo") {
       const effectiveKm = getTempoEffectiveKm(selectedCab);
       tripDetails = `Tempo Traveller (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
@@ -925,7 +925,7 @@ Please confirm my booking. Thank you!`;
                             </>
                           ) : tripType === "city" ? (
                             <>
-                              <div className="cab-inclusions-title">Local Taxi Per-Day Rate Breakdown</div>
+                              <div className="cab-inclusions-title">Local & Outstation Taxi Per-Day Rate Breakdown</div>
                               <div style={{ fontSize: "0.75rem", color: "var(--text-gray)" }}>
                                 {cityDayCount > 1
                                   ? `(₹${cab.ratePerKm}/km × ${cab.minKmPerDay} km/day + ₹${cab.driverAllowance}/day driver) × ${cityDayCount} days = ₹${cabPrice}`
