@@ -48,11 +48,33 @@ function normalizeBookingConfig(raw) {
     .filter(([, promo]) => promo && promo.active !== false)
     .map(([code, promo]) => ({ code, ...promo }));
 
+  const rawCities = raw.cities && typeof raw.cities === "object" ? raw.cities : {};
+  const cities = Object.entries(rawCities)
+    .filter(([, city]) => city && city.active !== false)
+    .map(([id, city]) => ({
+      id,
+      name: city.name,
+      validFor: Array.isArray(city.validFor) ? city.validFor : [],
+    }));
+
+  const bookingTypeMeta = {};
+  for (const [id, bt] of Object.entries(bookingTypes)) {
+    if (!bt || bt.active === false) continue;
+    bookingTypeMeta[id] = {
+      id,
+      label: bt.label,
+      applicableCabs: Array.isArray(bt.applicableCabs) ? bt.applicableCabs : [],
+      pricingModel: bt.pricing?.model ?? null,
+    };
+  }
+
   return {
     version: raw.version ?? null,
     updatedAt: raw.updatedAt ?? null,
     cabTypes,
     promos,
+    cities,
+    bookingTypes: bookingTypeMeta,
   };
 }
 

@@ -14,6 +14,14 @@ const getTomorrowDate = () => {
 
 const isTempoCab = (cab) => cab.id.startsWith("tempo");
 
+// UI tab id → Firestore bookingTypes id
+const TRIP_TYPE_TO_BOOKING_TYPE = {
+  airport: "airport",
+  city: "city",
+  daily: "intercity",
+  tempo: "tempo",
+};
+
 export default function Page() {
   const [bookingConfig, setBookingConfig] = useState(null);
   const [loadError, setLoadError] = useState(null);
@@ -161,6 +169,15 @@ function BookingApp({ bookingConfig }) {
   // Sync inputs when product switcher tab changes (Flights, Hotels, Buses style)
   const handleTabChange = (tab) => {
     setTripType(tab);
+
+    // Reset selectedCab if it's not applicable for the new tab.
+    const nextBookingTypeId = TRIP_TYPE_TO_BOOKING_TYPE[tab];
+    const nextApplicable = bookingConfig.bookingTypes[nextBookingTypeId]?.applicableCabs ?? [];
+    if (nextApplicable.length > 0 && !nextApplicable.includes(selectedCab.id)) {
+      const fallback = bookingConfig.cabTypes.find((cab) => nextApplicable.includes(cab.id));
+      if (fallback) setSelectedCab(fallback);
+    }
+
     if (tab === "airport") {
       handleAirportDirectionChange("drop");
     } else if (tab === "city") {
@@ -237,10 +254,19 @@ function BookingApp({ bookingConfig }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const suggestions = {
-    pickup: ["Mysore", "Bangalore Airport (KIA)", "Bangalore City", "Ooty", "Coorg (Madikeri)", "Kabini", "Bandipur"],
-    drop: ["Bangalore Airport (KIA)", "Bangalore City", "Mysore", "Ooty", "Coorg (Madikeri)", "Kabini", "Bandipur"]
-  };
+  const bookingTypeId = TRIP_TYPE_TO_BOOKING_TYPE[tripType];
+  const activeBookingType = bookingConfig.bookingTypes[bookingTypeId] ?? null;
+  const applicableCabIds = activeBookingType?.applicableCabs ?? [];
+
+  // Suggestions: Firestore cities valid for this booking type; outstation tabs add free-text tour destinations.
+  const firestoreCityNames = bookingConfig.cities
+    .filter((c) => c.validFor.includes(bookingTypeId))
+    .map((c) => c.name);
+  const outstationDestinations = ["Ooty", "Coorg (Madikeri)", "Kabini", "Bandipur", "Wayanad"];
+  const suggestionList = isOutstationTrip
+    ? Array.from(new Set([...firestoreCityNames, ...outstationDestinations]))
+    : firestoreCityNames;
+  const suggestions = { pickup: suggestionList, drop: suggestionList };
 
   // Pricing engine
   const calculatePrice = (cab) => {
@@ -268,7 +294,7 @@ function BookingApp({ bookingConfig }) {
 
   // Filtered Cabs based on search filters (Show 6+ Seater Cabs Only)
   const filteredCabs = bookingConfig.cabTypes.filter((cab) => {
-    if (tripType === "tempo" && !isTempoCab(cab)) return false;
+    if (applicableCabIds.length > 0 && !applicableCabIds.includes(cab.id)) return false;
     if (only6Seaters && cab.seats < 6) return false;
     return true;
   });
@@ -1366,9 +1392,15 @@ Please confirm my booking. Thank you!`;
         )}
 
         {/* Step 1 Promo Row (Matches bottom cards on Cleartrip screen) */}
-        {step === 1 && bookingConfig.promos.length > 0 && (
+        {(() => {
+          if (step !== 1) return null;
+          const applicablePromos = bookingConfig.promos.filter(
+            (promo) => !promo.appliesTo || promo.appliesTo.length === 0 || promo.appliesTo.includes(bookingTypeId)
+          );
+          if (applicablePromos.length === 0) return null;
+          return (
           <section className="cleartrip-promo-row" id="promos" aria-label="Offers and Promotions">
-            {bookingConfig.promos.map((promo, idx) => {
+            {applicablePromos.map((promo, idx) => {
               const palette = ["#22A06B", "#FF4F00", "#3366CC", "#7A3FFF"];
               const icons = ["🎁", "🎟️", "📅", "🏷️"];
               const tag = (promo.appliesTo || []).join(" • ").toUpperCase() || "OFFER";
@@ -1392,7 +1424,8 @@ Please confirm my booking. Thank you!`;
               );
             })}
           </section>
-        )}
+          );
+        })()}
 
       </div>
 
