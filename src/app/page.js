@@ -226,11 +226,7 @@ export default function Home() {
   const firestoreCityNames = bookingConfig.cities
     .filter((c) => c.validFor.includes(bookingTypeId))
     .map((c) => c.name);
-  const outstationDestinations = ["Ooty", "Coorg (Madikeri)", "Kabini", "Bandipur", "Wayanad"];
-  const suggestionList = isOutstationTrip
-    ? Array.from(new Set([...firestoreCityNames, ...outstationDestinations]))
-    : firestoreCityNames;
-  const suggestions = { pickup: suggestionList, drop: suggestionList };
+  const suggestions = { pickup: firestoreCityNames, drop: firestoreCityNames };
 
   const calculatePrice = (cab) => {
     if (tripType === "airport") return cab.airportPrice;
@@ -600,7 +596,6 @@ Please confirm my booking. Thank you!`;
                           onBlur={() => setTimeout(() => setShowDropSuggestions(false), 200)}
                           placeholder="Enter destination city"
                           required
-                          disabled={isOutstationTrip}
                         />
                         {showDropSuggestions && (
                           <div className="suggestions-dropdown">
