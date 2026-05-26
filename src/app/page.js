@@ -161,6 +161,7 @@ export default function Home() {
     } else if (tab === "daily") {
       setPickup("Mysore");
       setDrop("Outstation Tour / Local");
+      setOutstationDirection("oneway");
     } else if (tab === "tempo") {
       setPickup("Mysore");
       setDrop("Group Tour / Outstation");
@@ -215,11 +216,13 @@ export default function Home() {
       setCityType("drop");
     } else if (routeId.startsWith("tour-")) {
       setTripType("daily");
+      setOutstationDirection("oneway");
       setPickup("Mysore");
       if (item.destination) setDrop(item.destination);
       if (item.days) setNumDays(item.days);
     } else if (routeId.startsWith("tempo-")) {
       setTripType("tempo");
+      setOutstationDirection("oneway");
       setPickup("Mysore");
       if (item.destination) setDrop(item.destination);
       if (item.days) setTempoDays(item.days);
@@ -530,7 +533,13 @@ Please confirm my booking. Thank you!`;
                         <input
                           type="checkbox"
                           checked={outstationDirection === "roundtrip"}
-                          onChange={(e) => setOutstationDirection(e.target.checked ? "roundtrip" : "oneway")}
+                          onChange={(e) => {
+                            const isRound = e.target.checked;
+                            setOutstationDirection(isRound ? "roundtrip" : "oneway");
+                            if (isRound) {
+                              setDrop("");
+                            }
+                          }}
                           className="inline-radio-input"
                         />
                         <span>Round Trip Outstation (1.8x Km base)</span>
@@ -605,6 +614,7 @@ Please confirm my booking. Thank you!`;
                           onBlur={() => setTimeout(() => setShowDropSuggestions(false), 200)}
                           placeholder="Enter destination city"
                           required
+                          disabled={tripType === "daily" && outstationDirection === "roundtrip"}
                         />
                         {showDropSuggestions && (
                           <div className="suggestions-dropdown">
