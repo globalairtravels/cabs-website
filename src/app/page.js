@@ -13,6 +13,7 @@ const getTomorrowDate = () => {
 };
 
 const isTempoCab = (cab) => cab.id.startsWith("tempo");
+const TEMPO_CAB = bookingConfig.cabTypes.find(isTempoCab);
 
 // UI tab id → bookingTypes id in firestore/config.booking.json
 const TRIP_TYPE_TO_BOOKING_TYPE = {
@@ -31,46 +32,39 @@ const normalizePositiveInteger = (value, { min = 1, max = Number.MAX_SAFE_INTEGE
   return Math.min(max, Math.max(min, Math.floor(number)));
 };
 
-export default function Home() {
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-  const getAssetPath = (path) => `${basePath}${path}`;
-  const whatsappNumber = siteConfig.whatsapp.replace(/\D/g, "");
-  const whatsappIconPath = getAssetPath("/icons/messaging/whatsapp-chat.svg");
-  const getWhatsAppUrl = (message) => {
-    const baseUrl = `https://wa.me/${whatsappNumber}`;
-    return message ? `${baseUrl}?text=${encodeURIComponent(message)}` : baseUrl;
-  };
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const getAssetPath = (path) => `${BASE_PATH}${path}`;
+const WHATSAPP_NUMBER = siteConfig.whatsapp.replace(/\D/g, "");
+const WHATSAPP_ICON_PATH = getAssetPath("/icons/messaging/whatsapp-chat.svg");
 
-  // Booking Flow States
+const getWhatsAppUrl = (message) => {
+  const base = `https://wa.me/${WHATSAPP_NUMBER}`;
+  return message ? `${base}?text=${encodeURIComponent(message)}` : base;
+};
+
+const plural = (n) => (n > 1 ? "s" : "");
+
+export default function Home() {
   const [step, setStep] = useState(1);
-  const [tripType, setTripType] = useState("airport"); // 'airport', 'city', 'daily', 'tempo'
-  
-  // Airport direction options: 'drop' (Mysore to KIA) or 'pickup' (KIA to Mysore)
+  const [tripType, setTripType] = useState("airport");
   const [airportType, setAirportType] = useState("drop");
-  // City direction options: 'drop' (Mysore to Blr City) or 'pickup' (Blr City to Mysore)
   const [cityType, setCityType] = useState("drop");
-  
-  // Trip Duration options
-  const [outstationDirection, setOutstationDirection] = useState("oneway"); // 'oneway', 'roundtrip'
+  const [outstationDirection, setOutstationDirection] = useState("oneway");
   const [numDays, setNumDays] = useState(1);
   const [cityDays, setCityDays] = useState(1);
-
-  // Tempo-specific inputs
   const [tempoDays, setTempoDays] = useState(1);
   const [tempoEstKm, setTempoEstKm] = useState(300);
 
-  // Form Fields
   const [pickup, setPickup] = useState("Mysore");
   const [drop, setDrop] = useState("Bangalore Airport (KIA)");
   const [date, setDate] = useState(getTomorrowDate);
   const [time, setTime] = useState("10:00");
   const [showPickupSuggestions, setShowPickupSuggestions] = useState(false);
   const [showDropSuggestions, setShowDropSuggestions] = useState(false);
-
-  // Active filters inside search box (0 = no filter / none selected by default)
   const [minSeats, setMinSeats] = useState(0);
+  const [showInlineCabs, setShowInlineCabs] = useState(false);
+  const [swapRotation, setSwapRotation] = useState(0);
 
-  // Selected Cab & Passenger Info
   const [selectedCab, setSelectedCab] = useState(bookingConfig.cabTypes[0]);
   const [bookingId, setBookingId] = useState(createBookingId);
   const [name, setName] = useState("");
@@ -78,40 +72,38 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [pickupAddress, setPickupAddress] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
-  
-  // Payment Options: 'arrival', 'advance', 'full'
   const [paymentMethod, setPaymentMethod] = useState("arrival");
 
-  // Navigation / Modal Display States
   const [showMyBookings, setShowMyBookings] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState("");
-
-  // OTP Login Flow States
-  const [loginPhone, setLoginPhone] = useState("");
-  const [loginOtp, setLoginOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
-  // Tracking Bookings Flow States
   const [trackBookingId, setTrackBookingId] = useState("");
   const [trackPhone, setTrackPhone] = useState("");
   const [trackedBooking, setTrackedBooking] = useState(null);
   const [trackAttempted, setTrackAttempted] = useState(false);
+
   const isOutstationTrip = tripType === "daily" || tripType === "tempo";
   const showTripModeSelector = tripType !== "airport" && tripType !== "city";
-  const tempoCab = bookingConfig.cabTypes.find(isTempoCab);
   const cityDayCount = normalizePositiveInteger(cityDays, { max: 30 });
   const tempoDayCount = normalizePositiveInteger(tempoDays, { max: 30 });
   const tempoKmCount = normalizePositiveInteger(tempoEstKm);
-  const tripSummaryLabel = tripType === "airport" ? "Airport Transfers" :
-                           tripType === "city" ? `City Taxi (${cityDayCount} Day${cityDayCount > 1 ? "s" : ""})` :
-                           tripType === "tempo" ? `Tempo Traveller (${tempoDayCount} Day${tempoDayCount > 1 ? "s" : ""} / ~${tempoKmCount}km)` :
-                           `Intercity Travel (${numDays} Days)`;
 
-  // Sync inputs when airport transfer direction changes
+  const tripSummaryLabel =
+    tripType === "airport" ? "Airport Transfers" :
+    tripType === "city" ? `City Taxi (${cityDayCount} Day${plural(cityDayCount)})` :
+    tripType === "tempo" ? `Tempo Traveller (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount}km)` :
+    `Intercity Travel (${numDays} Day${plural(numDays)})`;
+
+  const getTempoEffectiveKm = (cab) =>
+    Math.max(tempoKmCount, tempoDayCount * cab.minKmPerDay);
+
+  const openLogin = () => {
+    showComingSoonToast();
+  };
+
   const handleAirportDirectionChange = (direction) => {
     setAirportType(direction);
     if (direction === "drop") {
@@ -123,7 +115,6 @@ export default function Home() {
     }
   };
 
-  // Sync inputs when city drop direction changes
   const handleCityDirectionChange = (direction) => {
     setCityType(direction);
     if (direction === "drop") {
@@ -135,14 +126,11 @@ export default function Home() {
     }
   };
 
-  // Sync inputs when product switcher tab changes (Flights, Hotels, Buses style)
   const handleTabChange = (tab) => {
     setTripType(tab);
-
-    // Clear the seater filter when switching tabs.
+    setShowInlineCabs(false);
     setMinSeats(0);
 
-    // Reset selectedCab if it's not applicable for the new tab.
     const nextBookingTypeId = TRIP_TYPE_TO_BOOKING_TYPE[tab];
     const nextApplicable = bookingConfig.bookingTypes[nextBookingTypeId]?.applicableCabs ?? [];
     if (nextApplicable.length > 0 && !nextApplicable.includes(selectedCab.id)) {
@@ -160,24 +148,15 @@ export default function Home() {
     } else if (tab === "tempo") {
       setPickup("Mysore");
       setDrop("Group Tour / Outstation");
-      if (tempoCab) {
-        setSelectedCab(tempoCab);
-      }
+      if (TEMPO_CAB) setSelectedCab(TEMPO_CAB);
     }
   };
 
-  const [swapRotation, setSwapRotation] = useState(0);
-
-  // Swap pickup & drop locations
   const handleSwapLocations = () => {
-    if (isOutstationTrip) return; // No swap for outstation packages
-    
-    const temp = pickup;
+    if (isOutstationTrip) return;
     setPickup(drop);
-    setDrop(temp);
-    setSwapRotation(prev => prev + 180);
-
-    // Sync sub-types
+    setDrop(pickup);
+    setSwapRotation((prev) => prev + 180);
     if (tripType === "airport") {
       setAirportType(airportType === "drop" ? "pickup" : "drop");
     } else if (tripType === "city") {
@@ -185,7 +164,6 @@ export default function Home() {
     }
   };
 
-  // Quick route presets selection — handles both fixed routes and tour package items
   const handleQuickRouteSelect = (item) => {
     const routeId = typeof item === "string" ? item : item.id;
 
@@ -221,16 +199,15 @@ export default function Home() {
       setPickup("Mysore");
       if (item.destination) setDrop(item.destination);
       if (item.days) setTempoDays(item.days);
-      if (tempoCab) setSelectedCab(tempoCab);
+      if (TEMPO_CAB) setSelectedCab(TEMPO_CAB);
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const bookingTypeId = TRIP_TYPE_TO_BOOKING_TYPE[tripType];
   const activeBookingType = bookingConfig.bookingTypes[bookingTypeId] ?? null;
   const applicableCabIds = activeBookingType?.applicableCabs ?? [];
 
-  // Suggestions: Firestore cities valid for this booking type; outstation tabs add free-text tour destinations.
   const firestoreCityNames = bookingConfig.cities
     .filter((c) => c.validFor.includes(bookingTypeId))
     .map((c) => c.name);
@@ -240,35 +217,27 @@ export default function Home() {
     : firestoreCityNames;
   const suggestions = { pickup: suggestionList, drop: suggestionList };
 
-  // Pricing engine
   const calculatePrice = (cab) => {
-    if (tripType === "airport") {
-      return cab.airportPrice;
-    } else if (tripType === "city") {
-      return (cab.ratePerKm * cab.minKmPerDay + cab.driverAllowance) * cityDayCount;
-    } else if (tripType === "tempo") {
-      // Tempo: max(estKm, days × minKmPerDay) × ratePerKm + days × driverAllowance
-      const effectiveKm = Math.max(tempoKmCount, tempoDayCount * cab.minKmPerDay);
-      return effectiveKm * cab.ratePerKm + tempoDayCount * cab.driverAllowance;
-    } else {
-      // Daily / Outstation package: (baseRatePerKm * minKmPerDay + driverAllowance) * numDays
-      const baseFare = cab.ratePerKm * cab.minKmPerDay;
-      const driverFare = cab.driverAllowance;
-      const total = (baseFare + driverFare) * numDays;
-      return outstationDirection === "roundtrip" ? Math.round(total * 1.8) : total;
+    if (tripType === "airport") return cab.airportPrice;
+    if (tripType === "city") return (cab.ratePerKm * cab.minKmPerDay + cab.driverAllowance) * cityDayCount;
+    if (tripType === "tempo") {
+      return getTempoEffectiveKm(cab) * cab.ratePerKm + tempoDayCount * cab.driverAllowance;
     }
+    const dayTotal = cab.ratePerKm * cab.minKmPerDay + cab.driverAllowance;
+    return outstationDirection === "roundtrip" ? Math.round(dayTotal * numDays * 1.8) : dayTotal * numDays;
   };
 
-  // Calculate pricing values
   const totalPrice = calculatePrice(selectedCab);
 
-  // Custom booking advance structure (₹500 per day as noted in the leaflet)
-  const requiredAdvance = isOutstationTrip ? 500 * (tripType === "tempo" ? tempoDayCount : numDays) : tripType === "city" ? 500 * cityDayCount : 500;
-  
+  const advanceDays =
+    tripType === "city" ? cityDayCount :
+    tripType === "tempo" ? tempoDayCount :
+    tripType === "daily" ? numDays : 1;
+  const requiredAdvance = 500 * advanceDays;
+
   const onlinePaymentAmount = paymentMethod === "full" ? totalPrice : paymentMethod === "advance" ? requiredAdvance : 0;
   const payToDriverAmount = totalPrice - onlinePaymentAmount;
 
-  // Filtered Cabs based on search filters
   const filteredCabs = bookingConfig.cabTypes.filter((cab) => {
     if (applicableCabIds.length > 0 && !applicableCabIds.includes(cab.id)) return false;
     if (cab.seats < minSeats) return false;
@@ -279,14 +248,14 @@ export default function Home() {
     (promo) => !promo.appliesTo || promo.appliesTo.length === 0 || promo.appliesTo.includes(bookingTypeId)
   );
 
-  // Navigation handlers
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-  };
-
-  const handleInlineCabSelect = (cab) => {
-    setSelectedCab(cab);
-    setStep(3);
+    if (tripType !== "city" && (!pickup || !drop)) {
+      alert("Please fill in pickup and drop locations.");
+      return;
+    }
+    if (filteredCabs.length > 0) setSelectedCab(filteredCabs[0]);
+    setShowInlineCabs((prev) => !prev);
   };
 
   const handleCabSelect = (cab) => {
@@ -303,29 +272,28 @@ export default function Home() {
     setStep(4);
   };
 
-  // Generate UPI Deep Link
   const generateUpiLink = () => {
     const note = `Booking ${bookingId}`;
     return `upi://pay?pa=${siteConfig.upiId}&pn=${encodeURIComponent(siteConfig.merchantName)}&am=${onlinePaymentAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
   };
 
-  // Structured booking details message for WhatsApp
   const getWhatsAppMessage = () => {
-    let tripDetails = "";
+    let tripDetails;
     if (tripType === "airport") {
       tripDetails = `Airport Transfers (${airportType === "drop" ? "Mysore to Airport" : "Airport to Mysore"})`;
     } else if (tripType === "city") {
-      tripDetails = `City Taxi Service (${cityDayCount} Day${cityDayCount > 1 ? "s" : ""} · 250 km/day included)`;
+      tripDetails = `City Taxi Service (${cityDayCount} Day${plural(cityDayCount)} · 250 km/day included)`;
     } else if (tripType === "tempo") {
-      const effectiveKm = Math.max(tempoKmCount, tempoDayCount * selectedCab.minKmPerDay);
-      tripDetails = `Tempo Traveller (${tempoDayCount} Day${tempoDayCount > 1 ? "s" : ""} / ~${tempoKmCount} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
+      const effectiveKm = getTempoEffectiveKm(selectedCab);
+      tripDetails = `Tempo Traveller (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
     } else {
-      tripDetails = `Intercity Travel (${numDays} Day${numDays > 1 ? "s" : ""})`;
+      tripDetails = `Intercity Travel (${numDays} Day${plural(numDays)})`;
     }
 
-    const payStatus = paymentMethod === "full" ? "Paid 100% Full UPI" : 
-                      paymentMethod === "advance" ? `Paid ₹${requiredAdvance} Advance UPI (Balance to Driver)` : 
-                      "Pay to Driver (Cash/UPI at end)";
+    const payStatus =
+      paymentMethod === "full" ? "Paid 100% Full UPI" :
+      paymentMethod === "advance" ? `Paid ₹${requiredAdvance} Advance UPI (Balance to Driver)` :
+      "Pay to Driver (Cash/UPI at end)";
 
     return `Hello Global Air Travels,
 
@@ -352,55 +320,27 @@ Please confirm my booking. Thank you!`;
     setStep(5);
   };
 
-  // Click Offers link handler
   const handleOffersClick = () => {
-    if (step !== 1) {
-      setStep(1);
-    }
-    // Wait for step render, scroll to promos
+    if (step !== 1) setStep(1);
     setTimeout(() => {
-      const promoSection = document.getElementById("promos");
-      if (promoSection) {
-        promoSection.scrollIntoView({ behavior: "smooth" });
-      }
+      document.getElementById("promos")?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   };
 
-  // Mock OTP Signin verification
-  const handleSendOtp = (e) => {
-    e.preventDefault();
-    if (!loginPhone || loginPhone.length < 10) {
-      alert("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-    setOtpSent(true);
+  const showComingSoonToast = () => {
+    setToastMessage("Coming soon...");
+    setShowToast(true);
+    window.setTimeout(() => setShowToast(false), 2200);
   };
 
-  const handleVerifyOtp = (e) => {
-    e.preventDefault();
-    if (loginOtp === "1234" || loginOtp.length === 4) {
-      setIsLoggedIn(true);
-      setLoggedInUser(loginPhone);
-      setShowLogin(false);
-      setOtpSent(false);
-      setLoginPhone("");
-      setLoginOtp("");
-    } else {
-      alert("Invalid OTP code. Please enter 1234 to log in.");
-    }
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setLoggedInUser("");
-  };
-
-  // Mock Booking Status Tracker search
   const handleTrackBooking = (e) => {
     e.preventDefault();
     setTrackAttempted(true);
-    // If the ID matches current active reservation or standard test keys
-    if (trackBookingId.toUpperCase() === bookingId || trackBookingId.toUpperCase() === "GAT-123456" || trackBookingId.toUpperCase() === "GAT-987654") {
+    if (
+      trackBookingId.toUpperCase() === bookingId ||
+      trackBookingId.toUpperCase() === "GAT-123456" ||
+      trackBookingId.toUpperCase() === "GAT-987654"
+    ) {
       setTrackedBooking({
         id: trackBookingId.toUpperCase(),
         route: "Mysore ➔ Bangalore Airport KIA",
@@ -408,7 +348,7 @@ Please confirm my booking. Thank you!`;
         date: date || "Tomorrow",
         time: time || "10:00 AM",
         price: totalPrice,
-        status: "Confirmed (Driver details assigning 15 mins before reporting)"
+        status: "Confirmed (Driver details assigning 15 mins before reporting)",
       });
     } else {
       setTrackedBooking(null);
@@ -417,7 +357,6 @@ Please confirm my booking. Thank you!`;
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
-      {/* Pure White Header matching Cleartrip */}
       <header className="header">
         <div className="header-container">
           <a href="#" className="logo-link" onClick={() => setStep(1)}>
@@ -426,8 +365,7 @@ Please confirm my booking. Thank you!`;
               GLOBAL<span className="logo-highlight">AIR</span>TRAVELS
             </span>
           </a>
-          
-          {/* Mobile action bar with call button and hamburger menu */}
+
           <div className="mobile-only header-mobile-actions">
             <a href={`tel:${siteConfig.phone}`} className="mobile-call-icon-btn" aria-label="Call Us">
               <img src={getAssetPath("/icons/call/phone-ring.svg")} alt="" className="nav-icon" width="20" height="20" />
@@ -437,7 +375,6 @@ Please confirm my booking. Thank you!`;
             </button>
           </div>
 
-          {/* Desktop only navigation menu */}
           <nav className="desktop-only" aria-label="Main Navigation">
             <ul className="desktop-nav">
               <li>
@@ -453,23 +390,15 @@ Please confirm my booking. Thank you!`;
                 </button>
               </li>
               <li>
-                {isLoggedIn ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--primary-navy)" }}>👤 +91 {loggedInUser.slice(0,5)}...</span>
-                    <button type="button" className="nav-item-link" style={{ fontSize: "0.75rem", textDecoration: "underline", padding: 0 }} onClick={handleLogout}>Logout</button>
-                  </div>
-                ) : (
-                  <button type="button" className="btn-login" onClick={() => { setShowLogin(true); setOtpSent(false); setLoginPhone(""); setLoginOtp(""); }}>
-                    Log in
-                  </button>
-                )}
+                <button type="button" className="btn-login" onClick={openLogin}>
+                  Log in
+                </button>
               </li>
             </ul>
           </nav>
         </div>
       </header>
 
-      {/* Mobile Navigation Drawer */}
       {showMobileMenu && (
         <div className="mobile-drawer-backdrop" onClick={() => setShowMobileMenu(false)}>
           <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
@@ -495,21 +424,12 @@ Please confirm my booking. Thank you!`;
                 </li>
                 <li className="divider"></li>
                 <li>
-                  {isLoggedIn ? (
-                    <div className="drawer-user-info">
-                      <div className="user-phone" style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--primary-navy)", marginBottom: "0.5rem" }}>👤 +91 {loggedInUser}</div>
-                      <button type="button" className="btn-login" style={{ width: "100%", justifyContent: "center" }} onClick={() => { setShowMobileMenu(false); handleLogout(); }}>
-                        Log Out
-                      </button>
-                    </div>
-                  ) : (
-                    <button type="button" className="btn-login" style={{ width: "100%", justifyContent: "center" }} onClick={() => { setShowMobileMenu(false); setShowLogin(true); setOtpSent(false); setLoginPhone(""); setLoginOtp(""); }}>
-                      Log in
-                    </button>
-                  )}
+                  <button type="button" className="btn-login" style={{ width: "100%", justifyContent: "center" }} onClick={() => { setShowMobileMenu(false); openLogin(); }}>
+                    Log in
+                  </button>
                 </li>
               </ul>
-              
+
               <div className="mobile-drawer-footer">
                 <a href={`tel:${siteConfig.phone}`} className="drawer-call-btn">
                   📞 Call Support: {siteConfig.phoneDisplay}
@@ -520,10 +440,14 @@ Please confirm my booking. Thank you!`;
         </div>
       )}
 
-      {/* Main Wrapper Layout */}
+      {showToast && (
+        <div className="toast-notification" role="status" aria-live="polite">
+          {toastMessage}
+        </div>
+      )}
+
       <div className="main-wrapper">
-        
-        {/* Product Switcher Pills */}
+
         {step === 1 && (
           <nav className="product-switcher-bar" aria-label="Service Type">
             <button
@@ -569,10 +493,8 @@ Please confirm my booking. Thank you!`;
           </nav>
         )}
 
-        {/* Step-based view selector */}
         {step === 1 ? (
           <div className="cleartrip-grid step-container">
-            {/* Left Column: Cleartrip Search Box Card */}
             <div>
               <div className="cleartrip-heading-area">
                 <h1 className="cleartrip-title">{siteConfig.sidebarByTripType[tripType].heading.title}</h1>
@@ -580,7 +502,6 @@ Please confirm my booking. Thank you!`;
               </div>
 
               <div className="cleartrip-card">
-                {/* Inline Selectors (City trip mode / Outstation duration mode) */}
                 {showTripModeSelector && (
                   <div className="inline-selectors-row">
                     {isOutstationTrip && tripType !== "tempo" ? (
@@ -595,28 +516,16 @@ Please confirm my booking. Thank you!`;
                       </label>
                     ) : tripType === "tempo" ? (
                       <span className="inline-radio-label" style={{ fontSize: "0.78rem", color: "var(--text-gray)" }}>
-                        Priced at ₹{tempoCab?.ratePerKm ?? 22}/km · min {tempoCab?.minKmPerDay ?? 300} km/day · ₹{tempoCab?.driverAllowance ?? 600}/day driver
+                        Priced at ₹{TEMPO_CAB?.ratePerKm ?? 22}/km · min {TEMPO_CAB?.minKmPerDay ?? 300} km/day · ₹{TEMPO_CAB?.driverAllowance ?? 600}/day driver
                       </span>
                     ) : (
                       <>
                         <label className="inline-radio-label">
-                          <input
-                            type="radio"
-                            name="direction-mode"
-                            checked={true}
-                            readOnly
-                            className="inline-radio-input"
-                          />
+                          <input type="radio" name="direction-mode" checked={true} readOnly className="inline-radio-input" />
                           <span>One way</span>
                         </label>
                         <label className="inline-radio-label" style={{ opacity: 0.5, cursor: "not-allowed" }}>
-                          <input
-                            type="radio"
-                            name="direction-mode"
-                            checked={false}
-                            disabled
-                            className="inline-radio-input"
-                          />
+                          <input type="radio" name="direction-mode" checked={false} disabled className="inline-radio-input" />
                           <span>Round trip</span>
                         </label>
                       </>
@@ -624,87 +533,72 @@ Please confirm my booking. Thank you!`;
                   </div>
                 )}
 
-                {/* Main Booking Search Form */}
                 <form onSubmit={handleSearchSubmit}>
-                  
-                  {/* Row 1: Adjacent Pickup & Drop Inputs with Swap circle (hidden for city day-hire) */}
-                  {tripType !== "city" && <div className="cleartrip-input-row">
-                    {/* Pickup Input Column */}
-                    <div className="input-col" style={{ position: "relative" }}>
-                      <label htmlFor="pickup-input" className="input-mini-label">From</label>
-                      <input
-                        id="pickup-input"
-                        type="text"
-                        className="input-field"
-                        value={pickup}
-                        onChange={(e) => setPickup(e.target.value)}
-                        onFocus={() => setShowPickupSuggestions(true)}
-                        onBlur={() => setTimeout(() => setShowPickupSuggestions(false), 200)}
-                        placeholder="Enter pickup city"
-                        required
-                      />
-                      {showPickupSuggestions && (
-                        <div className="suggestions-dropdown">
-                          {suggestions.pickup.map((s) => (
-                            <button
-                              key={s}
-                              type="button"
-                              className="suggestion-item"
-                              onMouseDown={() => setPickup(s)}
-                            >
-                              {s}
-                            </button>
-                          ))}
-                        </div>
+                  {tripType !== "city" && (
+                    <div className="cleartrip-input-row">
+                      <div className="input-col" style={{ position: "relative" }}>
+                        <label htmlFor="pickup-input" className="input-mini-label">From</label>
+                        <input
+                          id="pickup-input"
+                          type="text"
+                          className="input-field"
+                          value={pickup}
+                          onChange={(e) => setPickup(e.target.value)}
+                          onFocus={() => setShowPickupSuggestions(true)}
+                          onBlur={() => setTimeout(() => setShowPickupSuggestions(false), 200)}
+                          placeholder="Enter pickup city"
+                          required
+                        />
+                        {showPickupSuggestions && (
+                          <div className="suggestions-dropdown">
+                            {suggestions.pickup.map((s) => (
+                              <button key={s} type="button" className="suggestion-item" onMouseDown={() => setPickup(s)}>
+                                {s}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {!isOutstationTrip && (
+                        <button
+                          type="button"
+                          className="swap-circle-btn"
+                          onClick={handleSwapLocations}
+                          style={{ "--swap-rotation": `${swapRotation}deg` }}
+                          aria-label="Swap pickup and drop locations"
+                        >
+                          <img src={getAssetPath("/icons/hero/swap.svg")} alt="" className="swap-circle-icon" />
+                        </button>
                       )}
+
+                      <div className="input-col" style={{ position: "relative" }}>
+                        <label htmlFor="drop-input" className="input-mini-label">To</label>
+                        <input
+                          id="drop-input"
+                          type="text"
+                          className="input-field"
+                          value={drop}
+                          onChange={(e) => setDrop(e.target.value)}
+                          onFocus={() => setShowDropSuggestions(true)}
+                          onBlur={() => setTimeout(() => setShowDropSuggestions(false), 200)}
+                          placeholder="Enter destination city"
+                          required
+                          disabled={isOutstationTrip}
+                        />
+                        {showDropSuggestions && (
+                          <div className="suggestions-dropdown">
+                            {suggestions.drop.map((s) => (
+                              <button key={s} type="button" className="suggestion-item" onMouseDown={() => setDrop(s)}>
+                                {s}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
+                  )}
 
-                    {/* Swap Button (Absolutely centered overlapping borders) */}
-                    {!isOutstationTrip && (
-                      <button
-                        type="button"
-                        className="swap-circle-btn"
-                        onClick={handleSwapLocations}
-                        style={{ "--swap-rotation": `${swapRotation}deg` }}
-                        aria-label="Swap pickup and drop locations"
-                      >
-                        <img src={getAssetPath("/icons/hero/swap.svg")} alt="" className="swap-circle-icon" />
-                      </button>
-                    )}
-
-                    {/* Drop Input Column */}
-                    <div className="input-col" style={{ position: "relative" }}>
-                      <label htmlFor="drop-input" className="input-mini-label">To</label>
-                      <input
-                        id="drop-input"
-                        type="text"
-                        className="input-field"
-                        value={drop}
-                        onChange={(e) => setDrop(e.target.value)}
-                        onFocus={() => setShowDropSuggestions(true)}
-                        onBlur={() => setTimeout(() => setShowDropSuggestions(false), 200)}
-                        placeholder="Enter destination city"
-                        required
-                        disabled={isOutstationTrip}
-                      />
-                      {showDropSuggestions && (
-                        <div className="suggestions-dropdown">
-                          {suggestions.drop.map((s) => (
-                            <button
-                              key={s}
-                              type="button"
-                              className="suggestion-item"
-                              onMouseDown={() => setDrop(s)}
-                            >
-                              {s}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>}
-
-                  {/* Row 2: Duration selector (City day-hire / Outstation / Tempo — drives per-day pricing) */}
                   {(tripType === "city" || isOutstationTrip) && (
                     <div className="cleartrip-input-row">
                       {tripType === "city" ? (
@@ -772,7 +666,7 @@ Please confirm my booking. Thank you!`;
                             style={{ border: "none", appearance: "none" }}
                           >
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((d) => (
-                              <option key={d} value={d}>{d} Day{d > 1 ? "s" : ""} Tour</option>
+                              <option key={d} value={d}>{d} Day{plural(d)} Tour</option>
                             ))}
                           </select>
                         </div>
@@ -780,14 +674,12 @@ Please confirm my booking. Thank you!`;
                     </div>
                   )}
 
-                  {/* Included service tags */}
                   <div className="filter-tags-row" aria-label="Included services">
                     <span className="filter-tag included-tag">Tolls Included</span>
                     <span className="filter-tag included-tag">AC Cabs</span>
                     <span className="filter-tag included-tag">Driver Allowance Incl.</span>
                   </div>
 
-                  {/* Bottom Action Row (Seat Filter) */}
                   <div className="cleartrip-bottom-row">
                     <div className="seat-filter" aria-label="Minimum seats">
                       {[3, 5, 7].map((seatCount) => (
@@ -802,16 +694,31 @@ Please confirm my booking. Thank you!`;
                         </button>
                       ))}
                     </div>
+
+                    <button type="submit" className="btn-cleartrip-search" aria-expanded={showInlineCabs}>
+                      <span>{showInlineCabs ? "Hide Cabs" : "Show Cabs"}</span>
+                      <span
+                        className="show-cabs-chevron"
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.4rem",
+                          transition: "transform 0.25s ease",
+                          transform: showInlineCabs ? "rotate(180deg)" : "rotate(0deg)",
+                        }}
+                        aria-hidden="true"
+                      >
+                        ▾
+                      </span>
+                    </button>
                   </div>
 
-                  <div className="inline-cab-preview" style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }}>
+                  {showInlineCabs && (
+                    <div className="inline-cab-preview" style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "0.75rem" }}>
                         <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--primary-navy)", margin: 0 }}>
                           Available Cabs ({filteredCabs.length})
                         </h3>
-                        <span style={{ fontSize: "0.7rem", color: "var(--text-gray)" }}>
-                          {tripSummaryLabel}
-                        </span>
+                        <span style={{ fontSize: "0.7rem", color: "var(--text-gray)" }}>{tripSummaryLabel}</span>
                       </div>
 
                       <div className="inline-cab-list" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -828,7 +735,7 @@ Please confirm my booking. Thank you!`;
                                 padding: "0.6rem 0.75rem",
                                 border: "1px solid var(--border-color)",
                                 borderRadius: "8px",
-                                backgroundColor: "#fff"
+                                backgroundColor: "#fff",
                               }}
                             >
                               <img
@@ -837,32 +744,21 @@ Please confirm my booking. Thank you!`;
                                 style={{ width: 36, height: 36, objectFit: "contain", flexShrink: 0 }}
                               />
                               <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--primary-navy)" }}>
-                                  {cab.name}
-                                </div>
+                                <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--primary-navy)" }}>{cab.name}</div>
                                 <div style={{ fontSize: "0.7rem", color: "var(--text-gray)" }}>
                                   {cab.seats} Seats • {cab.luggage} {cab.ac ? "• AC" : ""}
                                 </div>
-                                <div style={{ fontSize: "0.68rem", color: "var(--text-gray)", marginTop: "0.15rem" }}>
-                                  e.g. {cab.example}
-                                </div>
+                                <div style={{ fontSize: "0.68rem", color: "var(--text-gray)", marginTop: "0.15rem" }}>e.g. {cab.example}</div>
                               </div>
                               <div style={{ textAlign: "right", flexShrink: 0 }}>
-                                <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--primary-orange)" }}>
-                                  ₹{cabPrice}
-                                </div>
+                                <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--primary-orange)" }}>₹{cabPrice}</div>
                                 <div style={{ fontSize: "0.65rem", color: "var(--text-gray)" }}>Assured</div>
                               </div>
                               <button
                                 type="button"
                                 className="btn-primary"
-                                style={{
-                                  minHeight: "32px",
-                                  padding: "0.35rem 0.75rem",
-                                  fontSize: "0.75rem",
-                                  flexShrink: 0
-                                }}
-                                onClick={() => handleInlineCabSelect(cab)}
+                                style={{ minHeight: "32px", padding: "0.35rem 0.75rem", fontSize: "0.75rem", flexShrink: 0 }}
+                                onClick={() => handleCabSelect(cab)}
                               >
                                 Book
                               </button>
@@ -880,12 +776,11 @@ Please confirm my booking. Thank you!`;
                         Prices include tolls, driver allowance & GST. No hidden charges.
                       </p>
                     </div>
-
+                  )}
                 </form>
               </div>
             </div>
 
-            {/* Right Column: Cleartrip Sidebar — content varies by tripType */}
             <aside className="cleartrip-sidebar">
               {(() => {
                 const sidebar = siteConfig.sidebarByTripType[tripType];
@@ -894,23 +789,21 @@ Please confirm my booking. Thank you!`;
                       backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.45)), url(${getAssetPath(sidebar.banner.image)}), ${sidebar.banner.gradient || "linear-gradient(135deg, #0B3D91 0%, #F26B1F 100%)"}`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
-                      color: "#ffffff"
+                      color: "#ffffff",
                     }
                   : {
                       backgroundImage: sidebar.banner.gradient || "linear-gradient(135deg, #0B3D91 0%, #F26B1F 100%)",
-                      color: "#ffffff"
+                      color: "#ffffff",
                     };
 
                 return (
                   <>
-                    {/* Dynamic Ad Banner */}
                     <div className="cleartrip-ad-card" style={bannerStyle}>
                       <span className="ad-badge" style={{ backgroundColor: "var(--primary-orange)", color: "#ffffff" }}>{sidebar.banner.badge}</span>
                       <p className="ad-text" style={{ color: "#ffffff", textShadow: "0 1px 3px rgba(0, 0, 0, 0.6)" }}>{sidebar.banner.text}</p>
                       <span className="ad-footer" style={{ color: "#e2e8f0" }}>{sidebar.banner.footer}</span>
                     </div>
 
-                    {/* Quick Select — routes or tour packages depending on trip type */}
                     <div className="cleartrip-sidebar-card">
                       <div className="sidebar-title-row">
                         <h2 className="sidebar-title">{sidebar.quickSelect.title}</h2>
@@ -918,12 +811,7 @@ Please confirm my booking. Thank you!`;
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                         {sidebar.quickSelect.items.map((item) => (
-                          <button
-                            key={item.id}
-                            type="button"
-                            className="quick-route-btn"
-                            onClick={() => handleQuickRouteSelect(item)}
-                          >
+                          <button key={item.id} type="button" className="quick-route-btn" onClick={() => handleQuickRouteSelect(item)}>
                             <span className="quick-route-name">{item.name}</span>
                             <span className="quick-route-price">{item.subtitle}</span>
                           </button>
@@ -931,7 +819,6 @@ Please confirm my booking. Thank you!`;
                       </div>
                     </div>
 
-                    {/* Info card — inclusions or border permits depending on trip type */}
                     <div className="cleartrip-sidebar-card">
                       <div className="sidebar-title-row">
                         <h2 className="sidebar-title">{sidebar.info.title}</h2>
@@ -947,9 +834,10 @@ Please confirm my booking. Thank you!`;
                       <section className="cleartrip-promo-row sidebar-promo-row" id="promos" aria-label="Offers and Promotions">
                         {applicablePromos.map((promo, idx) => {
                           const tag = (promo.appliesTo || []).join(" • ").toUpperCase() || "OFFER";
-                          const title = promo.type === "percent"
-                            ? `${promo.value}% Off${promo.maxDiscount ? ` (max ₹${promo.maxDiscount})` : ""}`
-                            : `Flat ₹${promo.value} Off`;
+                          const title =
+                            promo.type === "percent"
+                              ? `${promo.value}% Off${promo.maxDiscount ? ` (max ₹${promo.maxDiscount})` : ""}`
+                              : `Flat ₹${promo.value} Off`;
                           return (
                             <div key={promo.code} className="promo-card">
                               <div className="promo-img-box" style={{ color: PROMO_PALETTE[idx % PROMO_PALETTE.length] }}>
@@ -974,19 +862,14 @@ Please confirm my booking. Thank you!`;
             </aside>
           </div>
         ) : (
-          /* Multi-step screen inside center container */
           <div className="stepper-result step-container">
             {/* Step 2: Cab Selection */}
             {step === 2 && (
               <div>
                 <div className="route-summary-bar">
                   <div className="route-summary-info">
-                    <span className="route-summary-cities">
-                      {pickup} ➔ {drop}
-                    </span>
-                    <span className="route-summary-details">
-                      Date: {date} at {time} • {tripSummaryLabel}
-                    </span>
+                    <span className="route-summary-cities">{pickup} ➔ {drop}</span>
+                    <span className="route-summary-details">Date: {date} at {time} • {tripSummaryLabel}</span>
                   </div>
                   <button
                     type="button"
@@ -1003,21 +886,12 @@ Please confirm my booking. Thank you!`;
                   {filteredCabs.map((cab) => {
                     const cabPrice = calculatePrice(cab);
                     const isSelected = selectedCab.id === cab.id;
-                    
                     return (
-                      <div
-                        key={cab.id}
-                        className={`cab-card ${isSelected ? "selected" : ""}`}
-                      >
+                      <div key={cab.id} className={`cab-card ${isSelected ? "selected" : ""}`}>
                         <div className="cab-card-header">
                           <div className="cab-icon-box">
-                            <img
-                              src={getAssetPath(`/icons/${cab.icon}`)}
-                              alt=""
-                              className="cab-icon-img"
-                            />
+                            <img src={getAssetPath(`/icons/${cab.icon}`)} alt="" className="cab-icon-img" />
                           </div>
-                          
                           <div className="cab-meta">
                             <div className="cab-name-row">
                               <h3 className="cab-name">{cab.name}</h3>
@@ -1027,7 +901,6 @@ Please confirm my booking. Thank you!`;
                               </div>
                             </div>
                             <p className="cab-example">e.g. {cab.example}</p>
-                            
                             <div className="cab-specs">
                               <span className="cab-spec-badge">👤 {cab.seats} Seats</span>
                               <span className="cab-spec-badge">💼 {cab.luggage}</span>
@@ -1041,13 +914,10 @@ Please confirm my booking. Thank you!`;
                             <>
                               <div className="cab-inclusions-title">Tempo Per-Km Rate Breakdown</div>
                               <div style={{ fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                                {(() => {
-                                  const effectiveKm = Math.max(tempoKmCount, tempoDayCount * cab.minKmPerDay);
-                                  return `₹${cab.ratePerKm}/km × ${effectiveKm} km + ₹${cab.driverAllowance} × ${tempoDayCount} day${tempoDayCount > 1 ? "s" : ""} driver = ₹${cabPrice}`;
-                                })()}
+                                {`₹${cab.ratePerKm}/km × ${getTempoEffectiveKm(cab)} km + ₹${cab.driverAllowance} × ${tempoDayCount} day${plural(tempoDayCount)} driver = ₹${cabPrice}`}
                               </div>
                               <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", marginTop: "0.2rem" }}>
-                                Min {cab.minKmPerDay} km/day applies · {tempoDayCount} day{tempoDayCount > 1 ? "s" : ""}
+                                Min {cab.minKmPerDay} km/day applies · {tempoDayCount} day{plural(tempoDayCount)}
                               </div>
                             </>
                           ) : isOutstationTrip ? (
@@ -1072,7 +942,7 @@ Please confirm my booking. Thank you!`;
                           className="btn-primary"
                           style={{
                             marginTop: "0.5rem",
-                            backgroundColor: isSelected ? "var(--primary-navy)" : "var(--primary-orange)"
+                            backgroundColor: isSelected ? "var(--primary-navy)" : "var(--primary-orange)",
                           }}
                           onClick={() => handleCabSelect(cab)}
                         >
@@ -1097,7 +967,6 @@ Please confirm my booking. Thank you!`;
             {step === 3 && (
               <div className="booking-card">
                 <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Passenger Information</h2>
-                
                 <form onSubmit={handlePassengerSubmit} className="passenger-form">
                   <div className="form-group">
                     <label htmlFor="cust-name" className="form-label">Passenger Name</label>
@@ -1169,12 +1038,8 @@ Please confirm my booking. Thank you!`;
                   </div>
 
                   <div className="form-actions">
-                    <button type="button" className="btn-secondary" onClick={() => setStep(2)}>
-                      Back
-                    </button>
-                    <button type="submit" className="btn-primary">
-                      Confirm Address Details ➔
-                    </button>
+                    <button type="button" className="btn-secondary" onClick={() => setStep(2)}>Back</button>
+                    <button type="submit" className="btn-primary">Confirm Address Details ➔</button>
                   </div>
                 </form>
               </div>
@@ -1184,7 +1049,6 @@ Please confirm my booking. Thank you!`;
             {step === 4 && (
               <div className="booking-card">
                 <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Confirm Booking Invoice</h2>
-                
                 <div className="payment-section">
                   <div className="trip-bill-summary">
                     <div className="bill-title">Summary of Charges</div>
@@ -1204,23 +1068,18 @@ Please confirm my booking. Thank you!`;
                       <>
                         <div className="bill-row">
                           <span>Duration / Est. Km:</span>
-                          <span>{tempoDayCount} Day{tempoDayCount > 1 ? "s" : ""} · ~{tempoKmCount} km</span>
+                          <span>{tempoDayCount} Day{plural(tempoDayCount)} · ~{tempoKmCount} km</span>
                         </div>
                         <div className="bill-row">
                           <span>Rate:</span>
-                          <span>
-                            {(() => {
-                              const effectiveKm = Math.max(tempoKmCount, tempoDayCount * selectedCab.minKmPerDay);
-                              return `₹${selectedCab.ratePerKm}/km × ${effectiveKm} km + ₹${selectedCab.driverAllowance} × ${tempoDayCount}d driver`;
-                            })()}
-                          </span>
+                          <span>{`₹${selectedCab.ratePerKm}/km × ${getTempoEffectiveKm(selectedCab)} km + ₹${selectedCab.driverAllowance} × ${tempoDayCount}d driver`}</span>
                         </div>
                       </>
                     )}
                     {tripType === "daily" && (
                       <div className="bill-row">
                         <span>Duration:</span>
-                        <span>{numDays} Day{numDays > 1 ? "s" : ""} Tour</span>
+                        <span>{numDays} Day{plural(numDays)} Tour</span>
                       </div>
                     )}
                     <div className="bill-row total">
@@ -1231,38 +1090,16 @@ Please confirm my booking. Thank you!`;
 
                   <h3 className="form-label">Payment Preference</h3>
                   <div className="payment-methods" role="radiogroup" aria-label="Payment Mode">
-                    {/* Pay on arrival */}
-                    <div
-                      className={`payment-method-card ${paymentMethod === "arrival" ? "selected" : ""}`}
-                      onClick={() => setPaymentMethod("arrival")}
-                    >
-                      <input
-                        type="radio"
-                        id="radio-arrival"
-                        name="payment-preference"
-                        checked={paymentMethod === "arrival"}
-                        onChange={() => {}}
-                        className="payment-radio"
-                      />
+                    <div className={`payment-method-card ${paymentMethod === "arrival" ? "selected" : ""}`} onClick={() => setPaymentMethod("arrival")}>
+                      <input type="radio" id="radio-arrival" name="payment-preference" checked={paymentMethod === "arrival"} onChange={() => {}} className="payment-radio" />
                       <div className="payment-method-info">
                         <label htmlFor="radio-arrival" className="payment-method-name">Pay to Driver (Cash/UPI)</label>
                         <span className="payment-method-desc">Pay ₹{totalPrice} directly to driver at the end of the trip.</span>
                       </div>
                     </div>
 
-                    {/* Pay ₹500 advance */}
-                    <div
-                      className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`}
-                      onClick={() => setPaymentMethod("advance")}
-                    >
-                      <input
-                        type="radio"
-                        id="radio-advance"
-                        name="payment-preference"
-                        checked={paymentMethod === "advance"}
-                        onChange={() => {}}
-                        className="payment-radio"
-                      />
+                    <div className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`} onClick={() => setPaymentMethod("advance")}>
+                      <input type="radio" id="radio-advance" name="payment-preference" checked={paymentMethod === "advance"} onChange={() => {}} className="payment-radio" />
                       <div className="payment-method-info">
                         <label htmlFor="radio-advance" className="payment-method-name">
                           Pay Booking Advance (₹{requiredAdvance})
@@ -1272,19 +1109,8 @@ Please confirm my booking. Thank you!`;
                       </div>
                     </div>
 
-                    {/* Pay full online */}
-                    <div
-                      className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`}
-                      onClick={() => setPaymentMethod("full")}
-                    >
-                      <input
-                        type="radio"
-                        id="radio-full"
-                        name="payment-preference"
-                        checked={paymentMethod === "full"}
-                        onChange={() => {}}
-                        className="payment-radio"
-                      />
+                    <div className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`} onClick={() => setPaymentMethod("full")}>
+                      <input type="radio" id="radio-full" name="payment-preference" checked={paymentMethod === "full"} onChange={() => {}} className="payment-radio" />
                       <div className="payment-method-info">
                         <label htmlFor="radio-full" className="payment-method-name">
                           Pay Full Online (₹{totalPrice})
@@ -1295,67 +1121,48 @@ Please confirm my booking. Thank you!`;
                     </div>
                   </div>
 
-                  {/* QR Scan / Mobile App pay */}
-                  {paymentMethod !== "arrival" && (
-                    <div className="upi-gateway-container">
-                      <div className="upi-brands">
-                        <img src={getAssetPath("/icons/upi.svg")} alt="UPI Logo" className="upi-brand-icon" style={{ height: 16 }} />
-                        <span style={{ fontWeight: 700, fontSize: "0.8rem", color: "#5f259f" }}>GPay/PhonePe Gateway</span>
+                  {paymentMethod !== "arrival" && (() => {
+                    const upiLink = generateUpiLink();
+                    return (
+                      <div className="upi-gateway-container">
+                        <div className="upi-brands">
+                          <img src={getAssetPath("/icons/upi.svg")} alt="UPI Logo" className="upi-brand-icon" style={{ height: 16 }} />
+                          <span style={{ fontWeight: 700, fontSize: "0.8rem", color: "#5f259f" }}>GPay/PhonePe Gateway</span>
+                        </div>
+                        <div className="qr-instructions">
+                          <span style={{ display: "block", fontWeight: 700, fontSize: "1.05rem", color: "var(--primary-navy)" }}>
+                            Amount to Pay: ₹{onlinePaymentAmount}
+                          </span>
+                          <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                            Account Holder: <strong>{siteConfig.merchantName}</strong>
+                          </span>
+                          <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                            GPay/PhonePe Number: <strong>{siteConfig.phoneDisplay}</strong>
+                          </span>
+                        </div>
+                        <div className="qr-code-box">
+                          <img
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(upiLink)}`}
+                            alt="Scan QR"
+                            className="qr-mock-img"
+                          />
+                        </div>
+                        <div className="pay-btn-group">
+                          <a href={upiLink} className="btn-phonepe-pay">📱 Pay via UPI Apps</a>
+                        </div>
                       </div>
-                      
-                      <div className="qr-instructions">
-                        <span style={{ display: "block", fontWeight: 700, fontSize: "1.05rem", color: "var(--primary-navy)" }}>
-                          Amount to Pay: ₹{onlinePaymentAmount}
-                        </span>
-                        <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                          Account Holder: <strong>{siteConfig.merchantName}</strong>
-                        </span>
-                        <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                          GPay/PhonePe Number: <strong>{siteConfig.phoneDisplay}</strong>
-                        </span>
-                      </div>
-
-                      <div className="qr-code-box">
-                        <img
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(generateUpiLink())}`}
-                          alt="Scan QR"
-                          className="qr-mock-img"
-                        />
-                      </div>
-
-                      <div className="pay-btn-group">
-                        <a href={generateUpiLink()} className="btn-phonepe-pay">
-                          📱 Pay via UPI Apps
-                        </a>
-                      </div>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   <div className="pay-btn-group" style={{ marginTop: "1rem" }}>
-                    <button
-                      type="button"
-                      className="btn-whatsapp-confirm"
-                      onClick={handleWhatsAppRedirect}
-                    >
-                      <img src={whatsappIconPath} alt="" className="whatsapp-icon-white" />
+                    <button type="button" className="btn-whatsapp-confirm" onClick={handleWhatsAppRedirect}>
+                      <img src={WHATSAPP_ICON_PATH} alt="" className="whatsapp-icon-white" />
                       Send Booking Request on WhatsApp
                     </button>
-                    
-                    <button
-                      type="button"
-                      className="btn-primary"
-                      onClick={() => setStep(5)}
-                    >
+                    <button type="button" className="btn-primary" onClick={() => setStep(5)}>
                       Confirm Booking (Pay on Arrival)
                     </button>
-
-                    <button
-                      type="button"
-                      className="btn-secondary"
-                      onClick={() => setStep(3)}
-                    >
-                      Back
-                    </button>
+                    <button type="button" className="btn-secondary" onClick={() => setStep(3)}>Back</button>
                   </div>
                 </div>
               </div>
@@ -1367,7 +1174,6 @@ Please confirm my booking. Thank you!`;
                 <div className="success-badge">
                   <img src={getAssetPath("/icons/verified.svg")} alt="" className="success-icon-svg" />
                 </div>
-                
                 <h2 className="success-title">Trip Registered!</h2>
                 <p className="success-desc">
                   Thank you, {name}! Your trip has been registered. We are preparing your allotment details.
@@ -1394,9 +1200,11 @@ Please confirm my booking. Thank you!`;
                   <div className="bill-row" style={{ borderTop: "1px dashed var(--border-color)", paddingTop: "0.5rem", marginTop: "0.5rem" }}>
                     <span>Payment Mode:</span>
                     <span style={{ fontWeight: 600, color: "var(--primary-orange)" }}>
-                      {paymentMethod === "full" ? "Paid Full Online" : 
-                       paymentMethod === "advance" ? `Paid ₹${requiredAdvance} (₹${payToDriverAmount} to Driver)` : 
-                       `Pay Driver ₹${totalPrice} at Trip End`}
+                      {paymentMethod === "full"
+                        ? "Paid Full Online"
+                        : paymentMethod === "advance"
+                        ? `Paid ₹${requiredAdvance} (₹${payToDriverAmount} to Driver)`
+                        : `Pay Driver ₹${totalPrice} at Trip End`}
                     </span>
                   </div>
                 </div>
@@ -1408,10 +1216,9 @@ Please confirm my booking. Thank you!`;
                     rel="noreferrer"
                     className="btn-whatsapp-confirm"
                   >
-                    <img src={whatsappIconPath} alt="" className="whatsapp-icon-white" />
+                    <img src={WHATSAPP_ICON_PATH} alt="" className="whatsapp-icon-white" />
                     Send Details on WhatsApp
                   </a>
-
                   <button
                     type="button"
                     className="btn-primary"
@@ -1433,21 +1240,12 @@ Please confirm my booking. Thank you!`;
             )}
           </div>
         )}
-
       </div>
 
-      {/* Floating WhatsApp button */}
-      <a
-        href={getWhatsAppUrl()}
-        className="whatsapp-float"
-        target="_blank"
-        rel="noreferrer"
-        aria-label="WhatsApp support"
-      >
-        <img src={whatsappIconPath} alt="WhatsApp" className="whatsapp-float-icon" />
+      <a href={getWhatsAppUrl()} className="whatsapp-float" target="_blank" rel="noreferrer" aria-label="WhatsApp support">
+        <img src={WHATSAPP_ICON_PATH} alt="WhatsApp" className="whatsapp-float-icon" />
       </a>
 
-      {/* Footer */}
       <footer className="footer">
         <div className="footer-container">
           <div className="footer-grid">
@@ -1483,26 +1281,11 @@ Please confirm my booking. Thank you!`;
             <div className="footer-section">
               <h2 className="footer-heading">{siteConfig.footer.bankDetails.title}</h2>
               <dl className="footer-bank-list">
-                <div>
-                  <dt>Bank</dt>
-                  <dd>{siteConfig.footer.bankDetails.bank}</dd>
-                </div>
-                <div>
-                  <dt>Current A/c Number</dt>
-                  <dd>{siteConfig.footer.bankDetails.accountNumber}</dd>
-                </div>
-                <div>
-                  <dt>Name</dt>
-                  <dd>{siteConfig.footer.bankDetails.accountName}</dd>
-                </div>
-                <div>
-                  <dt>Branch</dt>
-                  <dd>{siteConfig.footer.bankDetails.branch}</dd>
-                </div>
-                <div>
-                  <dt>IFSC code</dt>
-                  <dd>{siteConfig.footer.bankDetails.ifsc}</dd>
-                </div>
+                <div><dt>Bank</dt><dd>{siteConfig.footer.bankDetails.bank}</dd></div>
+                <div><dt>Current A/c Number</dt><dd>{siteConfig.footer.bankDetails.accountNumber}</dd></div>
+                <div><dt>Name</dt><dd>{siteConfig.footer.bankDetails.accountName}</dd></div>
+                <div><dt>Branch</dt><dd>{siteConfig.footer.bankDetails.branch}</dd></div>
+                <div><dt>IFSC code</dt><dd>{siteConfig.footer.bankDetails.ifsc}</dd></div>
               </dl>
             </div>
           </div>
@@ -1512,9 +1295,8 @@ Please confirm my booking. Thank you!`;
         </div>
       </footer>
 
-      {/* ================= MODALS SYSTEM ================= */}
-      
-      {/* 1. Track Bookings / My Bookings Modal */}
+      {/* ===== MODALS ===== */}
+
       {showMyBookings && (
         <div className="modal-backdrop" onClick={() => setShowMyBookings(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
@@ -1529,7 +1311,6 @@ Please confirm my booking. Thank you!`;
                   <p style={{ marginBottom: "0.85rem", fontSize: "0.85rem", color: "var(--text-gray)" }}>
                     Enter your booking reference ID to check current status and allotment.
                   </p>
-                  
                   <label htmlFor="track-id" className="form-label" style={{ fontWeight: 600 }}>Booking ID</label>
                   <input
                     id="track-id"
@@ -1540,7 +1321,6 @@ Please confirm my booking. Thank you!`;
                     onChange={(e) => setTrackBookingId(e.target.value)}
                     required
                   />
-
                   <label htmlFor="track-tel" className="form-label" style={{ fontWeight: 600 }}>Mobile Number</label>
                   <input
                     id="track-tel"
@@ -1551,11 +1331,7 @@ Please confirm my booking. Thank you!`;
                     onChange={(e) => setTrackPhone(e.target.value)}
                     required
                   />
-
-                  <button type="submit" className="btn-primary" style={{ marginTop: "0.5rem" }}>
-                    Search Trip Status ➔
-                  </button>
-                  
+                  <button type="submit" className="btn-primary" style={{ marginTop: "0.5rem" }}>Search Trip Status ➔</button>
                   {trackAttempted && (
                     <p style={{ color: "var(--error-red)", fontSize: "0.75rem", marginTop: "0.5rem", fontWeight: 600 }}>
                       No active bookings found for ID: {trackBookingId}. Try typing your active ID: {bookingId}
@@ -1569,27 +1345,21 @@ Please confirm my booking. Thank you!`;
                       Status: {trackedBooking.status}
                     </div>
                     <div className="bill-row" style={{ fontSize: "0.8rem", marginBlock: "0.2rem" }}>
-                      <span>Booking ID:</span>
-                      <strong>{trackedBooking.id}</strong>
+                      <span>Booking ID:</span><strong>{trackedBooking.id}</strong>
                     </div>
                     <div className="bill-row" style={{ fontSize: "0.8rem", marginBlock: "0.2rem" }}>
-                      <span>Route:</span>
-                      <span>{trackedBooking.route}</span>
+                      <span>Route:</span><span>{trackedBooking.route}</span>
                     </div>
                     <div className="bill-row" style={{ fontSize: "0.8rem", marginBlock: "0.2rem" }}>
-                      <span>Vehicle:</span>
-                      <span>{trackedBooking.car}</span>
+                      <span>Vehicle:</span><span>{trackedBooking.car}</span>
                     </div>
                     <div className="bill-row" style={{ fontSize: "0.8rem", marginBlock: "0.2rem" }}>
-                      <span>Reporting:</span>
-                      <span>{trackedBooking.date} at {trackedBooking.time}</span>
+                      <span>Reporting:</span><span>{trackedBooking.date} at {trackedBooking.time}</span>
                     </div>
                     <div className="bill-row" style={{ fontSize: "0.8rem", marginBlock: "0.2rem" }}>
-                      <span>Assured Cost:</span>
-                      <strong>₹{trackedBooking.price}</strong>
+                      <span>Assured Cost:</span><strong>₹{trackedBooking.price}</strong>
                     </div>
                   </div>
-                  
                   <div style={{ display: "flex", gap: "0.5rem" }}>
                     <a
                       href={getWhatsAppUrl("Hello Global Air Travels, please verify status of Booking ID " + trackedBooking.id)}
@@ -1611,7 +1381,6 @@ Please confirm my booking. Thank you!`;
         </div>
       )}
 
-      {/* 2. Customer Support Modal */}
       {showSupport && (
         <div className="modal-backdrop" onClick={() => setShowSupport(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
@@ -1624,88 +1393,13 @@ Please confirm my booking. Thank you!`;
               <p style={{ marginBottom: "1rem", fontSize: "0.85rem", color: "var(--text-gray)" }}>
                 Need help with your booking? Contact our Mysore booking office directly:
               </p>
-              
               <div className="booking-summary-box" style={{ margin: "0.5rem 0 1.25rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <div>📞 <strong>Call booking manager:</strong> <a href={`tel:${siteConfig.phone}`} style={{ color: "var(--primary-blue)", fontWeight: 700 }}>{siteConfig.phoneDisplay}</a></div>
                 <div>💬 <strong>WhatsApp Chat:</strong> <a href={getWhatsAppUrl()} target="_blank" rel="noreferrer" style={{ color: "var(--success-green)", fontWeight: 700 }}>{siteConfig.whatsappDisplay}</a></div>
                 <div>✉️ <strong>Email Address:</strong> <a href={`mailto:${siteConfig.email}`} style={{ color: "var(--primary-blue)" }}>{siteConfig.email}</a></div>
                 <div>📍 <strong>Registered Office:</strong> Mysore, Karnataka, India</div>
               </div>
-
-              <button type="button" className="btn-primary" onClick={() => setShowSupport(false)}>
-                Back to Website
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 3. Login Modal */}
-      {showLogin && (
-        <div className="modal-backdrop" onClick={() => setShowLogin(false)}>
-          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <button type="button" className="modal-close-btn" onClick={() => setShowLogin(false)}>✕</button>
-            <h2 className="modal-title">
-              <img src={getAssetPath("/icons/nav/login.svg")} alt="" className="nav-icon" width="20" height="20" style={{ color: "var(--primary-orange)" }} />
-              <span>Log in to your account</span>
-            </h2>
-            <div className="modal-body">
-              {!otpSent ? (
-                <form onSubmit={handleSendOtp}>
-                  <p style={{ marginBottom: "0.85rem", fontSize: "0.85rem", color: "var(--text-gray)" }}>
-                    Enter your phone number to receive a secure login code.
-                  </p>
-                  
-                  <label htmlFor="login-tel" className="form-label" style={{ fontWeight: 600 }}>Mobile Number</label>
-                  <input
-                    id="login-tel"
-                    type="tel"
-                    className="modal-input"
-                    placeholder="Enter 10-digit mobile number"
-                    value={loginPhone}
-                    onChange={(e) => setLoginPhone(e.target.value)}
-                    required
-                    pattern="[6-9][0-9]{9}"
-                    inputMode="tel"
-                  />
-
-                  <button type="submit" className="btn-primary" style={{ marginTop: "0.5rem" }}>
-                    Send One-Time OTP ➔
-                  </button>
-                </form>
-              ) : (
-                <form onSubmit={handleVerifyOtp}>
-                  <p style={{ marginBottom: "0.85rem", fontSize: "0.85rem", color: "var(--text-gray)" }}>
-                    We sent a mock SMS OTP verification code to <strong>+91 {loginPhone}</strong>.
-                  </p>
-
-                  <label htmlFor="login-otp" className="form-label" style={{ fontWeight: 600 }}>Enter 4-Digit OTP Code</label>
-                  <input
-                    id="login-otp"
-                    type="text"
-                    className="modal-input"
-                    placeholder="Enter OTP (type 1234)"
-                    value={loginOtp}
-                    onChange={(e) => setLoginOtp(e.target.value)}
-                    required
-                    maxLength={4}
-                    pattern="\d{4}"
-                    inputMode="numeric"
-                  />
-
-                  <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.85rem", textAlign: "right" }}>
-                    Hint: Enter code <strong>1234</strong> to verify.
-                  </span>
-
-                  <button type="submit" className="btn-primary">
-                    Verify & Sign In
-                  </button>
-                  
-                  <button type="button" className="btn-secondary" style={{ marginTop: "0.5rem", width: "100%" }} onClick={() => setOtpSent(false)}>
-                    Back
-                  </button>
-                </form>
-              )}
+              <button type="button" className="btn-primary" onClick={() => setShowSupport(false)}>Back to Website</button>
             </div>
           </div>
         </div>
