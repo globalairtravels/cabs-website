@@ -638,22 +638,6 @@ Please confirm my booking. Thank you!`;
                               style={{ border: "none" }}
                             />
                           </div>
-                          <div className="input-col">
-                            <label htmlFor="tempo-km-input" className="input-mini-label">Estimated Km</label>
-                            <input
-                              id="tempo-km-input"
-                              type="number"
-                              className="input-field"
-                              value={tempoEstKm}
-                              onChange={(e) => {
-                                const { value } = e.target;
-                                setTempoEstKm(value === "" ? "" : normalizePositiveInteger(value));
-                              }}
-                              onBlur={() => setTempoEstKm(tempoKmCount)}
-                              min="1"
-                              style={{ border: "none" }}
-                            />
-                          </div>
                         </>
                       ) : (
                         <div className="input-col">
