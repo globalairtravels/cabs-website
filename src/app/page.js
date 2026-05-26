@@ -65,6 +65,22 @@ export default function Home() {
 
   const [swapRotation, setSwapRotation] = useState(0);
 
+  const handlePickupLocationChange = (val) => {
+    setPickup(val);
+    const normalize = (loc) => (loc || "").trim().toLowerCase();
+    if (tripType === "airport" && val && normalize(val) === normalize(drop)) {
+      setDrop("");
+    }
+  };
+
+  const handleDropLocationChange = (val) => {
+    setDrop(val);
+    const normalize = (loc) => (loc || "").trim().toLowerCase();
+    if (tripType === "airport" && val && normalize(val) === normalize(pickup)) {
+      setPickup("");
+    }
+  };
+
   const [selectedCab, setSelectedCab] = useState(bookingConfig.cabTypes[0]);
   const [bookingId, setBookingId] = useState(createBookingId);
   const [name, setName] = useState("");
@@ -543,7 +559,7 @@ Please confirm my booking. Thank you!`;
                           type="text"
                           className="input-field"
                           value={pickup}
-                          onChange={(e) => setPickup(e.target.value)}
+                          onChange={(e) => handlePickupLocationChange(e.target.value)}
                           onFocus={() => setShowPickupSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowPickupSuggestions(false), 200)}
                           placeholder="Enter pickup city"
@@ -552,7 +568,7 @@ Please confirm my booking. Thank you!`;
                         {showPickupSuggestions && (
                           <div className="suggestions-dropdown">
                             {suggestions.pickup.map((s) => (
-                              <button key={s} type="button" className="suggestion-item" onMouseDown={() => setPickup(s)}>
+                              <button key={s} type="button" className="suggestion-item" onMouseDown={() => handlePickupLocationChange(s)}>
                                 {s}
                               </button>
                             ))}
@@ -579,7 +595,7 @@ Please confirm my booking. Thank you!`;
                           type="text"
                           className="input-field"
                           value={drop}
-                          onChange={(e) => setDrop(e.target.value)}
+                          onChange={(e) => handleDropLocationChange(e.target.value)}
                           onFocus={() => setShowDropSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowDropSuggestions(false), 200)}
                           placeholder="Enter destination city"
@@ -589,7 +605,7 @@ Please confirm my booking. Thank you!`;
                         {showDropSuggestions && (
                           <div className="suggestions-dropdown">
                             {suggestions.drop.map((s) => (
-                              <button key={s} type="button" className="suggestion-item" onMouseDown={() => setDrop(s)}>
+                              <button key={s} type="button" className="suggestion-item" onMouseDown={() => handleDropLocationChange(s)}>
                                 {s}
                               </button>
                             ))}
