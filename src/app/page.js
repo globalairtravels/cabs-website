@@ -70,9 +70,6 @@ export default function Home() {
   // Active filters inside search box (0 = no filter / none selected by default)
   const [minSeats, setMinSeats] = useState(0);
 
-  // Inline cab preview expansion on home screen
-  const [showInlineCabs, setShowInlineCabs] = useState(false);
-
   // Selected Cab & Passenger Info
   const [selectedCab, setSelectedCab] = useState(bookingConfig.cabTypes[0]);
   const [bookingId, setBookingId] = useState(createBookingId);
@@ -142,8 +139,7 @@ export default function Home() {
   const handleTabChange = (tab) => {
     setTripType(tab);
 
-    // Hide the inline cab preview and clear the seater filter when switching tabs.
-    setShowInlineCabs(false);
+    // Clear the seater filter when switching tabs.
     setMinSeats(0);
 
     // Reset selectedCab if it's not applicable for the new tab.
@@ -286,14 +282,6 @@ export default function Home() {
   // Navigation handlers
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (tripType !== "city" && (!pickup || !drop)) {
-      alert("Please fill in pickup and drop locations.");
-      return;
-    }
-    if (filteredCabs.length > 0) {
-      setSelectedCab(filteredCabs[0]);
-    }
-    setShowInlineCabs((prev) => !prev);
   };
 
   const handleInlineCabSelect = (cab) => {
@@ -799,7 +787,7 @@ Please confirm my booking. Thank you!`;
                     <span className="filter-tag included-tag">Driver Allowance Incl.</span>
                   </div>
 
-                  {/* Bottom Action Row (Seat Filter & Primary Button) */}
+                  {/* Bottom Action Row (Seat Filter) */}
                   <div className="cleartrip-bottom-row">
                     <div className="seat-filter" aria-label="Minimum seats">
                       {[3, 5, 7].map((seatCount) => (
@@ -814,30 +802,9 @@ Please confirm my booking. Thank you!`;
                         </button>
                       ))}
                     </div>
-
-                    <button
-                      type="submit"
-                      className="btn-cleartrip-search"
-                      aria-expanded={showInlineCabs}
-                    >
-                      <span>{showInlineCabs ? "Hide Cabs" : "Show Cabs"}</span>
-                      <span
-                        className="show-cabs-chevron"
-                        style={{
-                          display: "inline-block",
-                          marginLeft: "0.4rem",
-                          transition: "transform 0.25s ease",
-                          transform: showInlineCabs ? "rotate(180deg)" : "rotate(0deg)"
-                        }}
-                        aria-hidden="true"
-                      >
-                        ▾
-                      </span>
-                    </button>
                   </div>
 
-                  {showInlineCabs && (
-                    <div className="inline-cab-preview" style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }}>
+                  <div className="inline-cab-preview" style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "0.75rem" }}>
                         <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--primary-navy)", margin: 0 }}>
                           Available Cabs ({filteredCabs.length})
@@ -913,7 +880,6 @@ Please confirm my booking. Thank you!`;
                         Prices include tolls, driver allowance & GST. No hidden charges.
                       </p>
                     </div>
-                  )}
 
                 </form>
               </div>
