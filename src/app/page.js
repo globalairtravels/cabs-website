@@ -717,9 +717,11 @@ Please confirm my booking. Thank you!`;
                   )}
 
                   <div className="filter-tags-row" aria-label="Included services">
-                    <span className="filter-tag included-tag">Tolls Included</span>
-                    <span className="filter-tag included-tag">AC Cabs</span>
-                    <span className="filter-tag included-tag">Driver Allowance Incl.</span>
+                    {siteConfig.sidebarByTripType[tripType].info.shortInclusions?.map((tag) => (
+                      <span key={tag} className="filter-tag included-tag">
+                        {tag}
+                      </span>
+                    ))}
                   </div>
 
                   <div className="cleartrip-bottom-row">

@@ -213,6 +213,12 @@ export const siteConfig = {
           "Toll, parking & driver allowance included",
           "Meet & greet at arrival gate"
         ],
+        shortInclusions: [
+          "Tolls Included",
+          "Airport Waiting",
+          "Flight Tracking",
+          "AC Cabs"
+        ],
         exclusions: [
           "Multiple pickups/drops or route deviations",
           "Interstate border permit charges"
@@ -244,6 +250,12 @@ export const siteConfig = {
           "Unlimited stops & flexible daily routing",
           "Fixed minimum kilometer limit (250 km/day for cars)",
           "Driver allowance & fuel charges included"
+        ],
+        shortInclusions: [
+          "Flexible Travel",
+          "Unlimited Stops",
+          "250km Included",
+          "Driver Included"
         ],
         exclusions: [
           "Parking charges & toll fees (paid as actuals)",
@@ -278,6 +290,12 @@ export const siteConfig = {
           "No extra helper/permit charge for standard route",
           "Dedicated clean AC cab just for your group"
         ],
+        shortInclusions: [
+          "Tolls Included",
+          "One-way Drop",
+          "Permits Included",
+          "AC Cabs"
+        ],
         exclusions: [
           "Multiple pickups/drops or local sightseeing run",
           "Nice Road Toll (charged separately if used)"
@@ -311,6 +329,11 @@ export const siteConfig = {
           "12+1 seaters AC or Non-AC vehicles",
           "Fuel charges included in per-km base",
           "Flexible routing and multiple tourist stops"
+        ],
+        shortInclusions: [
+          "12+1 Seaters",
+          "Fuel Included",
+          "Flexible Routing"
         ],
         exclusions: [
           "Tolls & parking charges (paid as actuals)",
