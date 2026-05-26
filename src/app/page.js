@@ -54,7 +54,7 @@ export default function Home() {
   const [showDropSuggestions, setShowDropSuggestions] = useState(false);
 
   // Active filters inside search box
-  const [only6Seaters, setOnly6Seaters] = useState(false);
+  const [minSeats, setMinSeats] = useState(4);
 
   // Inline cab preview expansion on home screen
   const [showInlineCabs, setShowInlineCabs] = useState(false);
@@ -247,10 +247,12 @@ export default function Home() {
   const onlinePaymentAmount = paymentMethod === "full" ? totalPrice : paymentMethod === "advance" ? requiredAdvance : 0;
   const payToDriverAmount = totalPrice - onlinePaymentAmount;
 
-  // Filtered Cabs based on search filters (Show 6+ Seater Cabs Only)
+  const minSeatsLabel = minSeats >= 7 ? "7+" : String(minSeats);
+
+  // Filtered Cabs based on search filters
   const filteredCabs = bookingConfig.cabTypes.filter((cab) => {
     if (applicableCabIds.length > 0 && !applicableCabIds.includes(cab.id)) return false;
-    if (only6Seaters && cab.seats < 6) return false;
+    if (cab.seats < minSeats) return false;
     return true;
   });
 
@@ -736,20 +738,30 @@ Please confirm my booking. Thank you!`;
                     <span className="filter-tag included-tag">Driver Allowance Incl.</span>
                   </div>
 
-                  {/* Bottom Action Row (Toggle Switch & Primary Button) */}
+                  {/* Bottom Action Row (Seat Slider & Primary Button) */}
                   <div className="cleartrip-bottom-row">
-                    {/* Dynamic Seating Filter Toggle Switch */}
-                    <div className="toggle-container" onClick={() => setOnly6Seaters(!only6Seaters)}>
-                      <div className="toggle-switch-box">
-                        <input
-                          type="checkbox"
-                          checked={only6Seaters}
-                          onChange={() => {}} // Handled by container click
-                          className="toggle-input"
-                        />
-                        <span className="toggle-slider"></span>
+                    <div className="seat-filter">
+                      <div className="seat-filter-header">
+                        <label htmlFor="min-seats-slider" className="seat-filter-label">Minimum seats</label>
+                        <span className="seat-filter-value">{minSeatsLabel}</span>
                       </div>
-                      <span className="toggle-label-text">Show 6+ Seaters Only (SUV/Tempo)</span>
+                      <input
+                        id="min-seats-slider"
+                        type="range"
+                        min="4"
+                        max="7"
+                        step="1"
+                        value={minSeats}
+                        onChange={(e) => setMinSeats(Number(e.target.value))}
+                        className="seat-filter-slider"
+                        aria-valuetext={`${minSeatsLabel} seats`}
+                      />
+                      <div className="seat-filter-marks" aria-hidden="true">
+                        <span>4</span>
+                        <span>5</span>
+                        <span>6</span>
+                        <span>7+</span>
+                      </div>
                     </div>
 
                     <button
@@ -1016,7 +1028,7 @@ Please confirm my booking. Thank you!`;
                   {filteredCabs.length === 0 && (
                     <div className="booking-card" style={{ textAlign: "center", padding: "2rem" }}>
                       <p style={{ fontWeight: 600 }}>No vehicles match your active filters.</p>
-                      <button type="button" className="btn-secondary" style={{ marginTop: "1rem", display: "inline-flex" }} onClick={() => setOnly6Seaters(false)}>
+                      <button type="button" className="btn-secondary" style={{ marginTop: "1rem", display: "inline-flex" }} onClick={() => setMinSeats(4)}>
                         Clear Seating Filter
                       </button>
                     </div>
