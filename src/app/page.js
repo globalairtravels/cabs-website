@@ -268,8 +268,8 @@ export default function Home() {
   // Navigation handlers
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (!pickup || !drop || !date || !time) {
-      alert("Please fill in all routing fields.");
+    if (!pickup || !drop) {
+      alert("Please fill in pickup and drop locations.");
       return;
     }
     if (filteredCabs.length > 0) {
@@ -693,24 +693,9 @@ Please confirm my booking. Thank you!`;
                     </div>
                   </div>
 
-                  {/* Row 2: Adjacent Dates & Duration Inputs */}
-                  <div className="cleartrip-input-row">
-                    {/* Journey Date Input */}
-                    <div className="input-col">
-                      <label htmlFor="date-input" className="input-mini-label">Depart Date</label>
-                      <input
-                        id="date-input"
-                        type="date"
-                        className="input-field"
-                        value={date}
-                        min={new Date().toISOString().split("T")[0]}
-                        onChange={(e) => setDate(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    {/* Pickup Time or Duration Days input */}
-                    {isOutstationTrip ? (
+                  {/* Row 2: Duration selector (Outstation / Tempo only — drives per-day pricing) */}
+                  {isOutstationTrip && (
+                    <div className="cleartrip-input-row">
                       <div className="input-col">
                         <label htmlFor="days-select" className="input-mini-label">Duration</label>
                         <select
@@ -725,20 +710,8 @@ Please confirm my booking. Thank you!`;
                           ))}
                         </select>
                       </div>
-                    ) : (
-                      <div className="input-col">
-                        <label htmlFor="time-input" className="input-mini-label">Pickup Time</label>
-                        <input
-                          id="time-input"
-                          type="time"
-                          className="input-field"
-                          value={time}
-                          onChange={(e) => setTime(e.target.value)}
-                          required
-                        />
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* Included service tags */}
                   <div className="filter-tags-row" aria-label="Included services">
@@ -791,7 +764,7 @@ Please confirm my booking. Thank you!`;
                           Available Cabs ({filteredCabs.length})
                         </h3>
                         <span style={{ fontSize: "0.7rem", color: "var(--text-gray)" }}>
-                          {tripSummaryLabel} • {date}
+                          {tripSummaryLabel}
                         </span>
                       </div>
 
