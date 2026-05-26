@@ -156,7 +156,8 @@ export default function Home() {
     if (tab === "airport") {
       handleAirportDirectionChange("drop");
     } else if (tab === "city") {
-      handleCityDirectionChange("drop");
+      setPickup("Mysore");
+      setDrop("Local Sightseeing / Running");
     } else if (tab === "daily") {
       setPickup("Mysore");
       setDrop("Outstation Tour / Local");
@@ -194,6 +195,14 @@ export default function Home() {
     } else if (routeId === "blr-city-mysore") {
       setTripType("city");
       handleCityDirectionChange("pickup");
+    } else if (routeId === "local-mysore") {
+      setTripType("city");
+      setPickup("Mysore");
+      setDrop("Local Sightseeing / Running");
+    } else if (routeId === "local-bangalore") {
+      setTripType("city");
+      setPickup("Bangalore");
+      setDrop("Local Sightseeing / Running");
     } else if (routeId === "mysore-mangalore-airport") {
       setTripType("airport");
       setPickup("Mysore");

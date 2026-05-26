@@ -217,30 +217,30 @@ export const siteConfig = {
     },
     city: {
       heading: {
-        title: "Book Mysore ⇄ Bangalore Local Taxis",
-        subtitle: "Comfortable point-to-point intercity rides with assured fares"
+        title: "Book Local City Taxis",
+        subtitle: "Flat per-day pricing for travel within city limits. Packages include set time and kilometer limits, allowing you to go anywhere and make unlimited stops."
       },
       banner: {
-        badge: "Best Price",
-        text: "Mysore ⇄ Bangalore City One-Way from ₹3,100/-",
-        footer: "Toll & driver allowance included.",
+        badge: "Local Run",
+        text: "Local City packages with 250 km/day included",
+        footer: "Unlimited stops & flexible daily routing.",
         image: "/images/local-taxi.webp",
       },
       quickSelect: {
-        title: "Popular Local Routes",
+        title: "Popular Local Packages",
         items: [
-          { id: "mysore-blr-city", name: "Mysore ➔ Bangalore City", subtitle: "₹3,100 Sedan • Toll Incl." },
-          { id: "blr-city-mysore", name: "Bangalore City ➔ Mysore", subtitle: "₹3,100 Sedan • Toll Incl." },
-          { id: "mysore-mangalore-city", name: "Mysore ➔ Mangalore City", subtitle: "₹5,200 Sedan • On Request" }
+          { id: "local-mysore", name: "Mysore Local running", subtitle: "₹3,400 Sedan • 250 km limit" },
+          { id: "local-bangalore", name: "Bangalore Local running", subtitle: "₹3,400 Sedan • 250 km limit" }
         ]
       },
       info: {
         title: "Local Trip Inclusions",
         items: [
-          "Up to 150 km point-to-point limit",
-          "₹400 toll charges included",
-          "One pickup and one drop point",
-          "30 minutes waiting buffer free"
+          "Up to 250 km running per day",
+          "Go anywhere and make any number of stops",
+          "Driver allowance & fuel charges included",
+          "Ideal for sightseeing, shopping, or business runs",
+          "Parking and toll fees extra (paid directly as actuals)"
         ]
       }
     },
