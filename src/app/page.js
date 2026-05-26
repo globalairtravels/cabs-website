@@ -102,7 +102,7 @@ export default function Home() {
   const [trackAttempted, setTrackAttempted] = useState(false);
 
   const isOutstationTrip = tripType === "tempo";
-  const showTripModeSelector = tripType !== "airport" && tripType !== "city";
+  const showTripModeSelector = tripType === "tempo";
   const cityDayCount = normalizePositiveInteger(cityDays, { max: 30 });
   const tempoDayCount = normalizePositiveInteger(tempoDays, { max: 30 });
   const tempoKmCount = normalizePositiveInteger(tempoEstKm);

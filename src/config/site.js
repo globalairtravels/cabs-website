@@ -188,12 +188,12 @@ export const siteConfig = {
   sidebarByTripType: {
     airport: {
       heading: {
-        title: "Book Mysore ⇄ Bangalore Airport Cabs",
+        title: "Book Airport Transfer Cabs",
         subtitle: "One-way transfers from fixed places to the airport. Toll and driver allowance included."
       },
       banner: {
         badge: "Special Rate",
-        text: "Mysore ⇄ KIA Airport Drop starting at just ₹3,600/-",
+        text: "Airport drops & pickups at fixed package prices",
         footer: "Includes driver allowance & toll tax!",
         image: "/images/airport.webp"
       },
@@ -217,8 +217,8 @@ export const siteConfig = {
     },
     city: {
       heading: {
-        title: "Book Local & Outstation Taxi Services",
-        subtitle: "Flat per-day pricing for travel within or outside city limits. Book for any number of days with a fixed daily kilometer limit and driver allowance included, allowing you to go anywhere and make unlimited stops."
+        title: "Book Local & Outstation Daily Cabs",
+        subtitle: "Flat per-day cabs for travel within or outside city. Driver allowance and fuel included."
       },
       banner: {
         badge: "Daily Run",
@@ -247,12 +247,12 @@ export const siteConfig = {
     },
     daily: {
       heading: {
-        title: "Book Mysore ⇄ Bangalore City Cabs",
-        subtitle: "One-way intercity drops between Mysore and Bangalore. Toll and driver allowance included."
+        title: "Book Intercity One-Way Cabs",
+        subtitle: "One-way intercity drops between fixed locations. Toll and driver allowance included."
       },
       banner: {
         badge: "Special Rate",
-        text: "Mysore ⇄ Bangalore City Drop starting at just ₹3,100/-",
+        text: "One-way intercity drops at fixed package prices",
         footer: "Includes toll tax & driver allowance!",
         image: "/images/local-taxi.webp",
         gradient: "linear-gradient(135deg, #F26B1F 0%, #FF9248 100%)"
@@ -276,8 +276,8 @@ export const siteConfig = {
     },
     tempo: {
       heading: {
-        title: "Hire a Tempo Traveller for Groups",
-        subtitle: "12+1 seater for weddings, pilgrim tours and corporate outings"
+        title: "Book Tempo Travellers for Groups",
+        subtitle: "Spacious 12+1 seaters for group trips, tours, weddings and corporate outings."
       },
       banner: {
         badge: "Group Travel",
