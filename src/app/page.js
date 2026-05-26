@@ -47,6 +47,7 @@ export default function Home() {
   // Trip Duration options
   const [outstationDirection, setOutstationDirection] = useState("oneway"); // 'oneway', 'roundtrip'
   const [numDays, setNumDays] = useState(1);
+  const [cityDays, setCityDays] = useState(1);
 
   // Tempo-specific inputs
   const [tempoDays, setTempoDays] = useState(1);
@@ -97,10 +98,10 @@ export default function Home() {
   const [trackedBooking, setTrackedBooking] = useState(null);
   const [trackAttempted, setTrackAttempted] = useState(false);
   const isOutstationTrip = tripType === "daily" || tripType === "tempo";
-  const showTripModeSelector = tripType !== "airport";
+  const showTripModeSelector = tripType !== "airport" && tripType !== "city";
   const tempoCab = bookingConfig.cabTypes.find(isTempoCab);
   const tripSummaryLabel = tripType === "airport" ? "Airport Transfers" :
-                           tripType === "city" ? "City Taxi Service" :
+                           tripType === "city" ? `City Taxi (${cityDays} Day${cityDays > 1 ? "s" : ""})` :
                            tripType === "tempo" ? `Tempo Traveller (${tempoDays} Day${tempoDays > 1 ? "s" : ""} / ~${tempoEstKm}km)` :
                            `Intercity Travel (${numDays} Days)`;
 
@@ -239,7 +240,7 @@ export default function Home() {
     if (tripType === "airport") {
       return cab.airportPrice;
     } else if (tripType === "city") {
-      return cab.cityPrice;
+      return (cab.ratePerKm * cab.minKmPerDay + cab.driverAllowance) * cityDays;
     } else if (tripType === "tempo") {
       // Tempo: max(estKm, days × minKmPerDay) × ratePerKm + days × driverAllowance
       const effectiveKm = Math.max(tempoEstKm, tempoDays * cab.minKmPerDay);
@@ -257,7 +258,7 @@ export default function Home() {
   const totalPrice = calculatePrice(selectedCab);
 
   // Custom booking advance structure (₹500 per day as noted in the leaflet)
-  const requiredAdvance = isOutstationTrip ? 500 * (tripType === "tempo" ? tempoDays : numDays) : 500;
+  const requiredAdvance = isOutstationTrip ? 500 * (tripType === "tempo" ? tempoDays : numDays) : tripType === "city" ? 500 * cityDays : 500;
   
   const onlinePaymentAmount = paymentMethod === "full" ? totalPrice : paymentMethod === "advance" ? requiredAdvance : 0;
   const payToDriverAmount = totalPrice - onlinePaymentAmount;
@@ -276,7 +277,7 @@ export default function Home() {
   // Navigation handlers
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (!pickup || !drop) {
+    if (tripType !== "city" && (!pickup || !drop)) {
       alert("Please fill in pickup and drop locations.");
       return;
     }
@@ -317,7 +318,7 @@ export default function Home() {
     if (tripType === "airport") {
       tripDetails = `Airport Transfers (${airportType === "drop" ? "Mysore to Airport" : "Airport to Mysore"})`;
     } else if (tripType === "city") {
-      tripDetails = `City Taxi Service (${cityType === "drop" ? "Mysore to Bangalore" : "Bangalore to Mysore"})`;
+      tripDetails = `City Taxi Service (${cityDays} Day${cityDays > 1 ? "s" : ""} · 250 km/day included)`;
     } else if (tripType === "tempo") {
       const effectiveKm = Math.max(tempoEstKm, tempoDays * selectedCab.minKmPerDay);
       tripDetails = `Tempo Traveller (${tempoDays} Day${tempoDays > 1 ? "s" : ""} / ~${tempoEstKm} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
@@ -629,8 +630,8 @@ Please confirm my booking. Thank you!`;
                 {/* Main Booking Search Form */}
                 <form onSubmit={handleSearchSubmit}>
                   
-                  {/* Row 1: Adjacent Pickup & Drop Inputs with Swap circle */}
-                  <div className="cleartrip-input-row">
+                  {/* Row 1: Adjacent Pickup & Drop Inputs with Swap circle (hidden for city day-hire) */}
+                  {tripType !== "city" && <div className="cleartrip-input-row">
                     {/* Pickup Input Column */}
                     <div className="input-col" style={{ position: "relative" }}>
                       <label htmlFor="pickup-input" className="input-mini-label">From</label>
@@ -704,12 +705,26 @@ Please confirm my booking. Thank you!`;
                         </div>
                       )}
                     </div>
-                  </div>
+                  </div>}
 
-                  {/* Row 2: Duration selector (Outstation / Tempo only — drives per-day pricing) */}
-                  {isOutstationTrip && (
+                  {/* Row 2: Duration selector (City day-hire / Outstation / Tempo — drives per-day pricing) */}
+                  {(tripType === "city" || isOutstationTrip) && (
                     <div className="cleartrip-input-row">
-                      {tripType === "tempo" ? (
+                      {tripType === "city" ? (
+                        <div className="input-col">
+                          <label htmlFor="city-days-input" className="input-mini-label">Number of Days</label>
+                          <input
+                            id="city-days-input"
+                            type="number"
+                            className="input-field"
+                            value={cityDays}
+                            onChange={(e) => setCityDays(Math.max(1, Number(e.target.value)))}
+                            min="1"
+                            max="30"
+                            style={{ border: "none" }}
+                          />
+                        </div>
+                      ) : tripType === "tempo" ? (
                         <>
                           <div className="input-col">
                             <label htmlFor="tempo-days-input" className="input-mini-label">Number of Days</label>
