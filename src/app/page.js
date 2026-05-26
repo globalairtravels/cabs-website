@@ -128,6 +128,10 @@ export default function Home() {
   const handleTabChange = (tab) => {
     setTripType(tab);
 
+    // Hide the inline cab preview and clear the seater filter when switching tabs.
+    setShowInlineCabs(false);
+    setMinSeats(0);
+
     // Reset selectedCab if it's not applicable for the new tab.
     const nextBookingTypeId = TRIP_TYPE_TO_BOOKING_TYPE[tab];
     const nextApplicable = bookingConfig.bookingTypes[nextBookingTypeId]?.applicableCabs ?? [];
