@@ -813,6 +813,9 @@ Please confirm my booking. Thank you!`;
                                 <div style={{ fontSize: "0.7rem", color: "var(--text-gray)" }}>
                                   {cab.seats} Seats • {cab.luggage} {cab.ac ? "• AC" : ""}
                                 </div>
+                                <div style={{ fontSize: "0.68rem", color: "var(--text-gray)", marginTop: "0.15rem" }}>
+                                  e.g. {cab.example}
+                                </div>
                               </div>
                               <div style={{ textAlign: "right", flexShrink: 0 }}>
                                 <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--primary-orange)" }}>
