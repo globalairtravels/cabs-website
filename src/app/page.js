@@ -22,6 +22,9 @@ const TRIP_TYPE_TO_BOOKING_TYPE = {
   tempo: "tempo",
 };
 
+const PROMO_PALETTE = ["#22A06B", "#FF4F00", "#3366CC", "#7A3FFF"];
+const PROMO_ICONS = ["🎁", "🎟️", "📅", "🏷️"];
+
 export default function Home() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
   const getAssetPath = (path) => `${basePath}${path}`;
@@ -255,6 +258,10 @@ export default function Home() {
     if (cab.seats < minSeats) return false;
     return true;
   });
+
+  const applicablePromos = bookingConfig.promos.filter(
+    (promo) => !promo.appliesTo || promo.appliesTo.length === 0 || promo.appliesTo.includes(bookingTypeId)
+  );
 
   // Navigation handlers
   const handleSearchSubmit = (e) => {
@@ -925,6 +932,32 @@ Please confirm my booking. Thank you!`;
                         ))}
                       </ul>
                     </div>
+
+                    {applicablePromos.length > 0 && (
+                      <section className="cleartrip-promo-row sidebar-promo-row" id="promos" aria-label="Offers and Promotions">
+                        {applicablePromos.map((promo, idx) => {
+                          const tag = (promo.appliesTo || []).join(" • ").toUpperCase() || "OFFER";
+                          const title = promo.type === "percent"
+                            ? `${promo.value}% Off${promo.maxDiscount ? ` (max ₹${promo.maxDiscount})` : ""}`
+                            : `Flat ₹${promo.value} Off`;
+                          return (
+                            <div key={promo.code} className="promo-card">
+                              <div className="promo-img-box" style={{ color: PROMO_PALETTE[idx % PROMO_PALETTE.length] }}>
+                                {PROMO_ICONS[idx % PROMO_ICONS.length]}
+                              </div>
+                              <div className="promo-info">
+                                <span className="promo-tag">{tag}</span>
+                                <h3 className="promo-title">{title}</h3>
+                                <p className="promo-desc">
+                                  {promo.label}
+                                  {promo.minFare ? ` Min fare ₹${promo.minFare}.` : ""} Code: <strong>{promo.code}</strong>
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </section>
+                    )}
                   </>
                 );
               })()}
@@ -1360,42 +1393,6 @@ Please confirm my booking. Thank you!`;
             )}
           </div>
         )}
-
-        {/* Step 1 Promo Row (Matches bottom cards on Cleartrip screen) */}
-        {(() => {
-          if (step !== 1) return null;
-          const applicablePromos = bookingConfig.promos.filter(
-            (promo) => !promo.appliesTo || promo.appliesTo.length === 0 || promo.appliesTo.includes(bookingTypeId)
-          );
-          if (applicablePromos.length === 0) return null;
-          return (
-          <section className="cleartrip-promo-row" id="promos" aria-label="Offers and Promotions">
-            {applicablePromos.map((promo, idx) => {
-              const palette = ["#22A06B", "#FF4F00", "#3366CC", "#7A3FFF"];
-              const icons = ["🎁", "🎟️", "📅", "🏷️"];
-              const tag = (promo.appliesTo || []).join(" • ").toUpperCase() || "OFFER";
-              const title = promo.type === "percent"
-                ? `${promo.value}% Off${promo.maxDiscount ? ` (max ₹${promo.maxDiscount})` : ""}`
-                : `Flat ₹${promo.value} Off`;
-              return (
-                <div key={promo.code} className="promo-card">
-                  <div className="promo-img-box" style={{ color: palette[idx % palette.length] }}>
-                    {icons[idx % icons.length]}
-                  </div>
-                  <div className="promo-info">
-                    <span className="promo-tag">{tag}</span>
-                    <h3 className="promo-title">{title}</h3>
-                    <p className="promo-desc">
-                      {promo.label}
-                      {promo.minFare ? ` Min fare ₹${promo.minFare}.` : ""} Code: <strong>{promo.code}</strong>
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </section>
-          );
-        })()}
 
       </div>
 

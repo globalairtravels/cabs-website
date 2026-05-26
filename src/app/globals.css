@@ -763,9 +763,17 @@ body {
   margin-top: 3rem;
 }
 
+.sidebar-promo-row {
+  margin-top: 0;
+}
+
 @media (min-width: 768px) {
   .cleartrip-promo-row {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .sidebar-promo-row {
+    grid-template-columns: 1fr;
   }
 }
 
