@@ -98,7 +98,14 @@ export default function Home() {
   const [showSupport, setShowSupport] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
+  const [expandedFares, setExpandedFares] = useState({});
+
+  const toggleFareExpansion = (cabId) => {
+    setExpandedFares((prev) => ({
+      ...prev,
+      [cabId]: !prev[cabId],
+    }));
+  };
 
   const [trackBookingId, setTrackBookingId] = useState("");
   const [trackPhone, setTrackPhone] = useState("");
@@ -267,6 +274,70 @@ export default function Home() {
       return `₹${cab.ratePerKm}/km × ${getTempoEffectiveKm(cab)} km + ₹${cab.driverAllowance}/day × ${tempoDayCount} day${plural(tempoDayCount)} driver`;
     }
     return null;
+  };
+
+  const renderFareBreakdown = (cab, cabPrice) => {
+    if (tripType === "city") {
+      const runningChargesPerDay = cab.ratePerKm * cab.minKmPerDay;
+      const totalRunningCharges = runningChargesPerDay * cityDayCount;
+      const totalDriverAllowance = cab.driverAllowance * cityDayCount;
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", marginTop: "0.5rem", fontSize: "0.72rem", color: "var(--text-gray)", borderTop: "1px dashed var(--border-color)", paddingTop: "0.5rem", animation: "fadeIn 0.2s ease-out" }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>• Running Charges ({cityDayCount} day{plural(cityDayCount)} × {cab.minKmPerDay} km @ ₹{cab.ratePerKm}/km):</span>
+            <span style={{ fontWeight: 600 }}>₹{totalRunningCharges}</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>• Driver Allowance ({cityDayCount} day{plural(cityDayCount)} × ₹{cab.driverAllowance}/day):</span>
+            <span style={{ fontWeight: 600 }}>₹{totalDriverAllowance}</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid var(--border-color)", paddingTop: "0.25rem", marginTop: "0.25rem", color: "var(--primary-navy)", fontWeight: 700 }}>
+            <span>Total Assured Fare:</span>
+            <span>₹{cabPrice}</span>
+          </div>
+        </div>
+      );
+    }
+    
+    if (tripType === "tempo") {
+      const effectiveKm = getTempoEffectiveKm(cab);
+      const totalRunningCharges = cab.ratePerKm * effectiveKm;
+      const totalDriverAllowance = cab.driverAllowance * tempoDayCount;
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", marginTop: "0.5rem", fontSize: "0.72rem", color: "var(--text-gray)", borderTop: "1px dashed var(--border-color)", paddingTop: "0.5rem", animation: "fadeIn 0.2s ease-out" }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>• Running Charges ({effectiveKm} km @ ₹{cab.ratePerKm}/km):</span>
+            <span style={{ fontWeight: 600 }}>₹{totalRunningCharges}</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>• Driver Allowance ({tempoDayCount} day{plural(tempoDayCount)} × ₹{cab.driverAllowance}/day):</span>
+            <span style={{ fontWeight: 600 }}>₹{totalDriverAllowance}</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid var(--border-color)", paddingTop: "0.25rem", marginTop: "0.25rem", color: "var(--primary-navy)", fontWeight: 700 }}>
+            <span>Total Assured Fare:</span>
+            <span>₹{cabPrice}</span>
+          </div>
+        </div>
+      );
+    }
+
+    // Default: airport or daily
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", marginTop: "0.5rem", fontSize: "0.72rem", color: "var(--text-gray)", borderTop: "1px dashed var(--border-color)", paddingTop: "0.5rem", animation: "fadeIn 0.2s ease-out" }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>• Point-to-Point Base Fare:</span>
+          <span style={{ fontWeight: 600 }}>₹{cabPrice}</span>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>• Included Tolls, State Permits & GST:</span>
+          <span style={{ fontWeight: 600, color: "var(--success-green)" }}>Included</span>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid var(--border-color)", paddingTop: "0.25rem", marginTop: "0.25rem", color: "var(--primary-navy)", fontWeight: 700 }}>
+          <span>Total Assured Fare:</span>
+          <span>₹{cabPrice}</span>
+        </div>
+      </div>
+    );
   };
 
   const totalPrice = calculatePrice(selectedCab);
@@ -773,24 +844,59 @@ Please confirm my booking. Thank you!`;
                                   {cab.seats} Seats • {cab.luggage} {cab.ac ? "• AC" : ""}
                                 </div>
                                 <div style={{ fontSize: "0.68rem", color: "var(--text-gray)", marginTop: "0.15rem" }}>e.g. {cab.example}</div>
-                                {cabFormula && (
-                                  <div style={{ fontSize: "0.68rem", color: "var(--primary-navy)", marginTop: "0.2rem", fontWeight: 600, lineHeight: 1.35 }}>
+                                {cabFormula && expandedFares[cab.id] && (
+                                  <div
+                                    style={{
+                                      fontSize: "0.68rem",
+                                      color: "var(--primary-navy)",
+                                      marginTop: "0.3rem",
+                                      fontWeight: 600,
+                                      lineHeight: 1.35,
+                                      animation: "fadeIn 0.2s ease-out"
+                                    }}
+                                  >
                                     {cabFormula}
                                   </div>
                                 )}
                               </div>
-                              <div style={{ textAlign: "right", flexShrink: 0 }}>
-                                <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--primary-orange)" }}>₹{cabPrice}</div>
-                                <div style={{ fontSize: "0.65rem", color: "var(--text-gray)" }}>Assured</div>
+                              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.35rem", flexShrink: 0, minWidth: "72px" }}>
+                                <button
+                                  type="button"
+                                  className="btn-primary"
+                                  style={{
+                                    minHeight: "32px",
+                                    padding: "0.35rem 0.75rem",
+                                    fontSize: "0.75rem",
+                                    width: "100%",
+                                    cursor: "pointer",
+                                    backgroundColor: "#f1f5f9",
+                                    border: "1px solid #cbd5e1",
+                                    borderRadius: "6px",
+                                    fontWeight: 600,
+                                    color: "var(--text-dark)",
+                                  }}
+                                  onClick={() => handleCabSelect(cab)}
+                                >
+                                  Book
+                                </button>
+                                <div
+                                  style={{ textAlign: "center", cursor: "pointer", userSelect: "none" }}
+                                  onClick={() => toggleFareExpansion(cab.id)}
+                                  role="button"
+                                  aria-expanded={!!expandedFares[cab.id]}
+                                  tabIndex={0}
+                                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleFareExpansion(cab.id); } }}
+                                  title="Click to view/hide fare formula"
+                                >
+                                  <div style={{ fontSize: "0.65rem", color: "var(--text-gray)", lineHeight: 1.1 }}>Assured</div>
+                                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                                    <span style={{ fontWeight: 800, fontSize: "1.05rem", color: "var(--primary-orange)", lineHeight: 1.15 }}>₹{cabPrice}</span>
+                                    <span style={{ fontSize: "0.95rem", fontWeight: 400, color: "var(--text-muted)", transition: "all 0.15s ease" }}>
+                                      {expandedFares[cab.id] ? "−" : "+"}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
-                              <button
-                                type="button"
-                                className="btn-primary"
-                                style={{ minHeight: "32px", padding: "0.35rem 0.75rem", fontSize: "0.75rem", flexShrink: 0 }}
-                                onClick={() => handleCabSelect(cab)}
-                              >
-                                Book
-                              </button>
                             </div>
                           );
                         })}
