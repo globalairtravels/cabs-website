@@ -272,7 +272,7 @@ export const siteConfig = {
         badge: "Special Rate",
         text: "One-way intercity drops at fixed package prices",
         footer: "Includes toll tax & driver allowance!",
-        image: "/images/local-taxi.webp",
+        image: "/images/intercity.webp",
         gradient: "linear-gradient(135deg, #F26B1F 0%, #FF9248 100%)"
       },
       quickSelect: {
@@ -311,7 +311,7 @@ export const siteConfig = {
         badge: "Group Travel",
         text: "12+1 Tempo Traveller from ₹7,200 for group tours",
         footer: "Best for weddings, pilgrim groups & corporate outings.",
-        image: "/images/tempo.webp",
+        image: "/images/temp-traveller.webp",
         gradient: "linear-gradient(135deg, #0B3D91 0%, #F26B1F 100%)"
       },
       quickSelect: {
