@@ -77,7 +77,7 @@ export const siteConfig = {
     {
       id: "sedan",
       name: "Sedan AC",
-      icon: "categories/sedan.svg",
+      icon: "images/etios.webp",
       example: "Etios, Dzire, Xcent",
       seats: 4,
       luggage: "2 Bags",
@@ -92,7 +92,7 @@ export const siteConfig = {
     {
       id: "suv",
       name: "Ertiga AC",
-      icon: "categories/suv.svg",
+      icon: "images/etriga.webp",
       example: "Ertiga (6+1)",
       seats: 6,
       luggage: "3 Bags",
@@ -107,7 +107,7 @@ export const siteConfig = {
     {
       id: "innova",
       name: "Innova AC",
-      icon: "categories/innova.svg",
+      icon: "images/innova.webp",
       example: "Innova (7+1)",
       seats: 7,
       luggage: "4 Bags",
@@ -122,7 +122,7 @@ export const siteConfig = {
     {
       id: "crysta",
       name: "Crysta AC",
-      icon: "categories/crysta.svg",
+      icon: "images/innova.webp",
       example: "Innova Crysta AC",
       seats: 7,
       luggage: "4 Bags",
@@ -137,7 +137,7 @@ export const siteConfig = {
     {
       id: "tempo",
       name: "Tempo Traveller AC",
-      icon: "categories/tempo-cat.svg",
+      icon: "images/tempo.webp",
       example: "TT (12+1 Seater)",
       seats: 12,
       luggage: "8 Bags",
@@ -152,7 +152,7 @@ export const siteConfig = {
     {
       id: "tempo-non-ac",
       name: "Tempo Traveller Non-AC",
-      icon: "categories/tempo-cat.svg",
+      icon: "images/tempo.webp",
       example: "TT (12+1 Seater)",
       seats: 12,
       luggage: "8 Bags",

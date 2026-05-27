@@ -1080,9 +1080,10 @@ body {
 }
 
 .cab-icon-box {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--border-radius-sm);
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1092,8 +1093,9 @@ body {
 }
 
 .cab-icon-img {
-  width: 34px;
-  height: 34px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .cab-meta {

@@ -5,7 +5,7 @@
     "sedan": {
       "name": "Sedan AC",
       "example": "Etios, Dzire, Xcent",
-      "icon": "categories/sedan.svg",
+      "icon": "images/etios.webp",
       "seats": 4,
       "luggage": "2 Bags",
       "ac": true,
@@ -17,7 +17,7 @@
     "suv": {
       "name": "Ertiga AC",
       "example": "Ertiga (6+1)",
-      "icon": "categories/suv.svg",
+      "icon": "images/etriga.webp",
       "seats": 6,
       "luggage": "3 Bags",
       "ac": true,
@@ -29,7 +29,7 @@
     "innova": {
       "name": "Innova AC",
       "example": "Innova (7+1)",
-      "icon": "categories/innova.svg",
+      "icon": "images/innova.webp",
       "seats": 7,
       "luggage": "4 Bags",
       "ac": true,
@@ -41,7 +41,7 @@
     "crysta": {
       "name": "Crysta AC",
       "example": "Innova Crysta AC",
-      "icon": "categories/crysta.svg",
+      "icon": "images/innova.webp",
       "seats": 7,
       "luggage": "4 Bags",
       "ac": true,
@@ -53,7 +53,7 @@
     "tempo": {
       "name": "Tempo Traveller AC",
       "example": "TT (12+1 Seater)",
-      "icon": "categories/tempo-cat.svg",
+      "icon": "images/tempo.webp",
       "seats": 12,
       "luggage": "8 Bags",
       "ac": true,
@@ -65,7 +65,7 @@
     "tempo-non-ac": {
       "name": "Tempo Traveller Non-AC",
       "example": "TT (12+1 Seater)",
-      "icon": "categories/tempo-cat.svg",
+      "icon": "images/tempo.webp",
       "seats": 12,
       "luggage": "8 Bags",
       "ac": false,

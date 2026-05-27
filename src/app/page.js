@@ -763,9 +763,9 @@ Please confirm my booking. Thank you!`;
                               }}
                             >
                               <img
-                                src={getAssetPath(`/icons/${cab.icon}`)}
+                                src={cab.icon.startsWith("images/") ? getAssetPath(`/${cab.icon}`) : getAssetPath(`/icons/${cab.icon}`)}
                                 alt=""
-                                style={{ width: 36, height: 36, objectFit: "contain", flexShrink: 0 }}
+                                style={{ width: 72, height: 72, objectFit: "cover", borderRadius: "50%", border: "1px solid var(--border-color)", flexShrink: 0 }}
                               />
                               <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--primary-navy)" }}>{cab.name}</div>
@@ -927,7 +927,7 @@ Please confirm my booking. Thank you!`;
                       <div key={cab.id} className={`cab-card ${isSelected ? "selected" : ""}`}>
                         <div className="cab-card-header">
                           <div className="cab-icon-box">
-                            <img src={getAssetPath(`/icons/${cab.icon}`)} alt="" className="cab-icon-img" />
+                            <img src={cab.icon.startsWith("images/") ? getAssetPath(`/${cab.icon}`) : getAssetPath(`/icons/${cab.icon}`)} alt="" className="cab-icon-img" />
                           </div>
                           <div className="cab-meta">
                             <div className="cab-name-row">
