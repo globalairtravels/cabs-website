@@ -393,10 +393,7 @@ Please confirm my booking. Thank you!`;
       <header className="header">
         <div className="header-container">
           <a href="#" className="logo-link" onClick={() => setStep(1)}>
-            <img src={getAssetPath("/icons/nav/cab.svg")} alt="Taxi Logo" className="logo-icon" />
-            <span className="logo-text">
-              GLOBAL<span className="logo-highlight">AIR</span>TRAVELS
-            </span>
+            <img src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="logo-image" />
           </a>
 
           <div className="mobile-only header-mobile-actions">
@@ -436,9 +433,7 @@ Please confirm my booking. Thank you!`;
         <div className="mobile-drawer-backdrop" onClick={() => setShowMobileMenu(false)}>
           <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
             <div className="mobile-drawer-header">
-              <span className="logo-text">
-                GLOBAL<span className="logo-highlight">AIR</span>TRAVELS
-              </span>
+              <img src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="logo-image" />
               <button type="button" className="drawer-close-btn" onClick={() => setShowMobileMenu(false)}>✕</button>
             </div>
             <div className="mobile-drawer-body">
@@ -1334,7 +1329,7 @@ Please confirm my booking. Thank you!`;
         <div className="footer-container">
           <div className="footer-grid">
             <div className="footer-brand-col">
-              <span className="footer-logo">{siteConfig.name.toUpperCase()}</span>
+              <img src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="footer-logo-image" />
               <p className="footer-description">{siteConfig.footer.description}</p>
               <div className="footer-contact">
                 <a href={`tel:${siteConfig.phone}`} className="footer-link">Call: {siteConfig.phoneDisplay}</a>

@@ -104,6 +104,12 @@ body {
   height: 32px;
 }
 
+.logo-image {
+  height: 40px;
+  width: auto;
+  display: block;
+}
+
 .logo-text {
   font-size: 1.25rem;
   font-weight: 800;
@@ -1565,6 +1571,12 @@ body {
   font-size: 0.95rem;
   font-weight: 800;
   color: var(--primary-navy);
+}
+
+.footer-logo-image {
+  height: 44px;
+  width: auto;
+  display: block;
 }
 
 .footer-description {
