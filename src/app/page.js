@@ -98,6 +98,7 @@ export default function Home() {
   const [showSupport, setShowSupport] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const [expandedFares, setExpandedFares] = useState({});
 
   const toggleFareExpansion = (cabId) => {
