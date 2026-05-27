@@ -233,7 +233,7 @@ export const siteConfig = {
       banner: {
         badge: "Daily Run",
         text: "Local & Outstation packages at fixed daily rates",
-        footer: "Book in number of days. Go anywhere within or outside city.",
+        footer: "Go anywhere within or outside city.",
         image: "/images/local-taxi.webp",
       },
       quickSelect: {
