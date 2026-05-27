@@ -1089,7 +1089,12 @@ body {
   justify-content: center;
   flex-shrink: 0;
   background-color: var(--bg-main);
-  border: 1px solid var(--border-color);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px #cbd5e1;
+  transition: all 0.2s ease;
+}
+
+.cab-card.selected .cab-icon-box {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--primary-orange);
 }
 
 .cab-icon-img {

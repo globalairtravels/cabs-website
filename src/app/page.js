@@ -765,7 +765,7 @@ Please confirm my booking. Thank you!`;
                               <img
                                 src={cab.icon.startsWith("images/") ? getAssetPath(`/${cab.icon}`) : getAssetPath(`/icons/${cab.icon}`)}
                                 alt=""
-                                style={{ width: 72, height: 72, objectFit: "cover", borderRadius: "50%", border: "1px solid var(--border-color)", flexShrink: 0 }}
+                                style={{ width: 72, height: 72, objectFit: "cover", borderRadius: "50%", boxShadow: "0 0 0 2px #fff, 0 0 0 3px #cbd5e1", flexShrink: 0 }}
                               />
                               <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--primary-navy)" }}>{cab.name}</div>
