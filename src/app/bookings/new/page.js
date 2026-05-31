@@ -211,11 +211,6 @@ export default function BookingNew() {
     setStep(5);
   };
 
-  const generateUpiLink = () => {
-    const note = `Booking ${bookingId}`;
-    return `upi://pay?pa=${siteConfig.upiId}&pn=${encodeURIComponent(siteConfig.merchantName)}&am=${onlinePaymentAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
-  };
-
   const getWhatsAppMessage = () => {
     let tripDetails;
     if (tripType === "airport") {
@@ -253,11 +248,6 @@ ${flightNumber ? `*Flight Details:* ${flightNumber}\n` : ""}
 *Assured Fare:* ₹${totalPrice}/-
 
 Please confirm my booking. Thank you!`;
-  };
-
-  const handleBackToSearch = () => {
-    const params = new URLSearchParams(window.location.search);
-    window.location.href = `${BASE_PATH}/?${params.toString()}`;
   };
 
   const handleOffersClick = () => {
