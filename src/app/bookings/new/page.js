@@ -172,9 +172,6 @@ export default function BookingNew() {
     tripType === "tempo" ? tempoDayCount : 1;
   const requiredAdvance = 500 * advanceDays;
 
-  const onlinePaymentAmount = paymentMethod === "full" ? totalPrice : paymentMethod === "advance" ? requiredAdvance : 0;
-  const payToDriverAmount = totalPrice - onlinePaymentAmount;
-
   const bookingTypeId = TRIP_TYPE_TO_BOOKING_TYPE[tripType];
   const applicablePromos = bookingConfig.promos.filter(
     (promo) => !promo.appliesTo || promo.appliesTo.length === 0 || promo.appliesTo.includes(bookingTypeId)
@@ -189,6 +186,9 @@ export default function BookingNew() {
       : appliedPromo.value
     : 0;
   const finalTotal = Math.max(0, totalPrice - promoDiscount);
+
+  const onlinePaymentAmount = paymentMethod === "full" ? finalTotal : paymentMethod === "advance" ? requiredAdvance : 0;
+  const payToDriverAmount = finalTotal - onlinePaymentAmount;
 
   const handleApplyPromo = (promo) => {
     if (appliedPromo?.code === promo.code) {
@@ -522,10 +522,10 @@ Please confirm my booking. Thank you!`;
                           <input type="radio" id="radio-full" name="payment-preference" checked={paymentMethod === "full"} onChange={() => {}} className="payment-radio" />
                           <div className="payment-method-info">
                             <label htmlFor="radio-full" className="payment-method-name">
-                              Pay Full Online (₹{totalPrice})
+                              Pay Full Online (₹{finalTotal})
                               <span className="payment-badge">Zero Fees</span>
                             </label>
-                            <span className="payment-method-desc">Pay full ₹{totalPrice} online now using GPay/PhonePe/UPI.</span>
+                            <span className="payment-method-desc">Pay full ₹{finalTotal} online now using GPay/PhonePe/UPI.</span>
                           </div>
                         </div>
                       </div>
