@@ -37,7 +37,7 @@ yarn-error.log*
 # local Firebase credentials
 *service-account*.json
 firebase-adminsdk*.json
-
+firebase-debug.log
 # vercel
 .vercel
 
