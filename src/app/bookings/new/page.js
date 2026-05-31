@@ -553,6 +553,10 @@ Please confirm my booking. Thank you!`;
                     <div className="cab-meta">
                       <div className="cab-name-row">
                         <h3 className="cab-name">{selectedCab.name}</h3>
+                        <div className="cab-price-col">
+                          <span className="cab-price">₹{totalPrice}</span>
+                          <span className="cab-price-subtext"> (Assured)</span>
+                        </div>
                       </div>
                       <p className="cab-example">e.g. {selectedCab.example}</p>
                       <div className="cab-specs">
@@ -562,6 +566,7 @@ Please confirm my booking. Thank you!`;
                       </div>
                     </div>
                   </div>
+
                 </div>
 
                 <div className="trip-bill-summary" style={{ marginTop: "1rem" }}>
