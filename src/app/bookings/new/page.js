@@ -67,7 +67,7 @@ export default function BookingNew() {
   const [email, setEmail] = useState("");
   const [pickupAddress, setPickupAddress] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("arrival");
+  const [paymentMethod, setPaymentMethod] = useState("advance");
   const [appliedPromo, setAppliedPromo] = useState(null);
 
   // Modals / Misc
@@ -226,8 +226,7 @@ export default function BookingNew() {
 
     const payStatus =
       paymentMethod === "full" ? "Paid 100% Full UPI" :
-      paymentMethod === "advance" ? `Paid ₹${requiredAdvance} Advance UPI (Balance to Driver)` :
-      "Pay to Driver (Cash/UPI at end)";
+      `Paid ₹${requiredAdvance} Advance UPI (Balance to Driver)`;
 
     return `Hello Global Air Travels,
 
@@ -701,14 +700,6 @@ Please confirm my booking. Thank you!`;
                   <div className="payment-section">
                     <h3 className="form-label">Payment Preference</h3>
                     <div className="payment-methods" role="radiogroup" aria-label="Payment Mode">
-                      <div className={`payment-method-card ${paymentMethod === "arrival" ? "selected" : ""}`} onClick={() => setPaymentMethod("arrival")}>
-                        <input type="radio" id="radio-arrival" name="payment-preference" checked={paymentMethod === "arrival"} onChange={() => {}} className="payment-radio" />
-                        <div className="payment-method-info">
-                          <label htmlFor="radio-arrival" className="payment-method-name">Pay to Driver (Cash/UPI)</label>
-                          <span className="payment-method-desc">Pay ₹{totalPrice} directly to driver at the end of the trip.</span>
-                        </div>
-                      </div>
-
                       <div className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`} onClick={() => setPaymentMethod("advance")}>
                         <input type="radio" id="radio-advance" name="payment-preference" checked={paymentMethod === "advance"} onChange={() => {}} className="payment-radio" />
                         <div className="payment-method-info">
