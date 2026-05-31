@@ -101,7 +101,7 @@ export default function AccountPage() {
           ) : (
             <>
               <div className="account-page-head">
-                <h1 className="account-page-title">My Profile</h1>
+                <h1 className="account-page-title">My Account</h1>
                 <p className="account-page-sub">Manage your contact details for faster bookings.</p>
               </div>
 
@@ -123,7 +123,7 @@ export default function AccountPage() {
 
                   <div className="form-group">
                     <label htmlFor="acc-email" className="form-label">
-                      Email address <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
+                      Email address
                     </label>
                     <input id="acc-email" type="email" className="form-input" placeholder="you@example.com"
                       value={form.email} onChange={setField("email")} autoComplete="email" />
@@ -168,7 +168,6 @@ export default function AccountPage() {
                   {error && <p className="auth-error">{error}</p>}
 
                   <div className="account-form-actions">
-                    <a href={`${BASE_PATH}/bookings/`} className="btn-secondary">My Bookings</a>
                     <button type="submit" className="btn-primary" disabled={saving}>
                       {saving ? "Saving…" : savedAt ? "✓ Saved" : "Save changes"}
                     </button>
