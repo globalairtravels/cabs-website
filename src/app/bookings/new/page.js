@@ -400,22 +400,22 @@ Please confirm my booking. Thank you!`;
 
                 {/* LEFT on desktop / BOTTOM on mobile: Passenger fields */}
                 <div className="booking-fields">
-                  <form onSubmit={handlePassengerSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                  {/* airport route banner */}
+                  {tripType === "airport" && (
+                    <div style={{ background: "var(--primary-navy-light)", borderRadius: "var(--border-radius)", padding: "0.75rem 1rem", border: "1px solid #d3e4fd", fontSize: "0.82rem", color: "var(--primary-navy-dark)", fontWeight: 600, marginBottom: "0.25rem" }}>
+                      {airportType === "drop" ? "✈️  Mysore → Bangalore Airport (Drop)" : "✈️  Bangalore Airport → Mysore (Pickup)"}
+                    </div>
+                  )}
 
-                    {/* Trip timing fields */}
-                    {tripType === "airport" && (
-                      <div style={{ background: "var(--primary-navy-light)", borderRadius: "var(--border-radius)", padding: "0.75rem 1rem", border: "1px solid #d3e4fd", fontSize: "0.82rem", color: "var(--primary-navy-dark)", fontWeight: 600 }}>
-                        {airportType === "drop" ? "✈️  Mysore → Bangalore Airport (Drop)" : "✈️  Bangalore Airport → Mysore (Pickup)"}
-                      </div>
-                    )}
+                  <form onSubmit={handlePassengerSubmit}>
 
-                    {/* Step 1: Booking Dates */}
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", marginBottom: "1rem" }}>
-                        <div style={{ width: "1.6rem", height: "1.6rem", borderRadius: "50%", border: "2px solid var(--text-dark)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.8rem", color: "var(--text-dark)", flexShrink: 0 }}>1</div>
-                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-dark)" }}>Booking Dates</span>
+                    {/* ── Section 1: Booking Dates ── */}
+                    <div style={{ padding: "1.5rem 0" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
+                        <div style={{ width: "2rem", height: "2rem", borderRadius: "50%", border: "2px solid var(--text-dark)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.85rem", color: "var(--text-dark)", flexShrink: 0 }}>1</div>
+                        <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "var(--text-dark)" }}>Booking Dates</span>
                       </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                         <div className="form-group">
                           <label htmlFor="reporting-date" className="form-label">Booking date</label>
                           <input id="reporting-date" type="date" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} required min={new Date().toISOString().split("T")[0]} />
@@ -425,87 +425,55 @@ Please confirm my booking. Thank you!`;
                           <input id="reporting-time" type="time" className="form-input" value={time} onChange={(e) => setTime(e.target.value)} required />
                         </div>
                       </div>
+                      {tripType === "city" && (
+                        <div className="form-group" style={{ marginTop: "1rem" }}>
+                          <label htmlFor="city-days-input" className="form-label">Number of days</label>
+                          <input id="city-days-input" type="number" className="form-input" value={cityDays}
+                            onChange={(e) => { const { value } = e.target; setCityDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
+                            onBlur={() => setCityDays(cityDayCount)} min="1" max="30" required />
+                        </div>
+                      )}
+                      {tripType === "tempo" && (
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "1rem" }}>
+                          <div className="form-group">
+                            <label htmlFor="tempo-days-input" className="form-label">Number of days</label>
+                            <input id="tempo-days-input" type="number" className="form-input" value={tempoDays}
+                              onChange={(e) => { const { value } = e.target; setTempoDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
+                              onBlur={() => setTempoDays(tempoDayCount)} min="1" max="30" required />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="tempo-km-input" className="form-label">Estimated kilometers</label>
+                            <input id="tempo-km-input" type="number" className="form-input" value={tempoEstKm}
+                              onChange={(e) => { const { value } = e.target; setTempoEstKm(value === "" ? "" : normalizePositiveInteger(value)); }}
+                              onBlur={() => setTempoEstKm(tempoKmCount)} min="1" required />
+                          </div>
+                        </div>
+                      )}
                     </div>
 
-                    {tripType === "city" && (
-                      <div className="form-group">
-                        <label htmlFor="city-days-input" className="form-label">Number of days</label>
-                        <input id="city-days-input" type="number" className="form-input" value={cityDays}
-                          onChange={(e) => { const { value } = e.target; setCityDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
-                          onBlur={() => setCityDays(cityDayCount)} min="1" max="30" required />
-                      </div>
-                    )}
+                    <hr style={{ border: "none", borderTop: "1px solid var(--border-color)", margin: 0 }} />
 
-                    {tripType === "tempo" && (
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem" }}>
-                        <div className="form-group">
-                          <label htmlFor="tempo-days-input" className="form-label">Number of days</label>
-                          <input id="tempo-days-input" type="number" className="form-input" value={tempoDays}
-                            onChange={(e) => { const { value } = e.target; setTempoDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
-                            onBlur={() => setTempoDays(tempoDayCount)} min="1" max="30" required />
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor="tempo-km-input" className="form-label">Estimated kilometers</label>
-                          <input id="tempo-km-input" type="number" className="form-input" value={tempoEstKm}
-                            onChange={(e) => { const { value } = e.target; setTempoEstKm(value === "" ? "" : normalizePositiveInteger(value)); }}
-                            onBlur={() => setTempoEstKm(tempoKmCount)} min="1" required />
-                        </div>
+                    {/* ── Section 2: Add Customer Details ── */}
+                    <div style={{ padding: "1.5rem 0" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
+                        <div style={{ width: "2rem", height: "2rem", borderRadius: "50%", border: "2px solid var(--text-dark)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.85rem", color: "var(--text-dark)", flexShrink: 0 }}>2</div>
+                        <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "var(--text-dark)" }}>Add Customer Details</span>
                       </div>
-                    )}
-
-                    {/* Step 2: Customer Details */}
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", marginBottom: "1rem" }}>
-                        <div style={{ width: "1.6rem", height: "1.6rem", borderRadius: "50%", border: "2px solid var(--text-dark)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.8rem", color: "var(--text-dark)", flexShrink: 0 }}>2</div>
-                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-dark)" }}>Add Customer Details</span>
-                      </div>
-
-                      <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
                         <div className="form-group">
                           <label htmlFor="cust-name" className="form-label">Full name</label>
-                          <input
-                            id="cust-name"
-                            type="text"
-                            className="form-input"
-                            placeholder="Enter your full name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            autoComplete="name"
-                          />
+                          <input id="cust-name" type="text" className="form-input" placeholder="Enter your full name" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
                         </div>
-
                         <div className="form-group">
                           <label htmlFor="cust-phone" className="form-label">WhatsApp mobile number</label>
-                          <input
-                            id="cust-phone"
-                            type="tel"
-                            className="form-input"
-                            placeholder="10-digit mobile number"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            required
-                            pattern="[6-9][0-9]{9}"
-                            inputMode="tel"
-                            autoComplete="tel"
-                          />
+                          <input id="cust-phone" type="tel" className="form-input" placeholder="10-digit mobile number" value={phone} onChange={(e) => setPhone(e.target.value)} required pattern="[6-9][0-9]{9}" inputMode="tel" autoComplete="tel" />
                         </div>
-
                         <div className="form-group">
                           <label htmlFor="cust-email" className="form-label">
                             Email address <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
                           </label>
-                          <input
-                            id="cust-email"
-                            type="email"
-                            className="form-input"
-                            placeholder="For booking confirmation"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            autoComplete="email"
-                          />
+                          <input id="cust-email" type="email" className="form-input" placeholder="For booking confirmation" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
                         </div>
-
                         <div className="form-group">
                           <label htmlFor="cust-address" className="form-label">
                             {tripType === "airport" && airportType === "pickup" ? "Drop address in Mysuru" : "Pickup address"}
@@ -526,36 +494,30 @@ Please confirm my booking. Thank you!`;
                             autoComplete="street-address"
                           />
                         </div>
-
                         {tripType === "airport" && (
                           <div className="form-group">
                             <label htmlFor="cust-flight" className="form-label">
                               Flight number <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
                             </label>
-                            <input
-                              id="cust-flight"
-                              type="text"
-                              className="form-input"
-                              placeholder="e.g. 6E-203, AI-820"
-                              value={flightNumber}
-                              onChange={(e) => setFlightNumber(e.target.value)}
-                              autoComplete="off"
-                            />
+                            <input id="cust-flight" type="text" className="form-input" placeholder="e.g. 6E-203, AI-820" value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)} autoComplete="off" />
                           </div>
                         )}
                       </div>
                     </div>
 
-                    {/* Step 3: Review & Pay */}
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", marginBottom: "1rem" }}>
-                        <div style={{ width: "1.6rem", height: "1.6rem", borderRadius: "50%", border: "2px solid var(--text-dark)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.8rem", color: "var(--text-dark)", flexShrink: 0 }}>3</div>
-                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-dark)" }}>Review &amp; Pay</span>
+                    <hr style={{ border: "none", borderTop: "1px solid var(--border-color)", margin: 0 }} />
+
+                    {/* ── Section 3: Review & Pay ── */}
+                    <div style={{ padding: "1.5rem 0 0.5rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
+                        <div style={{ width: "2rem", height: "2rem", borderRadius: "50%", border: "2px solid var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.85rem", color: "var(--text-muted)", flexShrink: 0 }}>3</div>
+                        <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "var(--text-muted)" }}>Review &amp; Pay</span>
                       </div>
                       <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
                         Continue to payment
                       </button>
                     </div>
+
                   </form>
                 </div>
 
