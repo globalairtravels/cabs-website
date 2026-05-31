@@ -44,6 +44,18 @@ function defaultProfile(user) {
   };
 }
 
+const AUTH_CACHE_KEY = "gat_auth";
+
+function readCache() {
+  try { return JSON.parse(localStorage.getItem(AUTH_CACHE_KEY)); } catch { return null; }
+}
+function writeCache(value) {
+  try { localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify(value)); } catch {}
+}
+function clearCache() {
+  try { localStorage.removeItem(AUTH_CACHE_KEY); } catch {}
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -76,12 +88,22 @@ export function AuthProvider({ children }) {
 
   // ----- Auth state subscription -----
   useEffect(() => {
+    // Restore cached snapshot instantly so the header doesn't flash
+    // "Log in" while Firebase validates the token in the background.
+    const cached = readCache();
+    if (cached) {
+      setUser({ uid: cached.uid, phoneNumber: cached.phoneNumber });
+      setProfile(cached);
+      setLoading(false);
+    }
+
     const auth = getFirebaseAuth();
     if (!auth) {
-      // Not configured (or SSR) — settle into a signed-out state. Deferred so we
-      // don't call setState synchronously in the effect body.
-      const t = setTimeout(() => setLoading(false), 0);
-      return () => clearTimeout(t);
+      if (!cached) {
+        const t = setTimeout(() => setLoading(false), 0);
+        return () => clearTimeout(t);
+      }
+      return;
     }
     const unsub = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
@@ -89,12 +111,14 @@ export function AuthProvider({ children }) {
         try {
           const p = await loadProfile(currentUser);
           setProfile(p);
+          writeCache({ uid: currentUser.uid, phoneNumber: currentUser.phoneNumber, ...p });
         } catch (err) {
           console.error("Failed to load profile:", err);
           setProfile(null);
         }
       } else {
         setProfile(null);
+        clearCache();
       }
       setLoading(false);
     });
@@ -171,13 +195,18 @@ export function AuthProvider({ children }) {
     const ref = doc(db, "users", user.uid);
     const payload = { ...fields, updatedAt: serverTimestamp() };
     await updateDoc(ref, payload);
-    setProfile((prev) => ({ ...(prev || {}), ...fields }));
+    setProfile((prev) => {
+      const updated = { ...(prev || {}), ...fields };
+      writeCache({ uid: user.uid, phoneNumber: user.phoneNumber, ...updated });
+      return updated;
+    });
   }, [user]);
 
   const refreshProfile = useCallback(async () => {
     if (!user) return;
     const p = await loadProfile(user);
     setProfile(p);
+    writeCache({ uid: user.uid, phoneNumber: user.phoneNumber, ...p });
   }, [user, loadProfile]);
 
   const value = {
