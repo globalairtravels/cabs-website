@@ -198,7 +198,7 @@ export default function BookingNew() {
   const handlePassengerSubmit = (e) => {
     e.preventDefault();
     if (!name || !phone || !pickupAddress) {
-      alert("Please fill in traveler Name, Phone, and Pickup Address.");
+      alert("Please fill in name, phone, and pickup address.");
       return;
     }
     setStep(4);
@@ -400,227 +400,189 @@ Please confirm my booking. Thank you!`;
 
                 {/* LEFT on desktop / BOTTOM on mobile: Passenger fields */}
                 <div className="booking-fields">
-                  <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Passenger Information</h2>
-                  <form onSubmit={handlePassengerSubmit} className="passenger-form">
-                {tripType === "airport" && (
-                  <div className="form-group" style={{ opacity: 0.85 }}>
-                    <label className="form-label">Airport Transfer Direction</label>
-                    <div className="inline-selectors-row" style={{ display: "flex", gap: "1.5rem", marginTop: "0.25rem", marginBottom: "1rem", pointerEvents: "none", flexWrap: "wrap" }}>
-                      <label className="inline-radio-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <input type="radio" name="airport-direction" checked={airportType === "drop"} readOnly className="inline-radio-input" />
-                        <span>Mysore ➔ Bangalore Airport Drop</span>
-                      </label>
-                      <label className="inline-radio-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <input type="radio" name="airport-direction" checked={airportType === "pickup"} readOnly className="inline-radio-input" />
-                        <span>Bangalore Airport Pickup ➔ Mysore</span>
-                      </label>
-                    </div>
-                  </div>
-                )}
-
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-                  <div className="form-group" style={{ margin: 0 }}>
-                    <label htmlFor="reporting-date" className="form-label">Reporting Date</label>
-                    <div className="input-wrapper">
-                      <img src={getAssetPath("/icons/hero/calendar.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
-                      <input
-                        id="reporting-date"
-                        type="date"
-                        className="form-input"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        required
-                        min={new Date().toISOString().split("T")[0]}
-                      />
-                    </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
+                    <div style={{
+                      width: "2rem", height: "2rem", borderRadius: "50%", border: "2px solid var(--text-dark)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontWeight: 700, fontSize: "0.9rem", color: "var(--text-dark)", flexShrink: 0
+                    }}>3</div>
+                    <h2 style={{ fontSize: "1.35rem", fontWeight: 700, color: "var(--text-dark)", margin: 0 }}>Add traveller details</h2>
                   </div>
 
-                  <div className="form-group" style={{ margin: 0 }}>
-                    <label htmlFor="reporting-time" className="form-label">Reporting Time</label>
-                    <div className="input-wrapper">
-                      <img src={getAssetPath("/icons/hero/time.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
-                      <input
-                        id="reporting-time"
-                        type="time"
-                        className="form-input"
-                        value={time}
-                        onChange={(e) => setTime(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
+                  <form onSubmit={handlePassengerSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
-                {tripType === "city" && (
-                  <div className="form-group">
-                    <label htmlFor="city-days-input" className="form-label">Number of Days</label>
-                    <div className="input-wrapper">
-                      <img src={getAssetPath("/icons/booking-flow/schedule.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
-                      <input
-                        id="city-days-input"
-                        type="number"
-                        className="form-input"
-                        value={cityDays}
-                        onChange={(e) => {
-                          const { value } = e.target;
-                          setCityDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 }));
-                        }}
-                        onBlur={() => setCityDays(cityDayCount)}
-                        min="1"
-                        max="30"
-                        required
-                      />
-                    </div>
-                  </div>
-                )}
+                    {/* Trip timing fields */}
+                    {tripType === "airport" && (
+                      <div style={{ background: "var(--primary-navy-light)", borderRadius: "var(--border-radius)", padding: "0.75rem 1rem", border: "1px solid #d3e4fd", fontSize: "0.82rem", color: "var(--primary-navy-dark)", fontWeight: 600 }}>
+                        {airportType === "drop" ? "✈️  Mysore → Bangalore Airport (Drop)" : "✈️  Bangalore Airport → Mysore (Pickup)"}
+                      </div>
+                    )}
 
-                {tripType === "tempo" && (
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-                    <div className="form-group" style={{ margin: 0 }}>
-                      <label htmlFor="tempo-days-input" className="form-label">Number of Days</label>
-                      <div className="input-wrapper">
-                        <img src={getAssetPath("/icons/booking-flow/schedule.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
-                        <input
-                          id="tempo-days-input"
-                          type="number"
-                          className="form-input"
-                          value={tempoDays}
-                          onChange={(e) => {
-                            const { value } = e.target;
-                            setTempoDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 }));
-                          }}
-                          onBlur={() => setTempoDays(tempoDayCount)}
-                          min="1"
-                          max="30"
-                          required
-                        />
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem" }}>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label htmlFor="reporting-date" className="form-label">Reporting Date</label>
+                        <div className="input-wrapper">
+                          <img src={getAssetPath("/icons/hero/calendar.svg")} alt="" className="input-icon" style={{ opacity: 0.5 }} />
+                          <input id="reporting-date" type="date" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} required min={new Date().toISOString().split("T")[0]} />
+                        </div>
+                      </div>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label htmlFor="reporting-time" className="form-label">Reporting Time</label>
+                        <div className="input-wrapper">
+                          <img src={getAssetPath("/icons/hero/time.svg")} alt="" className="input-icon" style={{ opacity: 0.5 }} />
+                          <input id="reporting-time" type="time" className="form-input" value={time} onChange={(e) => setTime(e.target.value)} required />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="form-group" style={{ margin: 0 }}>
-                      <label htmlFor="tempo-km-input" className="form-label">Estimated Kilometers</label>
-                      <div className="input-wrapper">
-                        <img src={getAssetPath("/icons/fare/per-km.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
-                        <input
-                          id="tempo-km-input"
-                          type="number"
-                          className="form-input"
-                          value={tempoEstKm}
-                          onChange={(e) => {
-                            const { value } = e.target;
-                            setTempoEstKm(value === "" ? "" : normalizePositiveInteger(value));
-                          }}
-                          onBlur={() => setTempoEstKm(tempoKmCount)}
-                          min="1"
-                          required
-                        />
+                    {tripType === "city" && (
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label htmlFor="city-days-input" className="form-label">Number of Days</label>
+                        <div className="input-wrapper">
+                          <img src={getAssetPath("/icons/booking-flow/schedule.svg")} alt="" className="input-icon" style={{ opacity: 0.5 }} />
+                          <input id="city-days-input" type="number" className="form-input" value={cityDays}
+                            onChange={(e) => { const { value } = e.target; setCityDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
+                            onBlur={() => setCityDays(cityDayCount)} min="1" max="30" required />
+                        </div>
+                      </div>
+                    )}
+
+                    {tripType === "tempo" && (
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem" }}>
+                        <div className="form-group" style={{ margin: 0 }}>
+                          <label htmlFor="tempo-days-input" className="form-label">Number of Days</label>
+                          <div className="input-wrapper">
+                            <img src={getAssetPath("/icons/booking-flow/schedule.svg")} alt="" className="input-icon" style={{ opacity: 0.5 }} />
+                            <input id="tempo-days-input" type="number" className="form-input" value={tempoDays}
+                              onChange={(e) => { const { value } = e.target; setTempoDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
+                              onBlur={() => setTempoDays(tempoDayCount)} min="1" max="30" required />
+                          </div>
+                        </div>
+                        <div className="form-group" style={{ margin: 0 }}>
+                          <label htmlFor="tempo-km-input" className="form-label">Estimated Kilometers</label>
+                          <div className="input-wrapper">
+                            <img src={getAssetPath("/icons/fare/per-km.svg")} alt="" className="input-icon" style={{ opacity: 0.5 }} />
+                            <input id="tempo-km-input" type="number" className="form-input" value={tempoEstKm}
+                              onChange={(e) => { const { value } = e.target; setTempoEstKm(value === "" ? "" : normalizePositiveInteger(value)); }}
+                              onBlur={() => setTempoEstKm(tempoKmCount)} min="1" required />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Passenger details card */}
+                    <div style={{ border: "1px solid var(--border-color)", borderRadius: "var(--border-radius)", overflow: "hidden" }}>
+                      <div style={{ padding: "0.85rem 1rem", borderBottom: "1px solid var(--border-color)", background: "var(--bg-card)" }}>
+                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-dark)" }}>Passenger details</span>
+                      </div>
+
+                      <div style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+                        <div className="form-group" style={{ margin: 0 }}>
+                          <label htmlFor="cust-name" className="form-label">Full name</label>
+                          <div className="input-wrapper">
+                            <img src={getAssetPath("/icons/hero/passenger.svg")} alt="" className="input-icon" />
+                            <input
+                              id="cust-name"
+                              type="text"
+                              className="form-input"
+                              placeholder="Enter your full name"
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              required
+                              autoComplete="name"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="form-group" style={{ margin: 0 }}>
+                          <label htmlFor="cust-phone" className="form-label">WhatsApp mobile number</label>
+                          <div className="input-wrapper">
+                            <img src={getAssetPath("/icons/footer/phone.svg")} alt="" className="input-icon" />
+                            <input
+                              id="cust-phone"
+                              type="tel"
+                              className="form-input"
+                              placeholder="10-digit mobile number"
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                              required
+                              pattern="[6-9][0-9]{9}"
+                              inputMode="tel"
+                              autoComplete="tel"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="form-group" style={{ margin: 0 }}>
+                          <label htmlFor="cust-email" className="form-label">
+                            Email address <span style={{ color: "var(--text-gray)", fontWeight: 400 }}>(optional)</span>
+                          </label>
+                          <div className="input-wrapper">
+                            <img src={getAssetPath("/icons/footer/email.svg")} alt="" className="input-icon" />
+                            <input
+                              id="cust-email"
+                              type="email"
+                              className="form-input"
+                              placeholder="For booking confirmation"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              autoComplete="email"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="form-group" style={{ margin: 0 }}>
+                          <label htmlFor="cust-address" className="form-label">
+                            {tripType === "airport" && airportType === "pickup" ? "Drop address in Mysuru" : "Pickup address"}
+                          </label>
+                          <div className="input-wrapper">
+                            <img src={getAssetPath("/icons/hero/pickup.svg")} alt="" className="input-icon" style={{ alignSelf: "flex-start", marginTop: "0.8rem" }} />
+                            <textarea
+                              id="cust-address"
+                              className="form-input"
+                              style={{ minHeight: "72px", padding: "0.5rem 0.75rem 0.5rem 2.25rem", resize: "vertical" }}
+                              placeholder={
+                                tripType === "airport" && airportType === "pickup"
+                                  ? "Your destination in Mysuru (home / hotel)"
+                                  : tripType === "airport"
+                                  ? "Your home / hotel address in Mysuru"
+                                  : "Reporting address with any landmark"
+                              }
+                              value={pickupAddress}
+                              onChange={(e) => setPickupAddress(e.target.value)}
+                              required
+                              autoComplete="street-address"
+                            />
+                          </div>
+                        </div>
+
+                        {tripType === "airport" && (
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label htmlFor="cust-flight" className="form-label">
+                              Flight number <span style={{ color: "var(--text-gray)", fontWeight: 400 }}>(optional)</span>
+                            </label>
+                            <div className="input-wrapper">
+                              <img src={getAssetPath("/icons/nav/airport.svg")} alt="" className="input-icon" />
+                              <input
+                                id="cust-flight"
+                                type="text"
+                                className="form-input"
+                                placeholder="e.g. 6E-203, AI-820"
+                                value={flightNumber}
+                                onChange={(e) => setFlightNumber(e.target.value)}
+                                autoComplete="off"
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                )}
 
-                <div className="form-group">
-                  <label htmlFor="cust-name" className="form-label">Passenger Name</label>
-                  <div className="input-wrapper">
-                    <img src={getAssetPath("/icons/hero/passenger.svg")} alt="" className="input-icon" />
-                    <input
-                      id="cust-name"
-                      type="text"
-                      className="form-input"
-                      placeholder="Enter full name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                      autoComplete="name"
-                    />
-                  </div>
+                    <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
+                      Continue to payment
+                    </button>
+                  </form>
                 </div>
-
-                <div className="form-group">
-                  <label htmlFor="cust-phone" className="form-label">WhatsApp Mobile Number</label>
-                  <div className="input-wrapper">
-                    <img src={getAssetPath("/icons/footer/phone.svg")} alt="" className="input-icon" />
-                    <input
-                      id="cust-phone"
-                      type="tel"
-                      className="form-input"
-                      placeholder="10-digit phone number"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      required
-                      pattern="[6-9][0-9]{9}"
-                      inputMode="tel"
-                      autoComplete="tel"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="cust-email" className="form-label">Email Address (Optional)</label>
-                  <div className="input-wrapper">
-                    <img src={getAssetPath("/icons/footer/email.svg")} alt="" className="input-icon" />
-                    <input
-                      id="cust-email"
-                      type="email"
-                      className="form-input"
-                      placeholder="For booking receipts"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      autoComplete="email"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="cust-address" className="form-label">
-                    {tripType === "airport" && airportType === "pickup"
-                      ? "Drop Address in Mysuru"
-                      : "Full Pickup Address"}
-                  </label>
-                  <div className="input-wrapper">
-                    <img src={getAssetPath("/icons/hero/pickup.svg")} alt="" className="input-icon" style={{ alignSelf: "flex-start", marginTop: "0.8rem" }} />
-                    <textarea
-                      id="cust-address"
-                      className="form-input"
-                      style={{ minHeight: "80px", padding: "0.5rem 0.75rem 0.5rem 2.25rem", resize: "vertical" }}
-                      placeholder={
-                        tripType === "airport" && airportType === "pickup"
-                          ? "Your destination address in Mysuru (home / hotel)"
-                          : tripType === "airport"
-                          ? "Your home / hotel address in Mysuru for pickup"
-                          : "Enter reporting address and any landmark details"
-                      }
-                      value={pickupAddress}
-                      onChange={(e) => setPickupAddress(e.target.value)}
-                      required
-                      autoComplete="street-address"
-                    ></textarea>
-                  </div>
-                </div>
-
-                {tripType === "airport" && (
-                  <div className="form-group">
-                    <label htmlFor="cust-flight" className="form-label">Flight Number (Optional)</label>
-                    <div className="input-wrapper">
-                      <img src={getAssetPath("/icons/nav/airport.svg")} alt="" className="input-icon" />
-                      <input
-                        id="cust-flight"
-                        type="text"
-                        className="form-input"
-                        placeholder="e.g. 6E-203, AI-820"
-                        value={flightNumber}
-                        onChange={(e) => setFlightNumber(e.target.value)}
-                        autoComplete="off"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div className="form-actions">
-                  <button type="submit" className="btn-primary">Confirm Details ➔</button>
-                </div>
-              </form>
-              </div>
 
               {/* RIGHT on desktop / TOP on mobile: Trip summary */}
               <div className="booking-summary">
