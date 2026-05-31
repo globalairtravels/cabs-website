@@ -1060,15 +1060,35 @@ body {
   border-radius: var(--border-radius);
   padding: 0.65rem 0.85rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 0.7rem;
   margin-bottom: 1.25rem;
   border: 1px solid #d3e4fd;
+}
+
+.trip-type-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background-color: #fff;
+  border: 1px solid #d3e4fd;
+}
+
+.trip-type-icon-img {
+  width: 95%;
+  height: 95%;
+  object-fit: contain;
 }
 
 .route-summary-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .route-summary-cities {

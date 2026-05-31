@@ -22,6 +22,13 @@ const TRIP_TYPE_TO_BOOKING_TYPE = {
   tempo: "tempo",
 };
 
+const TRIP_TYPE_ICON = {
+  airport: "/images/airport-transfers.svg",
+  daily: "/images/intercity-travel.svg",
+  city: "/images/city-taxi-service.svg",
+  tempo: "/images/tempo-traveller.svg",
+};
+
 const PROMO_PALETTE = ["#22A06B", "#FF4F00", "#3366CC", "#7A3FFF"];
 const PROMO_ICONS = ["🎁", "🎟️", "📅", "🏷️"];
 
@@ -523,6 +530,9 @@ Please confirm my booking. Thank you!`;
               {/* RIGHT on desktop / TOP on mobile: Trip summary */}
               <div className="booking-summary">
                 <div className="route-summary-bar" style={{ marginBottom: "1rem" }}>
+                  <div className="trip-type-icon-box">
+                    <img src={getAssetPath(TRIP_TYPE_ICON[tripType])} alt="" className="trip-type-icon-img" />
+                  </div>
                   <div className="route-summary-info">
                     <span className="route-summary-cities">
                       {(tripType === "city" || tripType === "tempo") ? pickup : `${pickup} ➔ ${drop}`}
