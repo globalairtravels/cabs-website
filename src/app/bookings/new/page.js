@@ -100,10 +100,20 @@ export default function BookingNew() {
       setTripType(tType);
 
       const qPickup = params.get("pickup");
-      if (qPickup) setPickup(qPickup);
+      if (qPickup) {
+        setPickup(qPickup);
+        if (qPickup.toLowerCase().includes("airport")) {
+          setAirportType("pickup");
+        }
+      }
 
       const qDrop = params.get("drop");
-      if (qDrop) setDrop(qDrop);
+      if (qDrop) {
+        setDrop(qDrop);
+        if (qDrop.toLowerCase().includes("airport")) {
+          setAirportType("drop");
+        }
+      }
 
       const qDays = params.get("days");
       if (qDays) {
@@ -373,33 +383,25 @@ Please confirm my booking. Thank you!`;
               <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Passenger Information</h2>
               <form onSubmit={handlePassengerSubmit} className="passenger-form">
                 {tripType === "airport" && (
-                  <div className="form-group">
+                  <div className="form-group" style={{ opacity: 0.85 }}>
                     <label className="form-label">Airport Transfer Direction</label>
-                    <div className="inline-selectors-row" style={{ display: "flex", gap: "1.5rem", marginTop: "0.25rem", marginBottom: "1rem" }}>
-                      <label className="inline-radio-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                    <div className="inline-selectors-row" style={{ display: "flex", gap: "1.5rem", marginTop: "0.25rem", marginBottom: "1rem", pointerEvents: "none" }}>
+                      <label className="inline-radio-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <input
                           type="radio"
                           name="airport-direction"
                           checked={airportType === "drop"}
-                          onChange={() => {
-                            setAirportType("drop");
-                            setPickup("Mysuru");
-                            setDrop("Bangalore Airport (KIA)");
-                          }}
+                          readOnly
                           className="inline-radio-input"
                         />
                         <span>Mysore ➔ Bangalore Airport Drop</span>
                       </label>
-                      <label className="inline-radio-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                      <label className="inline-radio-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <input
                           type="radio"
                           name="airport-direction"
                           checked={airportType === "pickup"}
-                          onChange={() => {
-                            setAirportType("pickup");
-                            setPickup("Bangalore Airport (KIA)");
-                            setDrop("Mysuru");
-                          }}
+                          readOnly
                           className="inline-radio-input"
                         />
                         <span>Bangalore Airport Pickup ➔ Mysore</span>
