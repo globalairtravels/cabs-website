@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----- Helpers -----
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Phone-auth users carry their number in the token. Used to ensure a
+    // profile's phone matches the authenticated identity.
+    function tokenPhone() {
+      return request.auth.token.phone_number;
+    }
+
+    // ----- User profiles -----
+    // Each user can read and update only their own /users/{uid} document.
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+
+      // On create, the doc id must equal the caller's uid and the stored
+      // phone must match the authenticated phone number.
+      allow create: if isOwner(userId)
+                    && request.resource.data.uid == userId
+                    && request.resource.data.phone == tokenPhone();
+
+      // On update, the immutable identity fields can't be changed.
+      allow update: if isOwner(userId)
+                    && request.resource.data.uid == resource.data.uid
+                    && request.resource.data.phone == resource.data.phone;
+
+      // Deletion handled out-of-band (support / Cloud Function), never by client.
+      allow delete: if false;
+    }
+
+    // ----- Bookings -----
+    // Booking documents are created and mutated only by the Admin SDK
+    // (Cloud Functions), which bypasses these rules. Clients may read a
+    // booking only if it is stamped with their uid.
+    match /bookings/{bookingId} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    // ----- Default deny -----
+    // Anything not matched above is denied for client access.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
