@@ -193,10 +193,24 @@ export default function BookingNew() {
   const handleApplyPromo = (promo) => {
     if (appliedPromo?.code === promo.code) {
       setAppliedPromo(null);
+    } else if (paymentMethod === "advance") {
+      setToastMessage("Coupons are only applicable for full online payments");
+      setShowToast(true);
+      window.setTimeout(() => setShowToast(false), 2500);
     } else if (!promo.minFare || totalPrice >= promo.minFare) {
       setAppliedPromo(promo);
     } else {
       setToastMessage(`Min fare ₹${promo.minFare} required for this offer`);
+      setShowToast(true);
+      window.setTimeout(() => setShowToast(false), 2500);
+    }
+  };
+
+  const handleSelectPaymentMethod = (method) => {
+    setPaymentMethod(method);
+    if (method === "advance" && appliedPromo) {
+      setAppliedPromo(null);
+      setToastMessage("Coupon removed. Coupons are only applicable for full online payments.");
       setShowToast(true);
       window.setTimeout(() => setShowToast(false), 2500);
     }
@@ -507,7 +521,7 @@ Please confirm my booking. Thank you!`;
 
                       {/* Payment method selection */}
                       <div className="payment-methods" role="radiogroup" aria-label="Payment Mode" style={{ marginBottom: "1rem" }}>
-                        <div className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`} onClick={() => setPaymentMethod("advance")}>
+                        <div className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`} onClick={() => handleSelectPaymentMethod("advance")}>
                           <input type="radio" id="radio-advance" name="payment-preference" checked={paymentMethod === "advance"} onChange={() => {}} className="payment-radio" />
                           <div className="payment-method-info">
                             <label htmlFor="radio-advance" className="payment-method-name">
@@ -518,7 +532,7 @@ Please confirm my booking. Thank you!`;
                           </div>
                         </div>
 
-                        <div className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`} onClick={() => setPaymentMethod("full")}>
+                        <div className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`} onClick={() => handleSelectPaymentMethod("full")}>
                           <input type="radio" id="radio-full" name="payment-preference" checked={paymentMethod === "full"} onChange={() => {}} className="payment-radio" />
                           <div className="payment-method-info">
                             <label htmlFor="radio-full" className="payment-method-name">
