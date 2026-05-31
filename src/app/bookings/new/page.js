@@ -211,15 +211,6 @@ export default function BookingNew() {
     setStep(5);
   };
 
-  const handleWhatsAppAndConfirm = () => {
-    if (!name || !phone || !pickupAddress) {
-      alert("Please fill in name, phone, and pickup address.");
-      return;
-    }
-    window.open(getWhatsAppUrl(getWhatsAppMessage()), "_blank");
-    setStep(5);
-  };
-
   const generateUpiLink = () => {
     const note = `Booking ${bookingId}`;
     return `upi://pay?pa=${siteConfig.upiId}&pn=${encodeURIComponent(siteConfig.merchantName)}&am=${onlinePaymentAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
@@ -549,45 +540,9 @@ Please confirm my booking. Thank you!`;
                         </div>
                       </div>
 
-                      {/* UPI Gateway */}
-                      <div className="upi-gateway-container">
-                        <div className="upi-brands">
-                          <img src={getAssetPath("/icons/upi.svg")} alt="UPI Logo" className="upi-brand-icon" style={{ height: 16 }} />
-                          <span style={{ fontWeight: 700, fontSize: "0.8rem", color: "#5f259f" }}>GPay/PhonePe Gateway</span>
-                        </div>
-                        <div className="qr-instructions">
-                          <span style={{ display: "block", fontWeight: 700, fontSize: "1.05rem", color: "var(--primary-navy)" }}>
-                            Amount to Pay: ₹{onlinePaymentAmount}
-                          </span>
-                          <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                            Account Holder: <strong>{siteConfig.merchantName}</strong>
-                          </span>
-                          <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                            GPay/PhonePe Number: <strong>{siteConfig.phoneDisplay}</strong>
-                          </span>
-                        </div>
-                        <div className="qr-code-box">
-                          <img
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(generateUpiLink())}`}
-                            alt="Scan QR"
-                            className="qr-mock-img"
-                          />
-                        </div>
-                        <div className="pay-btn-group">
-                          <a href={generateUpiLink()} className="btn-phonepe-pay">📱 Pay via UPI Apps</a>
-                        </div>
-                      </div>
-
-                      {/* Confirm buttons */}
-                      <div className="pay-btn-group" style={{ marginTop: "1rem" }}>
-                        <button type="button" className="btn-whatsapp-confirm" onClick={handleWhatsAppAndConfirm}>
-                          <img src={WHATSAPP_ICON_PATH} alt="" className="whatsapp-icon-white" />
-                          Send Booking Request on WhatsApp
-                        </button>
-                        <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-                          Pay Now &amp; Confirm Booking
-                        </button>
-                      </div>
+                      <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
+                        Pay Now ₹{onlinePaymentAmount}
+                      </button>
                     </div>
 
                   </form>
