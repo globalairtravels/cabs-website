@@ -2277,8 +2277,10 @@ textarea.form-input {
 }
 
 .inline-cab-specs {
-  font-size: 0.7rem;
-  color: var(--text-gray);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
 }
 
 .inline-cab-example {

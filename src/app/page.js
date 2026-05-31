@@ -885,7 +885,9 @@ export default function Home() {
                                 <div className="inline-cab-details">
                                   <div className="inline-cab-name">{cab.name}</div>
                                   <div className="inline-cab-specs">
-                                    {cab.seats} Seats • {cab.luggage} {cab.ac ? "• AC" : ""}
+                                    <span className="cab-spec-badge">{cab.seats} Seats</span>
+                                    <span className="cab-spec-badge">{cab.luggage}</span>
+                                    {cab.ac && <span className="cab-spec-badge">AC</span>}
                                   </div>
                                   <div className="inline-cab-example">e.g. {cab.example}</div>
                                 </div>
