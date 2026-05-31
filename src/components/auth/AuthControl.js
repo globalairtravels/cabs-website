@@ -92,10 +92,10 @@ export default function AuthControl({ variant = "desktop", onNavigate }) {
               </div>
             </div>
             <button type="button" className="drawer-nav-link" onClick={() => go("/account")}>
-              <span>My Profile</span>
+              <span>Account</span>
             </button>
             <button type="button" className="drawer-nav-link" onClick={() => go("/account/bookings")}>
-              <span>My Bookings</span>
+              <span>Bookings</span>
             </button>
             <button type="button" className="drawer-nav-link drawer-signout" onClick={handleSignOut}>
               <span>Sign out</span>
@@ -135,10 +135,10 @@ export default function AuthControl({ variant = "desktop", onNavigate }) {
                 <span className="account-dropdown-phone">{profile?.phone || user.phoneNumber}</span>
               </div>
               <button type="button" className="account-dropdown-item" role="menuitem" onClick={() => go("/account")}>
-                My Profile
+                Account
               </button>
               <button type="button" className="account-dropdown-item" role="menuitem" onClick={() => go("/account/bookings")}>
-                My Bookings
+                Bookings
               </button>
               <div className="account-dropdown-divider" />
               <button type="button" className="account-dropdown-item signout" role="menuitem" onClick={handleSignOut}>
