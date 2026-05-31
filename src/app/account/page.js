@@ -89,7 +89,7 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "var(--slate-50, #f8fafc)" }}>
+    <div className="flex flex-col min-h-screen account-page-bg">
       <AccountHeader />
 
       <div className="main-wrapper">
@@ -168,7 +168,7 @@ export default function AccountPage() {
                   {error && <p className="auth-error">{error}</p>}
 
                   <div className="account-form-actions">
-                    <a href={`${BASE_PATH}/account/bookings`} className="btn-secondary">My Bookings</a>
+                    <a href={`${BASE_PATH}/bookings/`} className="btn-secondary">My Bookings</a>
                     <button type="submit" className="btn-primary" disabled={saving}>
                       {saving ? "Saving…" : savedAt ? "✓ Saved" : "Save changes"}
                     </button>

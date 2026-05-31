@@ -2624,6 +2624,10 @@ textarea.form-input {
 .drawer-signout { color: var(--error-red); }
 
 /* ----- Account pages (/account, /account/bookings) ----- */
+.account-page-bg {
+  background-color: white;
+}
+
 .account-shell {
   max-width: 640px;
   margin: 0 auto;
