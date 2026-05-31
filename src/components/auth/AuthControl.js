@@ -61,6 +61,12 @@ export default function AuthControl({ variant = "desktop", onNavigate }) {
     setMenuOpen(false);
     onNavigate?.();
     await signOut();
+    try {
+      localStorage.clear();
+    } catch (e) {
+      console.error("Failed to clear localStorage:", e);
+    }
+    window.location.assign(href("/"));
   };
 
   const openLogin = () => {
