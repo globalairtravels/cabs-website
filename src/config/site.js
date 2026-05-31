@@ -202,8 +202,7 @@ export const siteConfig = {
         title: "Popular Airport Routes",
         items: [
           { id: "mysore-blr-airport", name: "Mysuru ➔ Bangalore Airport", subtitle: "₹3,600 Sedan • Toll Incl." },
-          { id: "blr-airport-mysore", name: "Bangalore Airport ➔ Mysuru", subtitle: "₹3,600 Sedan • Toll Incl." },
-          { id: "mysore-mangalore-airport", name: "Mysuru ➔ Mangalore Airport", subtitle: "₹5,500 Sedan • On Request" }
+          { id: "blr-airport-mysore", name: "Bangalore Airport ➔ Mysuru", subtitle: "₹3,600 Sedan • Toll Incl." }
         ]
       },
       info: {
