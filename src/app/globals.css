@@ -1014,6 +1014,46 @@ body {
   margin: 0 auto;
 }
 
+/* Two-column booking layout: mobile = summary top, fields bottom; desktop = fields left, summary right */
+.booking-two-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.booking-summary {
+  order: 1;
+}
+
+.booking-fields {
+  order: 2;
+}
+
+@media (min-width: 768px) {
+  .stepper-result.booking-page {
+    max-width: 960px;
+  }
+
+  .booking-two-col {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .booking-fields {
+    flex: 1 1 0;
+    min-width: 0;
+    order: 1;
+  }
+
+  .booking-summary {
+    flex: 0 0 340px;
+    order: 2;
+    position: sticky;
+    top: 80px;
+  }
+}
+
 /* Route Info Banner Step 2 */
 .route-summary-bar {
   background-color: var(--primary-navy-light);

@@ -68,6 +68,7 @@ export default function BookingNew() {
   const [pickupAddress, setPickupAddress] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("arrival");
+  const [appliedPromo, setAppliedPromo] = useState(null);
 
   // Modals / Misc
   const [bookingId, setBookingId] = useState(createBookingId);
@@ -171,6 +172,28 @@ export default function BookingNew() {
   const applicablePromos = bookingConfig.promos.filter(
     (promo) => !promo.appliesTo || promo.appliesTo.length === 0 || promo.appliesTo.includes(bookingTypeId)
   );
+
+  const promoDiscount = appliedPromo
+    ? appliedPromo.type === "percent"
+      ? Math.min(
+          Math.floor((totalPrice * appliedPromo.value) / 100),
+          appliedPromo.maxDiscount ?? Infinity
+        )
+      : appliedPromo.value
+    : 0;
+  const finalTotal = Math.max(0, totalPrice - promoDiscount);
+
+  const handleApplyPromo = (promo) => {
+    if (appliedPromo?.code === promo.code) {
+      setAppliedPromo(null);
+    } else if (!promo.minFare || totalPrice >= promo.minFare) {
+      setAppliedPromo(promo);
+    } else {
+      setToastMessage(`Min fare ₹${promo.minFare} required for this offer`);
+      setShowToast(true);
+      window.setTimeout(() => setShowToast(false), 2500);
+    }
+  };
 
   const handlePassengerSubmit = (e) => {
     e.preventDefault();
@@ -368,57 +391,17 @@ Please confirm my booking. Thank you!`;
       )}
 
       <div className="main-wrapper">
-        <div className="stepper-result step-container">
+        <div className="stepper-result step-container booking-page">
           
           {/* Step 3: Passenger Info */}
           {step === 3 && (
             <div className="booking-card">
-              <div className="route-summary-bar" style={{ marginBottom: "1rem" }}>
-                <div className="route-summary-info">
-                  <span className="route-summary-cities">
-                    {(tripType === "city" || tripType === "tempo") ? pickup : `${pickup} ➔ ${drop}`}
-                  </span>
-                  <span className="route-summary-details">{tripSummaryLabel}</span>
-                </div>
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  style={{ minHeight: "32px", padding: "0.25rem 0.5rem", fontSize: "0.75rem", flexShrink: 0 }}
-                  onClick={handleBackToSearch}
-                >
-                  Change
-                </button>
-              </div>
+              <div className="booking-two-col">
 
-              <div className="cab-card selected" style={{ marginBottom: "1.25rem" }}>
-                <div className="cab-card-header">
-                  <div className="cab-icon-box">
-                    <img
-                      src={selectedCab.icon.startsWith("images/") ? getAssetPath(`/${selectedCab.icon}`) : getAssetPath(`/icons/${selectedCab.icon}`)}
-                      alt=""
-                      className="cab-icon-img"
-                    />
-                  </div>
-                  <div className="cab-meta">
-                    <div className="cab-name-row">
-                      <h3 className="cab-name">{selectedCab.name}</h3>
-                      <div className="cab-price-col">
-                        <span className="cab-price">₹{totalPrice}</span>
-                        <span className="cab-price-subtext"> Assured</span>
-                      </div>
-                    </div>
-                    <p className="cab-example">e.g. {selectedCab.example}</p>
-                    <div className="cab-specs">
-                      <span className="cab-spec-badge">👤 {selectedCab.seats} Seats</span>
-                      <span className="cab-spec-badge">💼 {selectedCab.luggage}</span>
-                      {selectedCab.ac && <span className="cab-spec-badge">❄️ AC</span>}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Passenger Information</h2>
-              <form onSubmit={handlePassengerSubmit} className="passenger-form">
+                {/* LEFT on desktop / BOTTOM on mobile: Passenger fields */}
+                <div className="booking-fields">
+                  <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Passenger Information</h2>
+                  <form onSubmit={handlePassengerSubmit} className="passenger-form">
                 {tripType === "airport" && (
                   <div className="form-group" style={{ opacity: 0.85 }}>
                     <label className="form-label">Airport Transfer Direction</label>
@@ -634,48 +617,63 @@ Please confirm my booking. Thank you!`;
                 )}
 
                 <div className="form-actions">
-                  <button type="button" className="btn-secondary" onClick={handleBackToSearch}>← Change Cab</button>
                   <button type="submit" className="btn-primary">Confirm Details ➔</button>
                 </div>
               </form>
-            </div>
-          )}
-
-          {/* Step 4: Booking Checkout */}
-          {step === 4 && (
-            <div className="booking-card">
-              <div className="route-summary-bar" style={{ marginBottom: "1rem" }}>
-                <div className="route-summary-info">
-                  <span className="route-summary-cities">
-                    {(tripType === "city" || tripType === "tempo") ? pickup : `${pickup} ➔ ${drop}`}
-                  </span>
-                  <span className="route-summary-details">{selectedCab.name} • {tripSummaryLabel}</span>
-                </div>
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  style={{ minHeight: "32px", padding: "0.25rem 0.5rem", fontSize: "0.75rem", flexShrink: 0 }}
-                  onClick={() => setStep(3)}
-                >
-                  Back
-                </button>
               </div>
-              <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Confirm Booking Invoice</h2>
-              <div className="payment-section">
-                <div className="trip-bill-summary">
-                  <div className="bill-title">Summary of Charges</div>
-                  <div className="bill-row">
-                    <span>Vehicle Selected:</span>
-                    <span style={{ fontWeight: 600 }}>{selectedCab.name}</span>
+
+              {/* RIGHT on desktop / TOP on mobile: Trip summary */}
+              <div className="booking-summary">
+                <div className="route-summary-bar" style={{ marginBottom: "1rem" }}>
+                  <div className="route-summary-info">
+                    <span className="route-summary-cities">
+                      {(tripType === "city" || tripType === "tempo") ? pickup : `${pickup} ➔ ${drop}`}
+                    </span>
+                    <span className="route-summary-details">{tripSummaryLabel}</span>
                   </div>
+                </div>
+
+                <div className="cab-card selected">
+                  <div className="cab-card-header">
+                    <div className="cab-icon-box">
+                      <img
+                        src={selectedCab.icon.startsWith("images/") ? getAssetPath(`/${selectedCab.icon}`) : getAssetPath(`/icons/${selectedCab.icon}`)}
+                        alt=""
+                        className="cab-icon-img"
+                      />
+                    </div>
+                    <div className="cab-meta">
+                      <div className="cab-name-row">
+                        <h3 className="cab-name">{selectedCab.name}</h3>
+                      </div>
+                      <p className="cab-example">e.g. {selectedCab.example}</p>
+                      <div className="cab-specs">
+                        <span className="cab-spec-badge">👤 {selectedCab.seats} Seats</span>
+                        <span className="cab-spec-badge">💼 {selectedCab.luggage}</span>
+                        {selectedCab.ac && <span className="cab-spec-badge">❄️ AC</span>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="trip-bill-summary" style={{ marginTop: "1rem" }}>
+                  <div className="bill-title">Fare Breakdown</div>
                   <div className="bill-row">
                     <span>Trip:</span>
-                    <span>{pickup} to {drop}</span>
+                    <span>{(tripType === "city" || tripType === "tempo") ? pickup : `${pickup} → ${drop}`}</span>
                   </div>
-                  <div className="bill-row">
-                    <span>Reporting Time:</span>
-                    <span>{date || "Tomorrow"} at {time}</span>
-                  </div>
+                  {tripType === "airport" && (
+                    <div className="bill-row">
+                      <span>Assured flat fare:</span>
+                      <span>₹{selectedCab.airportPrice}</span>
+                    </div>
+                  )}
+                  {tripType === "daily" && (
+                    <div className="bill-row">
+                      <span>One-way intercity fare:</span>
+                      <span>₹{selectedCab.intercityPrice}</span>
+                    </div>
+                  )}
                   {tripType === "city" && (() => {
                     const totalKm = selectedCab.minKmPerDay * cityDayCount;
                     const runningCharges = selectedCab.ratePerKm * totalKm;
@@ -684,14 +682,14 @@ Please confirm my booking. Thank you!`;
                       <>
                         <div className="bill-row">
                           <span>Duration:</span>
-                          <span>{cityDayCount} Day{plural(cityDayCount)} · {selectedCab.minKmPerDay} km/day included</span>
+                          <span>{cityDayCount} Day{plural(cityDayCount)} · {selectedCab.minKmPerDay} km/day</span>
                         </div>
                         <div className="bill-row">
                           <span>Running ({totalKm} km × ₹{selectedCab.ratePerKm}/km):</span>
                           <span>₹{runningCharges}</span>
                         </div>
                         <div className="bill-row">
-                          <span>Driver allowance ({cityDayCount} day{plural(cityDayCount)} × ₹{selectedCab.driverAllowance}):</span>
+                          <span>Driver allowance ({cityDayCount}d × ₹{selectedCab.driverAllowance}):</span>
                           <span>₹{driverCharges}</span>
                         </div>
                       </>
@@ -705,106 +703,270 @@ Please confirm my booking. Thank you!`;
                       <>
                         <div className="bill-row">
                           <span>Duration / Est. Km:</span>
-                          <span>{tempoDayCount} Day{plural(tempoDayCount)} · ~{tempoKmCount} km (billed {effectiveKm} km)</span>
+                          <span>{tempoDayCount} Day{plural(tempoDayCount)} · {effectiveKm} km billed</span>
                         </div>
                         <div className="bill-row">
                           <span>Running ({effectiveKm} km × ₹{selectedCab.ratePerKm}/km):</span>
                           <span>₹{runningCharges}</span>
                         </div>
                         <div className="bill-row">
-                          <span>Driver allowance ({tempoDayCount} day{plural(tempoDayCount)} × ₹{selectedCab.driverAllowance}):</span>
+                          <span>Driver allowance ({tempoDayCount}d × ₹{selectedCab.driverAllowance}):</span>
                           <span>₹{driverCharges}</span>
                         </div>
                       </>
                     );
                   })()}
-                  {tripType === "daily" && (
-                    <div className="bill-row">
-                      <span>Trip Type:</span>
-                      <span>One Way Drop</span>
+                  <div className="bill-row">
+                    <span>Base fare:</span>
+                    <span>₹{totalPrice}</span>
+                  </div>
+                  {promoDiscount > 0 && (
+                    <div className="bill-row" style={{ color: "var(--success-green)", fontWeight: 600 }}>
+                      <span>Coupon ({appliedPromo.code}):</span>
+                      <span>− ₹{promoDiscount}</span>
                     </div>
                   )}
                   <div className="bill-row total">
                     <span>Total Assured Fare:</span>
-                    <span>₹{totalPrice}</span>
+                    <span>₹{finalTotal}</span>
                   </div>
                 </div>
 
-                <h3 className="form-label">Payment Preference</h3>
-                <div className="payment-methods" role="radiogroup" aria-label="Payment Mode">
-                  <div className={`payment-method-card ${paymentMethod === "arrival" ? "selected" : ""}`} onClick={() => setPaymentMethod("arrival")}>
-                    <input type="radio" id="radio-arrival" name="payment-preference" checked={paymentMethod === "arrival"} onChange={() => {}} className="payment-radio" />
-                    <div className="payment-method-info">
-                      <label htmlFor="radio-arrival" className="payment-method-name">Pay to Driver (Cash/UPI)</label>
-                      <span className="payment-method-desc">Pay ₹{totalPrice} directly to driver at the end of the trip.</span>
+                {applicablePromos.length > 0 && (
+                  <div style={{ marginTop: "1rem" }}>
+                    <div className="bill-title" style={{ marginBottom: "0.6rem" }}>Available Offers</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                      {applicablePromos.map((promo, idx) => {
+                        const isApplied = appliedPromo?.code === promo.code;
+                        const ineligible = promo.minFare && totalPrice < promo.minFare;
+                        const title =
+                          promo.type === "percent"
+                            ? `${promo.value}% Off${promo.maxDiscount ? ` (max ₹${promo.maxDiscount})` : ""}`
+                            : `Flat ₹${promo.value} Off`;
+                        return (
+                          <div
+                            key={promo.code}
+                            className="promo-card"
+                            style={{
+                              opacity: ineligible ? 0.55 : 1,
+                              border: isApplied ? "1.5px solid var(--success-green)" : undefined,
+                              padding: "0.75rem",
+                            }}
+                          >
+                            <div className="promo-img-box" style={{ color: PROMO_PALETTE[idx % PROMO_PALETTE.length], width: 36, height: 36, fontSize: "1.1rem" }}>
+                              {PROMO_ICONS[idx % PROMO_ICONS.length]}
+                            </div>
+                            <div className="promo-info" style={{ flex: 1, minWidth: 0 }}>
+                              <span className="promo-tag">{promo.code}</span>
+                              <h3 className="promo-title" style={{ fontSize: "0.8rem" }}>{title}</h3>
+                              <p className="promo-desc">{promo.label}{promo.minFare ? ` Min ₹${promo.minFare}.` : ""}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleApplyPromo(promo)}
+                              style={{
+                                flexShrink: 0,
+                                alignSelf: "center",
+                                padding: "0.3rem 0.65rem",
+                                fontSize: "0.72rem",
+                                fontWeight: 700,
+                                borderRadius: "6px",
+                                border: isApplied ? "1.5px solid var(--success-green)" : "1.5px solid var(--primary-orange)",
+                                background: "transparent",
+                                color: isApplied ? "var(--success-green)" : "var(--primary-orange)",
+                                cursor: ineligible ? "not-allowed" : "pointer",
+                              }}
+                            >
+                              {isApplied ? "✓ Applied" : "Apply"}
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
+                )}
+              </div>
 
-                  <div className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`} onClick={() => setPaymentMethod("advance")}>
-                    <input type="radio" id="radio-advance" name="payment-preference" checked={paymentMethod === "advance"} onChange={() => {}} className="payment-radio" />
-                    <div className="payment-method-info">
-                      <label htmlFor="radio-advance" className="payment-method-name">
-                        Pay Booking Advance (₹{requiredAdvance})
-                        <span className="payment-badge">Leaflet Policy</span>
-                      </label>
-                      <span className="payment-method-desc">Pay ₹{requiredAdvance} now via GPay/PhonePe to secure booking. Pay balance ₹{payToDriverAmount} to driver.</span>
+            </div>
+            </div>
+          )}
+
+          {/* Step 4: Booking Checkout */}
+          {step === 4 && (
+            <div className="booking-card">
+              <div className="booking-two-col">
+
+                {/* LEFT on desktop / BOTTOM on mobile: Payment fields */}
+                <div className="booking-fields">
+                  <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Confirm Booking Invoice</h2>
+                  <div className="payment-section">
+                    <h3 className="form-label">Payment Preference</h3>
+                    <div className="payment-methods" role="radiogroup" aria-label="Payment Mode">
+                      <div className={`payment-method-card ${paymentMethod === "arrival" ? "selected" : ""}`} onClick={() => setPaymentMethod("arrival")}>
+                        <input type="radio" id="radio-arrival" name="payment-preference" checked={paymentMethod === "arrival"} onChange={() => {}} className="payment-radio" />
+                        <div className="payment-method-info">
+                          <label htmlFor="radio-arrival" className="payment-method-name">Pay to Driver (Cash/UPI)</label>
+                          <span className="payment-method-desc">Pay ₹{totalPrice} directly to driver at the end of the trip.</span>
+                        </div>
+                      </div>
+
+                      <div className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`} onClick={() => setPaymentMethod("advance")}>
+                        <input type="radio" id="radio-advance" name="payment-preference" checked={paymentMethod === "advance"} onChange={() => {}} className="payment-radio" />
+                        <div className="payment-method-info">
+                          <label htmlFor="radio-advance" className="payment-method-name">
+                            Pay Booking Advance (₹{requiredAdvance})
+                            <span className="payment-badge">Leaflet Policy</span>
+                          </label>
+                          <span className="payment-method-desc">Pay ₹{requiredAdvance} now via GPay/PhonePe to secure booking. Pay balance ₹{payToDriverAmount} to driver.</span>
+                        </div>
+                      </div>
+
+                      <div className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`} onClick={() => setPaymentMethod("full")}>
+                        <input type="radio" id="radio-full" name="payment-preference" checked={paymentMethod === "full"} onChange={() => {}} className="payment-radio" />
+                        <div className="payment-method-info">
+                          <label htmlFor="radio-full" className="payment-method-name">
+                            Pay Full Online (₹{totalPrice})
+                            <span className="payment-badge">Zero Fees</span>
+                          </label>
+                          <span className="payment-method-desc">Pay full ₹{totalPrice} online now using GPay/PhonePe/UPI.</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`} onClick={() => setPaymentMethod("full")}>
-                    <input type="radio" id="radio-full" name="payment-preference" checked={paymentMethod === "full"} onChange={() => {}} className="payment-radio" />
-                    <div className="payment-method-info">
-                      <label htmlFor="radio-full" className="payment-method-name">
-                        Pay Full Online (₹{totalPrice})
-                        <span className="payment-badge">Zero Fees</span>
-                      </label>
-                      <span className="payment-method-desc">Pay full ₹{totalPrice} online now using GPay/PhonePe/UPI.</span>
+                    {paymentMethod !== "arrival" && (() => {
+                      const upiLink = generateUpiLink();
+                      return (
+                        <div className="upi-gateway-container">
+                          <div className="upi-brands">
+                            <img src={getAssetPath("/icons/upi.svg")} alt="UPI Logo" className="upi-brand-icon" style={{ height: 16 }} />
+                            <span style={{ fontWeight: 700, fontSize: "0.8rem", color: "#5f259f" }}>GPay/PhonePe Gateway</span>
+                          </div>
+                          <div className="qr-instructions">
+                            <span style={{ display: "block", fontWeight: 700, fontSize: "1.05rem", color: "var(--primary-navy)" }}>
+                              Amount to Pay: ₹{onlinePaymentAmount}
+                            </span>
+                            <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                              Account Holder: <strong>{siteConfig.merchantName}</strong>
+                            </span>
+                            <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                              GPay/PhonePe Number: <strong>{siteConfig.phoneDisplay}</strong>
+                            </span>
+                          </div>
+                          <div className="qr-code-box">
+                            <img
+                              src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(upiLink)}`}
+                              alt="Scan QR"
+                              className="qr-mock-img"
+                            />
+                          </div>
+                          <div className="pay-btn-group">
+                            <a href={upiLink} className="btn-phonepe-pay">📱 Pay via UPI Apps</a>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    <div className="pay-btn-group" style={{ marginTop: "1rem" }}>
+                      <button type="button" className="btn-whatsapp-confirm" onClick={handleWhatsAppRedirect}>
+                        <img src={WHATSAPP_ICON_PATH} alt="" className="whatsapp-icon-white" />
+                        Send Booking Request on WhatsApp
+                      </button>
+                      <button type="button" className="btn-primary" onClick={() => setStep(5)}>
+                        Confirm Booking (Pay on Arrival)
+                      </button>
                     </div>
                   </div>
                 </div>
 
-                {paymentMethod !== "arrival" && (() => {
-                  const upiLink = generateUpiLink();
-                  return (
-                    <div className="upi-gateway-container">
-                      <div className="upi-brands">
-                        <img src={getAssetPath("/icons/upi.svg")} alt="UPI Logo" className="upi-brand-icon" style={{ height: 16 }} />
-                        <span style={{ fontWeight: 700, fontSize: "0.8rem", color: "#5f259f" }}>GPay/PhonePe Gateway</span>
-                      </div>
-                      <div className="qr-instructions">
-                        <span style={{ display: "block", fontWeight: 700, fontSize: "1.05rem", color: "var(--primary-navy)" }}>
-                          Amount to Pay: ₹{onlinePaymentAmount}
-                        </span>
-                        <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                          Account Holder: <strong>{siteConfig.merchantName}</strong>
-                        </span>
-                        <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                          GPay/PhonePe Number: <strong>{siteConfig.phoneDisplay}</strong>
-                        </span>
-                      </div>
-                      <div className="qr-code-box">
-                        <img
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(upiLink)}`}
-                          alt="Scan QR"
-                          className="qr-mock-img"
-                        />
-                      </div>
-                      <div className="pay-btn-group">
-                        <a href={upiLink} className="btn-phonepe-pay">📱 Pay via UPI Apps</a>
-                      </div>
+                {/* RIGHT on desktop / TOP on mobile: Booking summary */}
+                <div className="booking-summary">
+                  <div className="route-summary-bar" style={{ marginBottom: "1rem" }}>
+                    <div className="route-summary-info">
+                      <span className="route-summary-cities">
+                        {(tripType === "city" || tripType === "tempo") ? pickup : `${pickup} ➔ ${drop}`}
+                      </span>
+                      <span className="route-summary-details">{selectedCab.name} • {tripSummaryLabel}</span>
                     </div>
-                  );
-                })()}
-
-                <div className="pay-btn-group" style={{ marginTop: "1rem" }}>
-                  <button type="button" className="btn-whatsapp-confirm" onClick={handleWhatsAppRedirect}>
-                    <img src={WHATSAPP_ICON_PATH} alt="" className="whatsapp-icon-white" />
-                    Send Booking Request on WhatsApp
-                  </button>
-                  <button type="button" className="btn-primary" onClick={() => setStep(5)}>
-                    Confirm Booking (Pay on Arrival)
-                  </button>
+                  </div>
+                  <div className="trip-bill-summary">
+                    <div className="bill-title">Summary of Charges</div>
+                    <div className="bill-row">
+                      <span>Vehicle Selected:</span>
+                      <span style={{ fontWeight: 600 }}>{selectedCab.name}</span>
+                    </div>
+                    <div className="bill-row">
+                      <span>Trip:</span>
+                      <span>{pickup} to {drop}</span>
+                    </div>
+                    <div className="bill-row">
+                      <span>Reporting Time:</span>
+                      <span>{date || "Tomorrow"} at {time}</span>
+                    </div>
+                    {tripType === "city" && (() => {
+                      const totalKm = selectedCab.minKmPerDay * cityDayCount;
+                      const runningCharges = selectedCab.ratePerKm * totalKm;
+                      const driverCharges = selectedCab.driverAllowance * cityDayCount;
+                      return (
+                        <>
+                          <div className="bill-row">
+                            <span>Duration:</span>
+                            <span>{cityDayCount} Day{plural(cityDayCount)} · {selectedCab.minKmPerDay} km/day included</span>
+                          </div>
+                          <div className="bill-row">
+                            <span>Running ({totalKm} km × ₹{selectedCab.ratePerKm}/km):</span>
+                            <span>₹{runningCharges}</span>
+                          </div>
+                          <div className="bill-row">
+                            <span>Driver allowance ({cityDayCount} day{plural(cityDayCount)} × ₹{selectedCab.driverAllowance}):</span>
+                            <span>₹{driverCharges}</span>
+                          </div>
+                        </>
+                      );
+                    })()}
+                    {tripType === "tempo" && (() => {
+                      const effectiveKm = getTempoEffectiveKm(selectedCab);
+                      const runningCharges = selectedCab.ratePerKm * effectiveKm;
+                      const driverCharges = selectedCab.driverAllowance * tempoDayCount;
+                      return (
+                        <>
+                          <div className="bill-row">
+                            <span>Duration / Est. Km:</span>
+                            <span>{tempoDayCount} Day{plural(tempoDayCount)} · ~{tempoKmCount} km (billed {effectiveKm} km)</span>
+                          </div>
+                          <div className="bill-row">
+                            <span>Running ({effectiveKm} km × ₹{selectedCab.ratePerKm}/km):</span>
+                            <span>₹{runningCharges}</span>
+                          </div>
+                          <div className="bill-row">
+                            <span>Driver allowance ({tempoDayCount} day{plural(tempoDayCount)} × ₹{selectedCab.driverAllowance}):</span>
+                            <span>₹{driverCharges}</span>
+                          </div>
+                        </>
+                      );
+                    })()}
+                    {tripType === "daily" && (
+                      <div className="bill-row">
+                        <span>Trip Type:</span>
+                        <span>One Way Drop</span>
+                      </div>
+                    )}
+                    <div className="bill-row">
+                      <span>Base fare:</span>
+                      <span>₹{totalPrice}</span>
+                    </div>
+                    {promoDiscount > 0 && (
+                      <div className="bill-row" style={{ color: "var(--success-green)", fontWeight: 600 }}>
+                        <span>Coupon ({appliedPromo.code}):</span>
+                        <span>− ₹{promoDiscount}</span>
+                      </div>
+                    )}
+                    <div className="bill-row total">
+                      <span>Total Assured Fare:</span>
+                      <span>₹{finalTotal}</span>
+                    </div>
+                  </div>
                 </div>
+
               </div>
             </div>
           )}
