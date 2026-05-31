@@ -77,6 +77,11 @@ export default function BookingNew() {
   const [email, setEmail] = useState("");
   const [pickupAddress, setPickupAddress] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
+  const [addrLine1, setAddrLine1] = useState("");
+  const [addrLine2, setAddrLine2] = useState("");
+  const [addrCity, setAddrCity] = useState("");
+  const [addrState, setAddrState] = useState("");
+  const [addrPincode, setAddrPincode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("full");
   const [appliedPromo, setAppliedPromo] = useState(null);
 
@@ -156,6 +161,11 @@ export default function BookingNew() {
       if (profile.email) setEmail((v) => v || profile.email);
       const digits = (profile.phone || "").replace(/\D/g, "").slice(-10);
       if (digits) setPhone((v) => v || digits);
+      if (profile.line1) setAddrLine1((v) => v || profile.line1);
+      if (profile.line2) setAddrLine2((v) => v || profile.line2);
+      if (profile.city) setAddrCity((v) => v || profile.city);
+      if (profile.state) setAddrState((v) => v || profile.state);
+      if (profile.pincode) setAddrPincode((v) => v || profile.pincode);
     }, 0);
     return () => clearTimeout(timer);
   }, [profile]);
@@ -516,6 +526,30 @@ Please confirm my booking. Thank you!`;
                             <input id="cust-flight" type="text" className="form-input" placeholder="e.g. 6E-203, AI-820" value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)} autoComplete="off" />
                           </div>
                         )}
+                        <div className="form-group">
+                          <label htmlFor="cust-addr-line1" className="form-label">Address Line 1</label>
+                          <input id="cust-addr-line1" type="text" className="form-input" placeholder="House / flat, street" value={addrLine1} onChange={(e) => setAddrLine1(e.target.value)} autoComplete="address-line1" />
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="cust-addr-line2" className="form-label">
+                            Address Line 2 <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
+                          </label>
+                          <input id="cust-addr-line2" type="text" className="form-input" placeholder="Area, landmark" value={addrLine2} onChange={(e) => setAddrLine2(e.target.value)} autoComplete="address-line2" />
+                        </div>
+                        <div className="account-grid-3">
+                          <div className="form-group">
+                            <label htmlFor="cust-addr-city" className="form-label">City</label>
+                            <input id="cust-addr-city" type="text" className="form-input" placeholder="City" value={addrCity} onChange={(e) => setAddrCity(e.target.value)} autoComplete="address-level2" />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="cust-addr-state" className="form-label">State</label>
+                            <input id="cust-addr-state" type="text" className="form-input" placeholder="State" value={addrState} onChange={(e) => setAddrState(e.target.value)} autoComplete="address-level1" />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="cust-addr-pin" className="form-label">Pincode</label>
+                            <input id="cust-addr-pin" type="text" className="form-input" placeholder="560001" inputMode="numeric" value={addrPincode} onChange={(e) => setAddrPincode(e.target.value.replace(/\D/g, "").slice(0, 6))} autoComplete="postal-code" />
+                          </div>
+                        </div>
                       </div>
                     </div>
 
