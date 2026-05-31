@@ -373,10 +373,47 @@ Please confirm my booking. Thank you!`;
           {/* Step 3: Passenger Info */}
           {step === 3 && (
             <div className="booking-card">
-              <div className="route-summary-bar" style={{ marginBottom: "1.5rem" }}>
+              <div className="route-summary-bar" style={{ marginBottom: "1rem" }}>
                 <div className="route-summary-info">
-                  <span className="route-summary-cities">{pickup} ➔ {drop}</span>
-                  <span className="route-summary-details">Date: {date || "Tomorrow"} at {time} • {tripSummaryLabel} • Car: {selectedCab.name}</span>
+                  <span className="route-summary-cities">
+                    {(tripType === "city" || tripType === "tempo") ? pickup : `${pickup} ➔ ${drop}`}
+                  </span>
+                  <span className="route-summary-details">{tripSummaryLabel}</span>
+                </div>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ minHeight: "32px", padding: "0.25rem 0.5rem", fontSize: "0.75rem", flexShrink: 0 }}
+                  onClick={handleBackToSearch}
+                >
+                  Change
+                </button>
+              </div>
+
+              <div className="cab-card selected" style={{ marginBottom: "1.25rem" }}>
+                <div className="cab-card-header">
+                  <div className="cab-icon-box">
+                    <img
+                      src={selectedCab.icon.startsWith("images/") ? getAssetPath(`/${selectedCab.icon}`) : getAssetPath(`/icons/${selectedCab.icon}`)}
+                      alt=""
+                      className="cab-icon-img"
+                    />
+                  </div>
+                  <div className="cab-meta">
+                    <div className="cab-name-row">
+                      <h3 className="cab-name">{selectedCab.name}</h3>
+                      <div className="cab-price-col">
+                        <span className="cab-price">₹{totalPrice}</span>
+                        <span className="cab-price-subtext"> Assured</span>
+                      </div>
+                    </div>
+                    <p className="cab-example">e.g. {selectedCab.example}</p>
+                    <div className="cab-specs">
+                      <span className="cab-spec-badge">👤 {selectedCab.seats} Seats</span>
+                      <span className="cab-spec-badge">💼 {selectedCab.luggage}</span>
+                      {selectedCab.ac && <span className="cab-spec-badge">❄️ AC</span>}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -385,25 +422,13 @@ Please confirm my booking. Thank you!`;
                 {tripType === "airport" && (
                   <div className="form-group" style={{ opacity: 0.85 }}>
                     <label className="form-label">Airport Transfer Direction</label>
-                    <div className="inline-selectors-row" style={{ display: "flex", gap: "1.5rem", marginTop: "0.25rem", marginBottom: "1rem", pointerEvents: "none" }}>
+                    <div className="inline-selectors-row" style={{ display: "flex", gap: "1.5rem", marginTop: "0.25rem", marginBottom: "1rem", pointerEvents: "none", flexWrap: "wrap" }}>
                       <label className="inline-radio-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <input
-                          type="radio"
-                          name="airport-direction"
-                          checked={airportType === "drop"}
-                          readOnly
-                          className="inline-radio-input"
-                        />
+                        <input type="radio" name="airport-direction" checked={airportType === "drop"} readOnly className="inline-radio-input" />
                         <span>Mysore ➔ Bangalore Airport Drop</span>
                       </label>
                       <label className="inline-radio-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <input
-                          type="radio"
-                          name="airport-direction"
-                          checked={airportType === "pickup"}
-                          readOnly
-                          className="inline-radio-input"
-                        />
+                        <input type="radio" name="airport-direction" checked={airportType === "pickup"} readOnly className="inline-radio-input" />
                         <span>Bangalore Airport Pickup ➔ Mysore</span>
                       </label>
                     </div>
@@ -414,7 +439,7 @@ Please confirm my booking. Thank you!`;
                   <div className="form-group" style={{ margin: 0 }}>
                     <label htmlFor="reporting-date" className="form-label">Reporting Date</label>
                     <div className="input-wrapper">
-                      <img src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
+                      <img src={getAssetPath("/icons/hero/calendar.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
                       <input
                         id="reporting-date"
                         type="date"
@@ -430,7 +455,7 @@ Please confirm my booking. Thank you!`;
                   <div className="form-group" style={{ margin: 0 }}>
                     <label htmlFor="reporting-time" className="form-label">Reporting Time</label>
                     <div className="input-wrapper">
-                      <img src={getAssetPath("/icons/call/phone-ring.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
+                      <img src={getAssetPath("/icons/hero/time.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
                       <input
                         id="reporting-time"
                         type="time"
@@ -447,7 +472,7 @@ Please confirm my booking. Thank you!`;
                   <div className="form-group">
                     <label htmlFor="city-days-input" className="form-label">Number of Days</label>
                     <div className="input-wrapper">
-                      <img src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
+                      <img src={getAssetPath("/icons/booking-flow/schedule.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
                       <input
                         id="city-days-input"
                         type="number"
@@ -471,7 +496,7 @@ Please confirm my booking. Thank you!`;
                     <div className="form-group" style={{ margin: 0 }}>
                       <label htmlFor="tempo-days-input" className="form-label">Number of Days</label>
                       <div className="input-wrapper">
-                        <img src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
+                        <img src={getAssetPath("/icons/booking-flow/schedule.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
                         <input
                           id="tempo-days-input"
                           type="number"
@@ -492,7 +517,7 @@ Please confirm my booking. Thank you!`;
                     <div className="form-group" style={{ margin: 0 }}>
                       <label htmlFor="tempo-km-input" className="form-label">Estimated Kilometers</label>
                       <div className="input-wrapper">
-                        <img src={getAssetPath("/icons/hero/pickup.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
+                        <img src={getAssetPath("/icons/fare/per-km.svg")} alt="" className="input-icon" style={{ opacity: 0.6 }} />
                         <input
                           id="tempo-km-input"
                           type="number"
@@ -514,7 +539,7 @@ Please confirm my booking. Thank you!`;
                 <div className="form-group">
                   <label htmlFor="cust-name" className="form-label">Passenger Name</label>
                   <div className="input-wrapper">
-                    <img src={getAssetPath("/icons/nav/login.svg")} alt="" className="input-icon" />
+                    <img src={getAssetPath("/icons/hero/passenger.svg")} alt="" className="input-icon" />
                     <input
                       id="cust-name"
                       type="text"
@@ -564,14 +589,24 @@ Please confirm my booking. Thank you!`;
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="cust-address" className="form-label">Full Pickup Address</label>
+                  <label htmlFor="cust-address" className="form-label">
+                    {tripType === "airport" && airportType === "pickup"
+                      ? "Drop Address in Mysuru"
+                      : "Full Pickup Address"}
+                  </label>
                   <div className="input-wrapper">
                     <img src={getAssetPath("/icons/hero/pickup.svg")} alt="" className="input-icon" style={{ alignSelf: "flex-start", marginTop: "0.8rem" }} />
                     <textarea
                       id="cust-address"
                       className="form-input"
                       style={{ minHeight: "80px", padding: "0.5rem 0.75rem 0.5rem 2.25rem", resize: "vertical" }}
-                      placeholder="Enter reporting address, landmark, or specific flight details"
+                      placeholder={
+                        tripType === "airport" && airportType === "pickup"
+                          ? "Your destination address in Mysuru (home / hotel)"
+                          : tripType === "airport"
+                          ? "Your home / hotel address in Mysuru for pickup"
+                          : "Enter reporting address and any landmark details"
+                      }
                       value={pickupAddress}
                       onChange={(e) => setPickupAddress(e.target.value)}
                       required
@@ -580,9 +615,27 @@ Please confirm my booking. Thank you!`;
                   </div>
                 </div>
 
+                {tripType === "airport" && (
+                  <div className="form-group">
+                    <label htmlFor="cust-flight" className="form-label">Flight Number (Optional)</label>
+                    <div className="input-wrapper">
+                      <img src={getAssetPath("/icons/nav/airport.svg")} alt="" className="input-icon" />
+                      <input
+                        id="cust-flight"
+                        type="text"
+                        className="form-input"
+                        placeholder="e.g. 6E-203, AI-820"
+                        value={flightNumber}
+                        onChange={(e) => setFlightNumber(e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <div className="form-actions">
-                  <button type="button" className="btn-secondary" onClick={handleBackToSearch}>Back to Search</button>
-                  <button type="submit" className="btn-primary">Confirm Address Details ➔</button>
+                  <button type="button" className="btn-secondary" onClick={handleBackToSearch}>← Change Cab</button>
+                  <button type="submit" className="btn-primary">Confirm Details ➔</button>
                 </div>
               </form>
             </div>
@@ -591,6 +644,22 @@ Please confirm my booking. Thank you!`;
           {/* Step 4: Booking Checkout */}
           {step === 4 && (
             <div className="booking-card">
+              <div className="route-summary-bar" style={{ marginBottom: "1rem" }}>
+                <div className="route-summary-info">
+                  <span className="route-summary-cities">
+                    {(tripType === "city" || tripType === "tempo") ? pickup : `${pickup} ➔ ${drop}`}
+                  </span>
+                  <span className="route-summary-details">{selectedCab.name} • {tripSummaryLabel}</span>
+                </div>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ minHeight: "32px", padding: "0.25rem 0.5rem", fontSize: "0.75rem", flexShrink: 0 }}
+                  onClick={() => setStep(3)}
+                >
+                  Back
+                </button>
+              </div>
               <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Confirm Booking Invoice</h2>
               <div className="payment-section">
                 <div className="trip-bill-summary">
@@ -735,7 +804,6 @@ Please confirm my booking. Thank you!`;
                   <button type="button" className="btn-primary" onClick={() => setStep(5)}>
                     Confirm Booking (Pay on Arrival)
                   </button>
-                  <button type="button" className="btn-secondary" onClick={() => setStep(3)}>Back</button>
                 </div>
               </div>
             </div>
