@@ -20,6 +20,7 @@ function friendlyError(err) {
   if (code.includes("too-many-requests")) return "Too many attempts. Please try again later.";
   if (code.includes("quota-exceeded")) return "SMS limit reached. Please try again later.";
   if (code.includes("missing-phone-number")) return "Please enter your mobile number.";
+  if (code.includes("operation-not-allowed")) return "Phone sign-in is not enabled. Please contact support.";
   return err?.message || "Something went wrong. Please try again.";
 }
 
@@ -203,7 +204,11 @@ export default function LoginModal({ onClose, onSuccess }) {
           <div id={RECAPTCHA_ID} />
 
           <p className="auth-legal">
-            By continuing you agree to receive an SMS for verification. Standard rates may apply.
+            By continuing you agree to receive an SMS for verification. Standard rates may apply.{" "}
+            Protected by reCAPTCHA &mdash;{" "}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a>
+            {" & "}
+            <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Terms</a> apply.
           </p>
         </div>
       </div>

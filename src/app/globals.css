@@ -2492,6 +2492,15 @@ textarea.form-input {
   margin-top: 1rem;
   line-height: 1.4;
 }
+.auth-legal a {
+  color: var(--text-muted);
+  text-decoration: underline;
+}
+
+/* Hide the reCAPTCHA badge injected into body; legal notice in .auth-legal covers ToS requirement */
+.grecaptcha-badge {
+  visibility: hidden !important;
+}
 
 /* ----- Account chip + dropdown (desktop header) ----- */
 .account-menu {
