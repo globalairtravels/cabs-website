@@ -405,8 +405,8 @@ Please confirm my booking. Thank you!`;
                       width: "2rem", height: "2rem", borderRadius: "50%", border: "2px solid var(--text-dark)",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       fontWeight: 700, fontSize: "0.9rem", color: "var(--text-dark)", flexShrink: 0
-                    }}>3</div>
-                    <h2 style={{ fontSize: "1.35rem", fontWeight: 700, color: "var(--text-dark)", margin: 0 }}>Add traveller details</h2>
+                    }}>1</div>
+                    <h2 style={{ fontSize: "1.35rem", fontWeight: 700, color: "var(--text-dark)", margin: 0 }}>Add Customer Details</h2>
                   </div>
 
                   <form onSubmit={handlePassengerSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -458,7 +458,7 @@ Please confirm my booking. Thank you!`;
                     {/* Passenger details card */}
                     <div style={{ border: "1px solid var(--border-color)", borderRadius: "var(--border-radius)", overflow: "hidden" }}>
                       <div style={{ padding: "0.85rem 1rem", borderBottom: "1px solid var(--border-color)", background: "var(--bg-card)" }}>
-                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-dark)" }}>Passenger details</span>
+                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-dark)" }}>Customer Details</span>
                       </div>
 
                       <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
