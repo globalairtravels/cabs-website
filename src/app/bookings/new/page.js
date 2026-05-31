@@ -400,15 +400,6 @@ Please confirm my booking. Thank you!`;
 
                 {/* LEFT on desktop / BOTTOM on mobile: Passenger fields */}
                 <div className="booking-fields">
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
-                    <div style={{
-                      width: "2rem", height: "2rem", borderRadius: "50%", border: "2px solid var(--text-dark)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontWeight: 700, fontSize: "0.9rem", color: "var(--text-dark)", flexShrink: 0
-                    }}>1</div>
-                    <h2 style={{ fontSize: "1.35rem", fontWeight: 700, color: "var(--text-dark)", margin: 0 }}>Add Customer Details</h2>
-                  </div>
-
                   <form onSubmit={handlePassengerSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
                     {/* Trip timing fields */}
@@ -418,14 +409,21 @@ Please confirm my booking. Thank you!`;
                       </div>
                     )}
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem" }}>
-                      <div className="form-group">
-                        <label htmlFor="reporting-date" className="form-label">Reporting date</label>
-                        <input id="reporting-date" type="date" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} required min={new Date().toISOString().split("T")[0]} />
+                    {/* Step 1: Booking Dates */}
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", marginBottom: "1rem" }}>
+                        <div style={{ width: "1.6rem", height: "1.6rem", borderRadius: "50%", border: "2px solid var(--text-dark)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.8rem", color: "var(--text-dark)", flexShrink: 0 }}>1</div>
+                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-dark)" }}>Booking Dates</span>
                       </div>
-                      <div className="form-group">
-                        <label htmlFor="reporting-time" className="form-label">Reporting time</label>
-                        <input id="reporting-time" type="time" className="form-input" value={time} onChange={(e) => setTime(e.target.value)} required />
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem" }}>
+                        <div className="form-group">
+                          <label htmlFor="reporting-date" className="form-label">Booking date</label>
+                          <input id="reporting-date" type="date" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} required min={new Date().toISOString().split("T")[0]} />
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="reporting-time" className="form-label">Booking time</label>
+                          <input id="reporting-time" type="time" className="form-input" value={time} onChange={(e) => setTime(e.target.value)} required />
+                        </div>
                       </div>
                     </div>
 
@@ -455,13 +453,14 @@ Please confirm my booking. Thank you!`;
                       </div>
                     )}
 
-                    {/* Passenger details card */}
-                    <div style={{ border: "1px solid var(--border-color)", borderRadius: "var(--border-radius)", overflow: "hidden" }}>
-                      <div style={{ padding: "0.85rem 1rem", borderBottom: "1px solid var(--border-color)", background: "var(--bg-card)" }}>
-                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-dark)" }}>Customer Details</span>
+                    {/* Step 2: Customer Details */}
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", marginBottom: "1rem" }}>
+                        <div style={{ width: "1.6rem", height: "1.6rem", borderRadius: "50%", border: "2px solid var(--text-dark)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.8rem", color: "var(--text-dark)", flexShrink: 0 }}>2</div>
+                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-dark)" }}>Add Customer Details</span>
                       </div>
 
-                      <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                         <div className="form-group">
                           <label htmlFor="cust-name" className="form-label">Full name</label>
                           <input
@@ -547,9 +546,16 @@ Please confirm my booking. Thank you!`;
                       </div>
                     </div>
 
-                    <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-                      Continue to payment
-                    </button>
+                    {/* Step 3: Review & Pay */}
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", marginBottom: "1rem" }}>
+                        <div style={{ width: "1.6rem", height: "1.6rem", borderRadius: "50%", border: "2px solid var(--text-dark)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.8rem", color: "var(--text-dark)", flexShrink: 0 }}>3</div>
+                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-dark)" }}>Review &amp; Pay</span>
+                      </div>
+                      <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
+                        Continue to payment
+                      </button>
+                    </div>
                   </form>
                 </div>
 
