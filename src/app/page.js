@@ -445,53 +445,38 @@ export default function Home() {
     setStep(4);
   };
 
-  const generateUpiLink = () => {
-    const note = `Booking ${bookingId}`;
-    return `upi://pay?pa=${siteConfig.upiId}&pn=${encodeURIComponent(siteConfig.merchantName)}&am=${onlinePaymentAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
-  };
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
 
-  const getWhatsAppMessage = () => {
-    let tripDetails;
-    if (tripType === "airport") {
-      tripDetails = `Airport Transfers (${airportType === "drop" ? "Mysore to Airport" : "Airport to Mysore"})`;
-    } else if (tripType === "city") {
-      tripDetails = `Local & Outstation Taxi (${cityDayCount} Day${plural(cityDayCount)} · ${selectedCab.minKmPerDay} km/day & driver allowance included)`;
-    } else if (tripType === "tempo") {
-      const effectiveKm = getTempoEffectiveKm(selectedCab);
-      tripDetails = `Tempo Travellers (${tempoDayCount} Day${plural(tempoDayCount)} / ~${tempoKmCount} km estimated · ${effectiveKm} km billed @ ₹${selectedCab.ratePerKm}/km)`;
-    } else if (tripType === "daily") {
-      tripDetails = "Intercity Travels (One Way)";
-    } else {
-      tripDetails = `Intercity Travels (${numDays} Day${plural(numDays)})`;
+  const handlePhonePePay = async () => {
+    const fnUrl = siteConfig.payment.phonepe.createOrderUrl;
+    if (!fnUrl) { alert("Payment gateway not configured. Please contact support."); return; }
+    setPaymentLoading(true);
+    setPaymentError("");
+    try {
+      const bookingDetails = {
+        tripType, airportType, pickup, drop, date, time,
+        cab: selectedCab.name, seats: selectedCab.seats,
+        totalPrice, paymentMethod,
+        name, email, pickupAddress, flightNumber,
+      };
+      const res = await fetch(fnUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookingId,
+          amount: onlinePaymentAmount * 100,
+          customerPhone: phone,
+          bookingDetails,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Payment initiation failed");
+      window.location.href = data.redirectUrl;
+    } catch (err) {
+      setPaymentError(err.message || "Something went wrong. Please try again.");
+      setPaymentLoading(false);
     }
-
-    const payStatus =
-      paymentMethod === "full" ? "Paid 100% Full UPI" :
-      `Paid ₹${requiredAdvance} Advance UPI (Balance to Driver)`;
-
-    return `Hello Global Air Travels,
-
-I would like to book a cab. Here are my booking details:
-*Booking ID:* ${bookingId}
-*Trip Category:* ${tripDetails}
-*Route:* ${pickup} ➔ ${drop}
-*Date & Time:* ${date} at ${time}
-*Car Category:* ${selectedCab.name} (${selectedCab.seats} Seater)
-
-*Passenger Details:*
-*Name:* ${name}
-*Phone:* ${phone}
-*Pickup Address:* ${pickupAddress}
-${flightNumber ? `*Flight Details:* ${flightNumber}\n` : ""}
-*Payment Option:* ${payStatus}
-*Assured Fare:* ₹${totalPrice}/-
-
-Please confirm my booking. Thank you!`;
-  };
-
-  const handleWhatsAppRedirect = () => {
-    window.open(getWhatsAppUrl(getWhatsAppMessage()), "_blank");
-    setStep(5);
   };
 
   const handleOffersClick = () => {
@@ -1376,46 +1361,18 @@ Please confirm my booking. Thank you!`;
                     </div>
                   </div>
 
-                  {paymentMethod !== "arrival" && (() => {
-                    const upiLink = generateUpiLink();
-                    return (
-                      <div className="upi-gateway-container">
-                        <div className="upi-brands">
-                          <img src={getAssetPath("/icons/upi.svg")} alt="UPI Logo" className="upi-brand-icon" style={{ height: 16 }} />
-                          <span style={{ fontWeight: 700, fontSize: "0.8rem", color: "#5f259f" }}>GPay/PhonePe Gateway</span>
-                        </div>
-                        <div className="qr-instructions">
-                          <span style={{ display: "block", fontWeight: 700, fontSize: "1.05rem", color: "var(--primary-navy)" }}>
-                            Amount to Pay: ₹{onlinePaymentAmount}
-                          </span>
-                          <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                            Account Holder: <strong>{siteConfig.merchantName}</strong>
-                          </span>
-                          <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                            GPay/PhonePe Number: <strong>{siteConfig.phoneDisplay}</strong>
-                          </span>
-                        </div>
-                        <div className="qr-code-box">
-                          <img
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(upiLink)}`}
-                            alt="Scan QR"
-                            className="qr-mock-img"
-                          />
-                        </div>
-                        <div className="pay-btn-group">
-                          <a href={upiLink} className="btn-phonepe-pay">📱 Pay via UPI Apps</a>
-                        </div>
-                      </div>
-                    );
-                  })()}
+                  {paymentError && (
+                    <p style={{ color: "red", fontSize: "0.85rem", marginTop: "0.5rem" }}>{paymentError}</p>
+                  )}
 
                   <div className="pay-btn-group" style={{ marginTop: "1rem" }}>
-                    <button type="button" className="btn-whatsapp-confirm" onClick={handleWhatsAppRedirect}>
-                      <img src={WHATSAPP_ICON_PATH} alt="" className="whatsapp-icon-white" />
-                      Send Booking Request on WhatsApp
-                    </button>
-                    <button type="button" className="btn-primary" onClick={() => setStep(5)}>
-                      Confirm Booking (Pay on Arrival)
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      onClick={handlePhonePePay}
+                      disabled={paymentLoading}
+                    >
+                      {paymentLoading ? "Redirecting to PhonePe…" : `Pay ₹${onlinePaymentAmount} via PhonePe`}
                     </button>
                     <button type="button" className="btn-secondary" onClick={() => setStep(3)}>Back</button>
                   </div>
@@ -1457,23 +1414,12 @@ Please confirm my booking. Thank you!`;
                     <span style={{ fontWeight: 600, color: "var(--primary-orange)" }}>
                       {paymentMethod === "full"
                         ? "Paid Full Online"
-                        : paymentMethod === "advance"
-                        ? `Paid ₹${requiredAdvance} (₹${payToDriverAmount} to Driver)`
-                        : `Pay Driver ₹${totalPrice} at Trip End`}
+                        : `Paid ₹${requiredAdvance} Advance (₹${payToDriverAmount} to Driver)`}
                     </span>
                   </div>
                 </div>
 
                 <div className="pay-btn-group">
-                  <a
-                    href={getWhatsAppUrl(getWhatsAppMessage())}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn-whatsapp-confirm"
-                  >
-                    <img src={WHATSAPP_ICON_PATH} alt="" className="whatsapp-icon-white" />
-                    Send Details on WhatsApp
-                  </a>
                   <button
                     type="button"
                     className="btn-primary"
