@@ -49,6 +49,18 @@ export default function AccountPage() {
     return () => clearTimeout(timer);
   }, [profile]);
 
+  useEffect(() => {
+    if (form.pincode.length !== 6) return;
+    fetch(`https://api.postalpincode.in/pincode/${form.pincode}`)
+      .then((r) => r.json())
+      .then(([res]) => {
+        if (res.Status === "Success" && res.PostOffice?.length) {
+          setForm((f) => ({ ...f, state: res.PostOffice[0].State }));
+        }
+      })
+      .catch(() => {});
+  }, [form.pincode]);
+
   const setField = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const handleSubmit = async (e) => {
