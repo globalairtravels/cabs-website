@@ -74,7 +74,7 @@ export default function BookingNew() {
   const [email, setEmail] = useState("");
   const [pickupAddress, setPickupAddress] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("advance");
+  const [paymentMethod, setPaymentMethod] = useState("full");
   const [appliedPromo, setAppliedPromo] = useState(null);
 
   // Modals / Misc
@@ -521,17 +521,6 @@ Please confirm my booking. Thank you!`;
 
                       {/* Payment method selection */}
                       <div className="payment-methods" role="radiogroup" aria-label="Payment Mode" style={{ marginBottom: "1rem" }}>
-                        <div className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`} onClick={() => handleSelectPaymentMethod("advance")}>
-                          <input type="radio" id="radio-advance" name="payment-preference" checked={paymentMethod === "advance"} onChange={() => {}} className="payment-radio" />
-                          <div className="payment-method-info">
-                            <label htmlFor="radio-advance" className="payment-method-name">
-                              Pay Booking Advance (₹{requiredAdvance})
-                              <span className="payment-badge">Leaflet Policy</span>
-                            </label>
-                            <span className="payment-method-desc">Pay ₹{requiredAdvance} now via GPay/PhonePe to secure booking. Pay balance ₹{payToDriverAmount} to driver.</span>
-                          </div>
-                        </div>
-
                         <div className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`} onClick={() => handleSelectPaymentMethod("full")}>
                           <input type="radio" id="radio-full" name="payment-preference" checked={paymentMethod === "full"} onChange={() => {}} className="payment-radio" />
                           <div className="payment-method-info">
@@ -540,6 +529,17 @@ Please confirm my booking. Thank you!`;
                               <span className="payment-badge">Zero Fees</span>
                             </label>
                             <span className="payment-method-desc">Pay full ₹{finalTotal} online now using GPay/PhonePe/UPI.</span>
+                          </div>
+                        </div>
+
+                        <div className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`} onClick={() => handleSelectPaymentMethod("advance")}>
+                          <input type="radio" id="radio-advance" name="payment-preference" checked={paymentMethod === "advance"} onChange={() => {}} className="payment-radio" />
+                          <div className="payment-method-info">
+                            <label htmlFor="radio-advance" className="payment-method-name">
+                              Pay Booking Advance (₹{requiredAdvance})
+                              <span className="payment-badge">Leaflet Policy</span>
+                            </label>
+                            <span className="payment-method-desc">Pay ₹{requiredAdvance} now via GPay/PhonePe to secure booking. Pay balance ₹{payToDriverAmount} to driver.</span>
                           </div>
                         </div>
                       </div>
