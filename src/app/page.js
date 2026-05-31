@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { siteConfig } from "@/config/site";
 import { bookingConfig } from "@/lib/booking-config";
 import { useAuth } from "@/context/AuthProvider";
 import AuthControl from "@/components/auth/AuthControl";
+import LoginModal from "@/components/auth/LoginModal";
 
 const createBookingId = () => `GAT-${Math.floor(100000 + Math.random() * 900000)}`;
 
@@ -46,8 +47,14 @@ const getWhatsAppUrl = (message) => {
 
 const plural = (n) => (n > 1 ? "s" : "");
 
+const isProfileComplete = (p) => {
+  if (!p) return false;
+  const addr = p.address || {};
+  return !!(p.name && p.email && addr.line1 && addr.line2 && addr.city && addr.state && addr.pincode);
+};
+
 export default function Home() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [step, setStep] = useState(1);
   const [tripType, setTripType] = useState("airport");
   const [airportType, setAirportType] = useState("drop");
@@ -101,6 +108,11 @@ export default function Home() {
   const [showSupport, setShowSupport] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [expandedFares, setExpandedFares] = useState({});
+
+  const pendingBookingRef = useRef(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const toggleFareExpansion = (cabId) => {
     setExpandedFares((prev) => ({
@@ -252,11 +264,6 @@ export default function Home() {
       setTripType("city");
       setPickup("Bangalore");
       setDrop("Bangalore");
-    } else if (routeId === "mysore-mangalore-airport") {
-      setTripType("airport");
-      setPickup("Mysuru");
-      setDrop("Mangalore Airport");
-      setAirportType("drop");
     } else if (routeId === "mysore-mangalore-city") {
       setTripType("city");
       setPickup("Mysuru");
@@ -415,6 +422,15 @@ export default function Home() {
     (promo) => !promo.appliesTo || promo.appliesTo.length === 0 || promo.appliesTo.includes(bookingTypeId)
   );
 
+  const showAddressToast = () => {
+    setToastMessage("Please update all your profile details before booking.");
+    setShowToast(true);
+    window.setTimeout(() => {
+      setShowToast(false);
+      window.location.assign(`${BASE_PATH}/account`);
+    }, 2500);
+  };
+
   const handleCabSelect = (cab) => {
     const params = new URLSearchParams();
     params.set("booking_type", TRIP_TYPE_TO_BOOKING_TYPE[tripType] || tripType);
@@ -430,8 +446,37 @@ export default function Home() {
       params.set("days", String(tempoDays));
     }
 
+    if (!user) {
+      pendingBookingRef.current = { params: params.toString() };
+      setShowLoginModal(true);
+      return;
+    }
+
+    if (!isProfileComplete(profile)) {
+      showAddressToast();
+      return;
+    }
+
     window.location.assign(`${BASE_PATH}/bookings/new?${params.toString()}`);
   };
+
+  useEffect(() => {
+    if (!pendingBookingRef.current || !user || !profile) return;
+    const booking = pendingBookingRef.current;
+    pendingBookingRef.current = null;
+    if (!isProfileComplete(profile)) {
+      const timer = window.setTimeout(() => {
+        setToastMessage("Please update all your profile details before booking.");
+        setShowToast(true);
+        window.setTimeout(() => {
+          setShowToast(false);
+          window.location.assign(`${BASE_PATH}/account`);
+        }, 2500);
+      }, 0);
+      return () => window.clearTimeout(timer);
+    }
+    window.location.assign(`${BASE_PATH}/bookings/new?${booking.params}`);
+  }, [user, profile]);
 
   const handlePassengerSubmit = (e) => {
     e.preventDefault();
@@ -1564,6 +1609,19 @@ export default function Home() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => { setShowLoginModal(false); pendingBookingRef.current = null; }}
+          onSuccess={() => setShowLoginModal(false)}
+        />
+      )}
+
+      {showToast && (
+        <div className="toast-notification" role="status" aria-live="polite">
+          {toastMessage}
         </div>
       )}
 
