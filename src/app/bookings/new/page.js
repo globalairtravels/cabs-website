@@ -311,7 +311,7 @@ Please confirm my booking. Thank you!`;
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "white" }}>
       <header className="header">
         <div className="header-container">
           <a href="#" className="logo-link" onClick={() => window.location.href = `${BASE_PATH}/`}>
