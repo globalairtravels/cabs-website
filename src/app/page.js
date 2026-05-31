@@ -131,34 +131,17 @@ export default function Home() {
       const qDrop = params.get("drop");
       if (qDrop) setDrop(qDrop);
 
-      const qDate = params.get("date");
-      if (qDate) setDate(qDate);
-
-      const qTime = params.get("time");
-      if (qTime) setTime(qTime);
-
-      const qAirportType = params.get("airport_type");
-      if (qAirportType) setAirportType(qAirportType);
-
-      const qCityDays = params.get("city_days");
-      if (qCityDays) setCityDays(Number(qCityDays));
-
-      const qTempoDays = params.get("tempo_days");
-      if (qTempoDays) setTempoDays(Number(qTempoDays));
-
-      const qTempoEstKm = params.get("tempo_est_km");
-      if (qTempoEstKm) setTempoEstKm(Number(qTempoEstKm));
-
-      const qOutstationDirection = params.get("outstation_direction");
-      if (qOutstationDirection) setOutstationDirection(qOutstationDirection);
-
-      const qNumDays = params.get("num_days");
-      if (qNumDays) setNumDays(Number(qNumDays));
-
       const qCabId = params.get("cab");
       if (qCabId) {
         const foundCab = bookingConfig.cabTypes.find((c) => c.id === qCabId);
         if (foundCab) setSelectedCab(foundCab);
+      }
+
+      const qDays = params.get("days");
+      if (qDays) {
+        const daysNum = Number(qDays);
+        setCityDays(daysNum);
+        setTempoDays(daysNum);
       }
     }, 0);
 
@@ -417,24 +400,18 @@ export default function Home() {
     const params = new URLSearchParams();
     params.set("booking_type", TRIP_TYPE_TO_BOOKING_TYPE[tripType] || tripType);
     params.set("pickup", pickup || "");
-    params.set("drop", drop || "");
+    if (tripType === "airport" || tripType === "daily") {
+      params.set("drop", drop || "");
+    }
     params.set("cab", cab.id);
-    params.set("date", date || "");
-    params.set("time", time || "");
 
-    if (tripType === "airport") {
-      params.set("airport_type", airportType || "");
-    } else if (tripType === "city") {
-      params.set("city_days", String(cityDays));
+    if (tripType === "city") {
+      params.set("days", String(cityDays));
     } else if (tripType === "tempo") {
-      params.set("tempo_days", String(tempoDays));
-      params.set("tempo_est_km", String(tempoEstKm));
-    } else if (tripType === "daily") {
-      params.set("outstation_direction", outstationDirection || "");
-      params.set("num_days", String(numDays));
+      params.set("days", String(tempoDays));
     }
 
-    window.location.href = `${BASE_PATH}/bookings/new?${params.toString()}`;
+    window.location.assign(`${BASE_PATH}/bookings/new?${params.toString()}`);
   };
 
   const handlePassengerSubmit = (e) => {
