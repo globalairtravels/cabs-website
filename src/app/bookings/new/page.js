@@ -208,7 +208,16 @@ export default function BookingNew() {
       alert("Please fill in name, phone, and pickup address.");
       return;
     }
-    setStep(4);
+    setStep(5);
+  };
+
+  const handleWhatsAppAndConfirm = () => {
+    if (!name || !phone || !pickupAddress) {
+      alert("Please fill in name, phone, and pickup address.");
+      return;
+    }
+    window.open(getWhatsAppUrl(getWhatsAppMessage()), "_blank");
+    setStep(5);
   };
 
   const generateUpiLink = () => {
@@ -253,11 +262,6 @@ ${flightNumber ? `*Flight Details:* ${flightNumber}\n` : ""}
 *Assured Fare:* ₹${totalPrice}/-
 
 Please confirm my booking. Thank you!`;
-  };
-
-  const handleWhatsAppRedirect = () => {
-    window.open(getWhatsAppUrl(getWhatsAppMessage()), "_blank");
-    setStep(5);
   };
 
   const handleBackToSearch = () => {
@@ -516,12 +520,74 @@ Please confirm my booking. Thank you!`;
                     {/* ── Section 3: Review & Pay ── */}
                     <div style={{ padding: "1.5rem 0 0.5rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
-                        <div style={{ width: "2rem", height: "2rem", borderRadius: "50%", border: "2px solid var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.85rem", color: "var(--text-muted)", flexShrink: 0 }}>3</div>
-                        <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "var(--text-muted)" }}>Review &amp; Pay</span>
+                        <div style={{ width: "2rem", height: "2rem", borderRadius: "50%", border: "2px solid var(--text-dark)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.85rem", color: "var(--text-dark)", flexShrink: 0 }}>3</div>
+                        <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "var(--text-dark)" }}>Review &amp; Pay</span>
                       </div>
-                      <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-                        Continue to payment
-                      </button>
+
+                      {/* Payment method selection */}
+                      <div className="payment-methods" role="radiogroup" aria-label="Payment Mode" style={{ marginBottom: "1rem" }}>
+                        <div className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`} onClick={() => setPaymentMethod("advance")}>
+                          <input type="radio" id="radio-advance" name="payment-preference" checked={paymentMethod === "advance"} onChange={() => {}} className="payment-radio" />
+                          <div className="payment-method-info">
+                            <label htmlFor="radio-advance" className="payment-method-name">
+                              Pay Booking Advance (₹{requiredAdvance})
+                              <span className="payment-badge">Leaflet Policy</span>
+                            </label>
+                            <span className="payment-method-desc">Pay ₹{requiredAdvance} now via GPay/PhonePe to secure booking. Pay balance ₹{payToDriverAmount} to driver.</span>
+                          </div>
+                        </div>
+
+                        <div className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`} onClick={() => setPaymentMethod("full")}>
+                          <input type="radio" id="radio-full" name="payment-preference" checked={paymentMethod === "full"} onChange={() => {}} className="payment-radio" />
+                          <div className="payment-method-info">
+                            <label htmlFor="radio-full" className="payment-method-name">
+                              Pay Full Online (₹{totalPrice})
+                              <span className="payment-badge">Zero Fees</span>
+                            </label>
+                            <span className="payment-method-desc">Pay full ₹{totalPrice} online now using GPay/PhonePe/UPI.</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* UPI Gateway */}
+                      <div className="upi-gateway-container">
+                        <div className="upi-brands">
+                          <img src={getAssetPath("/icons/upi.svg")} alt="UPI Logo" className="upi-brand-icon" style={{ height: 16 }} />
+                          <span style={{ fontWeight: 700, fontSize: "0.8rem", color: "#5f259f" }}>GPay/PhonePe Gateway</span>
+                        </div>
+                        <div className="qr-instructions">
+                          <span style={{ display: "block", fontWeight: 700, fontSize: "1.05rem", color: "var(--primary-navy)" }}>
+                            Amount to Pay: ₹{onlinePaymentAmount}
+                          </span>
+                          <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                            Account Holder: <strong>{siteConfig.merchantName}</strong>
+                          </span>
+                          <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                            GPay/PhonePe Number: <strong>{siteConfig.phoneDisplay}</strong>
+                          </span>
+                        </div>
+                        <div className="qr-code-box">
+                          <img
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(generateUpiLink())}`}
+                            alt="Scan QR"
+                            className="qr-mock-img"
+                          />
+                        </div>
+                        <div className="pay-btn-group">
+                          <a href={generateUpiLink()} className="btn-phonepe-pay">📱 Pay via UPI Apps</a>
+                        </div>
+                      </div>
+
+                      {/* Confirm buttons */}
+                      <div className="pay-btn-group" style={{ marginTop: "1rem" }}>
+                        <button type="button" className="btn-whatsapp-confirm" onClick={handleWhatsAppAndConfirm}>
+                          <img src={WHATSAPP_ICON_PATH} alt="" className="whatsapp-icon-white" />
+                          Send Booking Request on WhatsApp
+                        </button>
+                        <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
+                          Pay Now &amp; Confirm Booking
+                        </button>
+                      </div>
                     </div>
 
                   </form>
@@ -704,177 +770,7 @@ Please confirm my booking. Thank you!`;
             </div>
           )}
 
-          {/* Step 4: Booking Checkout */}
-          {step === 4 && (
-            <div className="booking-card">
-              <div className="booking-two-col">
 
-                {/* LEFT on desktop / BOTTOM on mobile: Payment fields */}
-                <div className="booking-fields">
-                  <h2 className="quick-routes-title" style={{ marginBottom: "1rem" }}>Confirm Booking Invoice</h2>
-                  <div className="payment-section">
-                    <h3 className="form-label">Payment Preference</h3>
-                    <div className="payment-methods" role="radiogroup" aria-label="Payment Mode">
-                      <div className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`} onClick={() => setPaymentMethod("advance")}>
-                        <input type="radio" id="radio-advance" name="payment-preference" checked={paymentMethod === "advance"} onChange={() => {}} className="payment-radio" />
-                        <div className="payment-method-info">
-                          <label htmlFor="radio-advance" className="payment-method-name">
-                            Pay Booking Advance (₹{requiredAdvance})
-                            <span className="payment-badge">Leaflet Policy</span>
-                          </label>
-                          <span className="payment-method-desc">Pay ₹{requiredAdvance} now via GPay/PhonePe to secure booking. Pay balance ₹{payToDriverAmount} to driver.</span>
-                        </div>
-                      </div>
-
-                      <div className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`} onClick={() => setPaymentMethod("full")}>
-                        <input type="radio" id="radio-full" name="payment-preference" checked={paymentMethod === "full"} onChange={() => {}} className="payment-radio" />
-                        <div className="payment-method-info">
-                          <label htmlFor="radio-full" className="payment-method-name">
-                            Pay Full Online (₹{totalPrice})
-                            <span className="payment-badge">Zero Fees</span>
-                          </label>
-                          <span className="payment-method-desc">Pay full ₹{totalPrice} online now using GPay/PhonePe/UPI.</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {paymentMethod !== "arrival" && (() => {
-                      const upiLink = generateUpiLink();
-                      return (
-                        <div className="upi-gateway-container">
-                          <div className="upi-brands">
-                            <img src={getAssetPath("/icons/upi.svg")} alt="UPI Logo" className="upi-brand-icon" style={{ height: 16 }} />
-                            <span style={{ fontWeight: 700, fontSize: "0.8rem", color: "#5f259f" }}>GPay/PhonePe Gateway</span>
-                          </div>
-                          <div className="qr-instructions">
-                            <span style={{ display: "block", fontWeight: 700, fontSize: "1.05rem", color: "var(--primary-navy)" }}>
-                              Amount to Pay: ₹{onlinePaymentAmount}
-                            </span>
-                            <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                              Account Holder: <strong>{siteConfig.merchantName}</strong>
-                            </span>
-                            <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                              GPay/PhonePe Number: <strong>{siteConfig.phoneDisplay}</strong>
-                            </span>
-                          </div>
-                          <div className="qr-code-box">
-                            <img
-                              src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(upiLink)}`}
-                              alt="Scan QR"
-                              className="qr-mock-img"
-                            />
-                          </div>
-                          <div className="pay-btn-group">
-                            <a href={upiLink} className="btn-phonepe-pay">📱 Pay via UPI Apps</a>
-                          </div>
-                        </div>
-                      );
-                    })()}
-
-                    <div className="pay-btn-group" style={{ marginTop: "1rem" }}>
-                      <button type="button" className="btn-whatsapp-confirm" onClick={handleWhatsAppRedirect}>
-                        <img src={WHATSAPP_ICON_PATH} alt="" className="whatsapp-icon-white" />
-                        Send Booking Request on WhatsApp
-                      </button>
-                      <button type="button" className="btn-primary" onClick={() => setStep(5)}>
-                        Confirm Booking (Pay on Arrival)
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* RIGHT on desktop / TOP on mobile: Booking summary */}
-                <div className="booking-summary">
-                  <div className="route-summary-bar" style={{ marginBottom: "1rem" }}>
-                    <div className="route-summary-info">
-                      <span className="route-summary-cities">
-                        {(tripType === "city" || tripType === "tempo") ? pickup : `${pickup} ➔ ${drop}`}
-                      </span>
-                      <span className="route-summary-details">{selectedCab.name} • {tripSummaryLabel}</span>
-                    </div>
-                  </div>
-                  <div className="trip-bill-summary">
-                    <div className="bill-title">Summary of Charges</div>
-                    <div className="bill-row">
-                      <span>Vehicle Selected:</span>
-                      <span style={{ fontWeight: 600 }}>{selectedCab.name}</span>
-                    </div>
-                    <div className="bill-row">
-                      <span>Trip:</span>
-                      <span>{pickup} to {drop}</span>
-                    </div>
-                    <div className="bill-row">
-                      <span>Reporting Time:</span>
-                      <span>{date || "Tomorrow"} at {time}</span>
-                    </div>
-                    {tripType === "city" && (() => {
-                      const totalKm = selectedCab.minKmPerDay * cityDayCount;
-                      const runningCharges = selectedCab.ratePerKm * totalKm;
-                      const driverCharges = selectedCab.driverAllowance * cityDayCount;
-                      return (
-                        <>
-                          <div className="bill-row">
-                            <span>Duration:</span>
-                            <span>{cityDayCount} Day{plural(cityDayCount)} · {selectedCab.minKmPerDay} km/day included</span>
-                          </div>
-                          <div className="bill-row">
-                            <span>Running ({totalKm} km × ₹{selectedCab.ratePerKm}/km):</span>
-                            <span>₹{runningCharges}</span>
-                          </div>
-                          <div className="bill-row">
-                            <span>Driver allowance ({cityDayCount} day{plural(cityDayCount)} × ₹{selectedCab.driverAllowance}):</span>
-                            <span>₹{driverCharges}</span>
-                          </div>
-                        </>
-                      );
-                    })()}
-                    {tripType === "tempo" && (() => {
-                      const effectiveKm = getTempoEffectiveKm(selectedCab);
-                      const runningCharges = selectedCab.ratePerKm * effectiveKm;
-                      const driverCharges = selectedCab.driverAllowance * tempoDayCount;
-                      return (
-                        <>
-                          <div className="bill-row">
-                            <span>Duration / Est. Km:</span>
-                            <span>{tempoDayCount} Day{plural(tempoDayCount)} · ~{tempoKmCount} km (billed {effectiveKm} km)</span>
-                          </div>
-                          <div className="bill-row">
-                            <span>Running ({effectiveKm} km × ₹{selectedCab.ratePerKm}/km):</span>
-                            <span>₹{runningCharges}</span>
-                          </div>
-                          <div className="bill-row">
-                            <span>Driver allowance ({tempoDayCount} day{plural(tempoDayCount)} × ₹{selectedCab.driverAllowance}):</span>
-                            <span>₹{driverCharges}</span>
-                          </div>
-                        </>
-                      );
-                    })()}
-                    {tripType === "daily" && (
-                      <div className="bill-row">
-                        <span>Trip Type:</span>
-                        <span>One Way Drop</span>
-                      </div>
-                    )}
-                    <div className="bill-row">
-                      <span>Base fare:</span>
-                      <span>₹{totalPrice}</span>
-                    </div>
-                    {promoDiscount > 0 && (
-                      <div className="bill-row" style={{ color: "var(--success-green)", fontWeight: 600 }}>
-                        <span>Coupon ({appliedPromo.code}):</span>
-                        <span>− ₹{promoDiscount}</span>
-                      </div>
-                    )}
-                    <div className="bill-row total">
-                      <span>Total Assured Fare:</span>
-                      <span>₹{finalTotal}</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          )}
 
           {/* Step 5: Booking Success */}
           {step === 5 && (
