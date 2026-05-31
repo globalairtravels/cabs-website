@@ -914,13 +914,13 @@ Please confirm my booking. Thank you!`;
                                 <div style={{ fontSize: "0.7rem", color: "var(--text-gray)" }}>
                                   {cab.seats} Seats • {cab.luggage} {cab.ac ? "• AC" : ""}
                                 </div>
-                                <div style={{ fontSize: "0.68rem", color: "var(--text-gray)", marginTop: "0.15rem" }}>e.g. {cab.example}</div>
+                                <div style={{ fontSize: "0.68rem", color: "var(--text-gray)", marginTop: "0.15rem", marginBottom: "0.6rem" }}>e.g. {cab.example}</div>
                                 {cabFormula && expandedFares[cab.id] && (
                                   <ul
                                     style={{
                                       fontSize: "0.68rem",
                                       color: "var(--text-gray)",
-                                      marginTop: "0.6rem",
+                                      marginTop: "0.1rem",
                                       lineHeight: 1.4,
                                       listStyleType: "none",
                                       padding: 0,
