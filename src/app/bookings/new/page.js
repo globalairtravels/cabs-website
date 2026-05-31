@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { siteConfig } from "@/config/site";
 import { bookingConfig } from "@/lib/booking-config";
+import { useAuth } from "@/context/AuthProvider";
+import AuthControl from "@/components/auth/AuthControl";
 
 const createBookingId = () => `GAT-${Math.floor(100000 + Math.random() * 900000)}`;
 
@@ -51,6 +53,7 @@ const getWhatsAppUrl = (message) => {
 const plural = (n) => (n > 1 ? "s" : "");
 
 export default function BookingNew() {
+  const { profile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(3);
   const [tripType, setTripType] = useState("airport");
@@ -140,6 +143,22 @@ export default function BookingNew() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Prefill passenger fields from the signed-in user's profile (once), without
+  // clobbering anything they've already typed. setTimeout keeps the state writes
+  // out of the synchronous effect body (avoids react-hooks/set-state-in-effect).
+  const prefilledFor = useRef(null);
+  useEffect(() => {
+    if (!profile || prefilledFor.current === profile.uid) return undefined;
+    const timer = setTimeout(() => {
+      prefilledFor.current = profile.uid;
+      if (profile.name) setName((v) => v || profile.name);
+      if (profile.email) setEmail((v) => v || profile.email);
+      const digits = (profile.phone || "").replace(/\D/g, "").slice(-10);
+      if (digits) setPhone((v) => v || digits);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [profile]);
 
   const cityDayCount = normalizePositiveInteger(cityDays, { max: 30 });
   const tempoDayCount = normalizePositiveInteger(tempoDays, { max: 30 });
@@ -268,12 +287,6 @@ Please confirm my booking. Thank you!`;
     window.location.href = `${BASE_PATH}/#promos`;
   };
 
-  const showComingSoonToast = () => {
-    setToastMessage("Coming soon...");
-    setShowToast(true);
-    window.setTimeout(() => setShowToast(false), 2200);
-  };
-
   const handleTrackBooking = (e) => {
     e.preventDefault();
     setTrackAttempted(true);
@@ -341,9 +354,7 @@ Please confirm my booking. Thank you!`;
                 </button>
               </li>
               <li>
-                <button type="button" className="btn-login" onClick={showComingSoonToast}>
-                  Log in
-                </button>
+                <AuthControl variant="desktop" />
               </li>
             </ul>
           </nav>
@@ -373,9 +384,7 @@ Please confirm my booking. Thank you!`;
                 </li>
                 <li className="divider"></li>
                 <li>
-                  <button type="button" className="btn-login" style={{ width: "100%", justifyContent: "center" }} onClick={() => { setShowMobileMenu(false); showComingSoonToast(); }}>
-                    Log in
-                  </button>
+                  <AuthControl variant="mobile" onNavigate={() => setShowMobileMenu(false)} />
                 </li>
               </ul>
 

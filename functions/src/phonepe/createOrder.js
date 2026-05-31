@@ -33,7 +33,7 @@ exports.createPhonePeOrder = onRequest(
     if (req.method === "OPTIONS") return res.status(204).send("");
     if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-    const { bookingId, amount, customerPhone, bookingDetails } = req.body;
+    const { bookingId, amount, customerPhone, bookingDetails, uid } = req.body;
 
     if (!bookingId || !amount || !customerPhone || !bookingDetails) {
       return res.status(400).json({ error: "Missing required fields: bookingId, amount, customerPhone, bookingDetails" });
@@ -95,7 +95,9 @@ exports.createPhonePeOrder = onRequest(
       return res.status(422).json({ error: "PhonePe order initiation failed", details: phonePeResponse });
     }
 
-    // Persist booking with pending status before redirecting user
+    // Persist booking with pending status before redirecting user.
+    // `uid` links the booking to a signed-in user (null for guest bookings) so
+    // it can be read back via the rules-gated "My Bookings" query.
     await db.collection("bookings").doc(bookingId).set({
       bookingId,
       paymentStatus: "pending",
@@ -103,6 +105,7 @@ exports.createPhonePeOrder = onRequest(
       merchantTransactionId,
       amount,
       customerPhone,
+      uid: typeof uid === "string" && uid ? uid : null,
       bookingDetails,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });

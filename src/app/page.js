@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { siteConfig } from "@/config/site";
 import { bookingConfig } from "@/lib/booking-config";
+import { useAuth } from "@/context/AuthProvider";
+import AuthControl from "@/components/auth/AuthControl";
 
 const createBookingId = () => `GAT-${Math.floor(100000 + Math.random() * 900000)}`;
 
@@ -45,6 +47,7 @@ const getWhatsAppUrl = (message) => {
 const plural = (n) => (n > 1 ? "s" : "");
 
 export default function Home() {
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [tripType, setTripType] = useState("airport");
   const [airportType, setAirportType] = useState("drop");
@@ -97,8 +100,6 @@ export default function Home() {
   const [showMyBookings, setShowMyBookings] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
   const [expandedFares, setExpandedFares] = useState({});
 
   const toggleFareExpansion = (cabId) => {
@@ -162,10 +163,6 @@ export default function Home() {
 
   const getTempoEffectiveKm = (cab) =>
     Math.max(tempoKmCount, tempoDayCount * cab.minKmPerDay);
-
-  const openLogin = () => {
-    showComingSoonToast();
-  };
 
   const handleAirportDirectionChange = (direction) => {
     setAirportType(direction);
@@ -467,6 +464,7 @@ export default function Home() {
           bookingId,
           amount: onlinePaymentAmount * 100,
           customerPhone: phone,
+          uid: user?.uid ?? null,
           bookingDetails,
         }),
       });
@@ -484,12 +482,6 @@ export default function Home() {
     setTimeout(() => {
       document.getElementById("promos")?.scrollIntoView({ behavior: "smooth" });
     }, 100);
-  };
-
-  const showComingSoonToast = () => {
-    setToastMessage("Coming soon...");
-    setShowToast(true);
-    window.setTimeout(() => setShowToast(false), 2200);
   };
 
   const handleTrackBooking = (e) => {
@@ -546,9 +538,7 @@ export default function Home() {
                 </button>
               </li>
               <li>
-                <button type="button" className="btn-login" onClick={openLogin}>
-                  Log in
-                </button>
+                <AuthControl variant="desktop" />
               </li>
             </ul>
           </nav>
@@ -578,9 +568,7 @@ export default function Home() {
                 </li>
                 <li className="divider"></li>
                 <li>
-                  <button type="button" className="btn-login" style={{ width: "100%", justifyContent: "center" }} onClick={() => { setShowMobileMenu(false); openLogin(); }}>
-                    Log in
-                  </button>
+                  <AuthControl variant="mobile" onNavigate={() => setShowMobileMenu(false)} />
                 </li>
               </ul>
 
@@ -591,12 +579,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
-      )}
-
-      {showToast && (
-        <div className="toast-notification" role="status" aria-live="polite">
-          {toastMessage}
         </div>
       )}
 
