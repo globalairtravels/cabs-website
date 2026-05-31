@@ -856,7 +856,8 @@ Please confirm my booking. Thank you!`;
             </div>
           </div>
           <div className="footer-copy">
-            Copyright &copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+            <div>Copyright &copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</div>
+            <div style={{ marginTop: "0.25rem", color: "var(--text-light)" }}>{siteConfig.footer.establishedText}</div>
           </div>
         </div>
       </footer>

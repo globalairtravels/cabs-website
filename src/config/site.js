@@ -10,7 +10,8 @@ export const siteConfig = {
   upiId: "9844082581@ybl", // Payee UPI ID based on the phone number
   merchantName: "Madhusudan H G", // Name from payment details in leaflet
   footer: {
-    description: "Founded in 1998, Global Air Travels is a Mysore travel agency known for reliable tours, ticketing, visa, forex, insurance, passport assistance and cab services.",
+    establishedText: "Office established on 06.03.1996",
+    description: "Established on 06.03.1996, Global Air Travels is a Mysore travel agency known for reliable tours, ticketing, visa, forex, insurance, passport assistance and cab services.",
     bankDetails: {
       title: "Our Bank Details / For Net Transfers",
       bank: "HDFC Bank",
