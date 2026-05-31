@@ -419,53 +419,38 @@ Please confirm my booking. Thank you!`;
                     )}
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem" }}>
-                      <div className="form-group" style={{ margin: 0 }}>
-                        <label htmlFor="reporting-date" className="form-label">Reporting Date</label>
-                        <div className="input-wrapper">
-                          <img src={getAssetPath("/icons/hero/calendar.svg")} alt="" className="input-icon" style={{ opacity: 0.5 }} />
-                          <input id="reporting-date" type="date" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} required min={new Date().toISOString().split("T")[0]} />
-                        </div>
+                      <div className="form-group">
+                        <label htmlFor="reporting-date" className="form-label">Reporting date</label>
+                        <input id="reporting-date" type="date" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} required min={new Date().toISOString().split("T")[0]} />
                       </div>
-                      <div className="form-group" style={{ margin: 0 }}>
-                        <label htmlFor="reporting-time" className="form-label">Reporting Time</label>
-                        <div className="input-wrapper">
-                          <img src={getAssetPath("/icons/hero/time.svg")} alt="" className="input-icon" style={{ opacity: 0.5 }} />
-                          <input id="reporting-time" type="time" className="form-input" value={time} onChange={(e) => setTime(e.target.value)} required />
-                        </div>
+                      <div className="form-group">
+                        <label htmlFor="reporting-time" className="form-label">Reporting time</label>
+                        <input id="reporting-time" type="time" className="form-input" value={time} onChange={(e) => setTime(e.target.value)} required />
                       </div>
                     </div>
 
                     {tripType === "city" && (
-                      <div className="form-group" style={{ margin: 0 }}>
-                        <label htmlFor="city-days-input" className="form-label">Number of Days</label>
-                        <div className="input-wrapper">
-                          <img src={getAssetPath("/icons/booking-flow/schedule.svg")} alt="" className="input-icon" style={{ opacity: 0.5 }} />
-                          <input id="city-days-input" type="number" className="form-input" value={cityDays}
-                            onChange={(e) => { const { value } = e.target; setCityDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
-                            onBlur={() => setCityDays(cityDayCount)} min="1" max="30" required />
-                        </div>
+                      <div className="form-group">
+                        <label htmlFor="city-days-input" className="form-label">Number of days</label>
+                        <input id="city-days-input" type="number" className="form-input" value={cityDays}
+                          onChange={(e) => { const { value } = e.target; setCityDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
+                          onBlur={() => setCityDays(cityDayCount)} min="1" max="30" required />
                       </div>
                     )}
 
                     {tripType === "tempo" && (
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem" }}>
-                        <div className="form-group" style={{ margin: 0 }}>
-                          <label htmlFor="tempo-days-input" className="form-label">Number of Days</label>
-                          <div className="input-wrapper">
-                            <img src={getAssetPath("/icons/booking-flow/schedule.svg")} alt="" className="input-icon" style={{ opacity: 0.5 }} />
-                            <input id="tempo-days-input" type="number" className="form-input" value={tempoDays}
-                              onChange={(e) => { const { value } = e.target; setTempoDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
-                              onBlur={() => setTempoDays(tempoDayCount)} min="1" max="30" required />
-                          </div>
+                        <div className="form-group">
+                          <label htmlFor="tempo-days-input" className="form-label">Number of days</label>
+                          <input id="tempo-days-input" type="number" className="form-input" value={tempoDays}
+                            onChange={(e) => { const { value } = e.target; setTempoDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
+                            onBlur={() => setTempoDays(tempoDayCount)} min="1" max="30" required />
                         </div>
-                        <div className="form-group" style={{ margin: 0 }}>
-                          <label htmlFor="tempo-km-input" className="form-label">Estimated Kilometers</label>
-                          <div className="input-wrapper">
-                            <img src={getAssetPath("/icons/fare/per-km.svg")} alt="" className="input-icon" style={{ opacity: 0.5 }} />
-                            <input id="tempo-km-input" type="number" className="form-input" value={tempoEstKm}
-                              onChange={(e) => { const { value } = e.target; setTempoEstKm(value === "" ? "" : normalizePositiveInteger(value)); }}
-                              onBlur={() => setTempoEstKm(tempoKmCount)} min="1" required />
-                          </div>
+                        <div className="form-group">
+                          <label htmlFor="tempo-km-input" className="form-label">Estimated kilometers</label>
+                          <input id="tempo-km-input" type="number" className="form-input" value={tempoEstKm}
+                            onChange={(e) => { const { value } = e.target; setTempoEstKm(value === "" ? "" : normalizePositiveInteger(value)); }}
+                            onBlur={() => setTempoEstKm(tempoKmCount)} min="1" required />
                         </div>
                       </div>
                     )}
@@ -476,103 +461,87 @@ Please confirm my booking. Thank you!`;
                         <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "var(--text-dark)" }}>Passenger details</span>
                       </div>
 
-                      <div style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
-                        <div className="form-group" style={{ margin: 0 }}>
+                      <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                        <div className="form-group">
                           <label htmlFor="cust-name" className="form-label">Full name</label>
-                          <div className="input-wrapper">
-                            <img src={getAssetPath("/icons/hero/passenger.svg")} alt="" className="input-icon" />
-                            <input
-                              id="cust-name"
-                              type="text"
-                              className="form-input"
-                              placeholder="Enter your full name"
-                              value={name}
-                              onChange={(e) => setName(e.target.value)}
-                              required
-                              autoComplete="name"
-                            />
-                          </div>
+                          <input
+                            id="cust-name"
+                            type="text"
+                            className="form-input"
+                            placeholder="Enter your full name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            autoComplete="name"
+                          />
                         </div>
 
-                        <div className="form-group" style={{ margin: 0 }}>
+                        <div className="form-group">
                           <label htmlFor="cust-phone" className="form-label">WhatsApp mobile number</label>
-                          <div className="input-wrapper">
-                            <img src={getAssetPath("/icons/footer/phone.svg")} alt="" className="input-icon" />
-                            <input
-                              id="cust-phone"
-                              type="tel"
-                              className="form-input"
-                              placeholder="10-digit mobile number"
-                              value={phone}
-                              onChange={(e) => setPhone(e.target.value)}
-                              required
-                              pattern="[6-9][0-9]{9}"
-                              inputMode="tel"
-                              autoComplete="tel"
-                            />
-                          </div>
+                          <input
+                            id="cust-phone"
+                            type="tel"
+                            className="form-input"
+                            placeholder="10-digit mobile number"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            required
+                            pattern="[6-9][0-9]{9}"
+                            inputMode="tel"
+                            autoComplete="tel"
+                          />
                         </div>
 
-                        <div className="form-group" style={{ margin: 0 }}>
+                        <div className="form-group">
                           <label htmlFor="cust-email" className="form-label">
-                            Email address <span style={{ color: "var(--text-gray)", fontWeight: 400 }}>(optional)</span>
+                            Email address <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
                           </label>
-                          <div className="input-wrapper">
-                            <img src={getAssetPath("/icons/footer/email.svg")} alt="" className="input-icon" />
-                            <input
-                              id="cust-email"
-                              type="email"
-                              className="form-input"
-                              placeholder="For booking confirmation"
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              autoComplete="email"
-                            />
-                          </div>
+                          <input
+                            id="cust-email"
+                            type="email"
+                            className="form-input"
+                            placeholder="For booking confirmation"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            autoComplete="email"
+                          />
                         </div>
 
-                        <div className="form-group" style={{ margin: 0 }}>
+                        <div className="form-group">
                           <label htmlFor="cust-address" className="form-label">
                             {tripType === "airport" && airportType === "pickup" ? "Drop address in Mysuru" : "Pickup address"}
                           </label>
-                          <div className="input-wrapper">
-                            <img src={getAssetPath("/icons/hero/pickup.svg")} alt="" className="input-icon" style={{ alignSelf: "flex-start", marginTop: "0.8rem" }} />
-                            <textarea
-                              id="cust-address"
-                              className="form-input"
-                              style={{ minHeight: "72px", padding: "0.5rem 0.75rem 0.5rem 2.25rem", resize: "vertical" }}
-                              placeholder={
-                                tripType === "airport" && airportType === "pickup"
-                                  ? "Your destination in Mysuru (home / hotel)"
-                                  : tripType === "airport"
-                                  ? "Your home / hotel address in Mysuru"
-                                  : "Reporting address with any landmark"
-                              }
-                              value={pickupAddress}
-                              onChange={(e) => setPickupAddress(e.target.value)}
-                              required
-                              autoComplete="street-address"
-                            />
-                          </div>
+                          <textarea
+                            id="cust-address"
+                            className="form-input"
+                            placeholder={
+                              tripType === "airport" && airportType === "pickup"
+                                ? "Your destination in Mysuru (home / hotel)"
+                                : tripType === "airport"
+                                ? "Your home / hotel address in Mysuru"
+                                : "Reporting address with any landmark"
+                            }
+                            value={pickupAddress}
+                            onChange={(e) => setPickupAddress(e.target.value)}
+                            required
+                            autoComplete="street-address"
+                          />
                         </div>
 
                         {tripType === "airport" && (
-                          <div className="form-group" style={{ margin: 0 }}>
+                          <div className="form-group">
                             <label htmlFor="cust-flight" className="form-label">
-                              Flight number <span style={{ color: "var(--text-gray)", fontWeight: 400 }}>(optional)</span>
+                              Flight number <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
                             </label>
-                            <div className="input-wrapper">
-                              <img src={getAssetPath("/icons/nav/airport.svg")} alt="" className="input-icon" />
-                              <input
-                                id="cust-flight"
-                                type="text"
-                                className="form-input"
-                                placeholder="e.g. 6E-203, AI-820"
-                                value={flightNumber}
-                                onChange={(e) => setFlightNumber(e.target.value)}
-                                autoComplete="off"
-                              />
-                            </div>
+                            <input
+                              id="cust-flight"
+                              type="text"
+                              className="form-input"
+                              placeholder="e.g. 6E-203, AI-820"
+                              value={flightNumber}
+                              onChange={(e) => setFlightNumber(e.target.value)}
+                              autoComplete="off"
+                            />
                           </div>
                         )}
                       </div>
@@ -1004,55 +973,6 @@ Please confirm my booking. Thank you!`;
         <img src={WHATSAPP_ICON_PATH} alt="WhatsApp" className="whatsapp-float-icon" />
       </a>
 
-      <footer className="footer">
-        <div className="footer-container">
-          <div className="footer-grid">
-            <div className="footer-brand-col">
-              <img src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="footer-logo-image" />
-              <p className="footer-description">{siteConfig.footer.description}</p>
-              <div className="footer-contact">
-                <a href={`tel:${siteConfig.phone}`} className="footer-link">Call: {siteConfig.phoneDisplay}</a>
-                <a href={getWhatsAppUrl()} className="footer-link">WhatsApp: {siteConfig.whatsappDisplay}</a>
-                <a href={`mailto:${siteConfig.email}`} className="footer-link">Email: {siteConfig.email}</a>
-              </div>
-            </div>
-
-            <div className="footer-section">
-              <h2 className="footer-heading">Offices</h2>
-              <div className="footer-office-list">
-                {siteConfig.footer.offices.map((office) => (
-                  <details key={office.title} className="footer-office">
-                    <summary className="footer-office-summary">{office.title}</summary>
-                    <address className="footer-address">
-                      <span>{office.name}</span>
-                      <span>{office.address}</span>
-                      <a href={`tel:${office.phone}`} className="footer-link">{office.phoneDisplay}</a>
-                      {office.email && (
-                        <a href={`mailto:${office.email}`} className="footer-link">{office.email}</a>
-                      )}
-                    </address>
-                  </details>
-                ))}
-              </div>
-            </div>
-
-            <div className="footer-section">
-              <h2 className="footer-heading">{siteConfig.footer.bankDetails.title}</h2>
-              <dl className="footer-bank-list">
-                <div><dt>Bank</dt><dd>{siteConfig.footer.bankDetails.bank}</dd></div>
-                <div><dt>Current A/c Number</dt><dd>{siteConfig.footer.bankDetails.accountNumber}</dd></div>
-                <div><dt>Name</dt><dd>{siteConfig.footer.bankDetails.accountName}</dd></div>
-                <div><dt>Branch</dt><dd>{siteConfig.footer.bankDetails.branch}</dd></div>
-                <div><dt>IFSC code</dt><dd>{siteConfig.footer.bankDetails.ifsc}</dd></div>
-              </dl>
-            </div>
-          </div>
-          <div className="footer-copy">
-            <div>Copyright &copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</div>
-            <div style={{ marginTop: "0.25rem", color: "var(--text-light)" }}>{siteConfig.footer.establishedText}</div>
-          </div>
-        </div>
-      </footer>
 
       {/* ===== MODALS ===== */}
 
