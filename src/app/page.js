@@ -303,11 +303,33 @@ export default function Home() {
 
   const formatFareFormula = (cab) => {
     if (tripType === "city") {
-      const perDay = `₹${cab.ratePerKm}/km × ${cab.minKmPerDay} km/day + ₹${cab.driverAllowance}/day driver`;
-      return cityDayCount > 1 ? `(${perDay}) × ${cityDayCount} days` : perDay;
+      const runningChargesPerDay = cab.ratePerKm * cab.minKmPerDay;
+      const dailyBaseCost = runningChargesPerDay + cab.driverAllowance;
+      const cabPrice = calculatePrice(cab);
+      const points = [
+        `Running charges: ₹${cab.ratePerKm}/km × ${cab.minKmPerDay} km/day (₹${runningChargesPerDay}/day)`,
+        `Driver allowance: ₹${cab.driverAllowance}/day`,
+      ];
+      if (cityDayCount > 1) {
+        points.push(`Daily rate: ₹${dailyBaseCost}/day`);
+        points.push(`Duration: ${cityDayCount} Days`);
+        points.push(`Billed: ₹${dailyBaseCost} × ${cityDayCount} days = ₹${cabPrice}`);
+      } else {
+        points.push(`Billed: ₹${runningChargesPerDay} + ₹${cab.driverAllowance} = ₹${cabPrice}`);
+      }
+      return points;
     }
     if (tripType === "tempo") {
-      return `₹${cab.ratePerKm}/km × ${getTempoEffectiveKm(cab)} km + ₹${cab.driverAllowance}/day × ${tempoDayCount} day${plural(tempoDayCount)} driver`;
+      const effectiveKm = getTempoEffectiveKm(cab);
+      const runningCharges = cab.ratePerKm * effectiveKm;
+      const totalDriverAllowance = cab.driverAllowance * tempoDayCount;
+      const minBilledKm = cab.minKmPerDay * tempoDayCount;
+      const cabPrice = calculatePrice(cab);
+      return [
+        `Running charges: ₹${cab.ratePerKm}/km × ${effectiveKm} km ${effectiveKm > tempoKmCount ? `(Min ${minBilledKm} km applies)` : `(Est. ${tempoKmCount} km)`} = ₹${runningCharges}`,
+        `Driver allowance: ₹${cab.driverAllowance}/day × ${tempoDayCount} days = ₹${totalDriverAllowance}`,
+        `Billed: ₹${runningCharges} + ₹${totalDriverAllowance} = ₹${cabPrice}`
+      ];
     }
     return null;
   };
@@ -864,7 +886,7 @@ Please confirm my booking. Thank you!`;
                         <span style={{ fontSize: "0.7rem", color: "var(--text-gray)" }}>{tripSummaryLabel}</span>
                       </div>
 
-                      <div className="inline-cab-list" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      <div className="inline-cab-list" style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                         {filteredCabs.map((cab) => {
                           const cabPrice = calculatePrice(cab);
                           const cabFormula = formatFareFormula(cab);
@@ -874,9 +896,9 @@ Please confirm my booking. Thank you!`;
                               className="inline-cab-row"
                               style={{
                                 display: "flex",
-                                alignItems: "center",
+                                alignItems: "flex-start",
                                 gap: "0.75rem",
-                                padding: "0.6rem 0.75rem",
+                                padding: "0.75rem 0.85rem",
                                 border: "1px solid var(--border-color)",
                                 borderRadius: "8px",
                                 backgroundColor: "#fff",
@@ -894,18 +916,34 @@ Please confirm my booking. Thank you!`;
                                 </div>
                                 <div style={{ fontSize: "0.68rem", color: "var(--text-gray)", marginTop: "0.15rem" }}>e.g. {cab.example}</div>
                                 {cabFormula && expandedFares[cab.id] && (
-                                  <div
+                                  <ul
                                     style={{
                                       fontSize: "0.68rem",
-                                      color: "var(--primary-navy)",
-                                      marginTop: "0.3rem",
-                                      fontWeight: 600,
-                                      lineHeight: 1.35,
-                                      animation: "fadeIn 0.2s ease-out"
+                                      color: "var(--text-gray)",
+                                      marginTop: "0.6rem",
+                                      lineHeight: 1.4,
+                                      listStyleType: "none",
+                                      padding: 0,
+                                      margin: 0,
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: "0.25rem",
+                                      animation: "fadeIn 0.2s ease-out",
+                                      paddingLeft: "0.25rem",
                                     }}
                                   >
-                                    {cabFormula}
-                                  </div>
+                                    {cabFormula.map((point, idx) => {
+                                      const isLast = idx === cabFormula.length - 1;
+                                      return (
+                                        <li
+                                          key={idx}
+                                          style={isLast ? { fontWeight: 600, marginTop: "0.2rem", borderTop: "1px dashed #e2e8f0", paddingTop: "0.3rem" } : {}}
+                                        >
+                                          • {point}
+                                        </li>
+                                      );
+                                    })}
+                                  </ul>
                                 )}
                               </div>
                               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.35rem", flexShrink: 0, minWidth: "72px" }}>
@@ -929,20 +967,22 @@ Please confirm my booking. Thank you!`;
                                   Book
                                 </button>
                                 <div
-                                  style={{ textAlign: "center", cursor: "pointer", userSelect: "none" }}
-                                  onClick={() => toggleFareExpansion(cab.id)}
-                                  role="button"
-                                  aria-expanded={!!expandedFares[cab.id]}
-                                  tabIndex={0}
-                                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleFareExpansion(cab.id); } }}
-                                  title="Click to view/hide fare formula"
+                                  style={cabFormula ? { textAlign: "center", cursor: "pointer", userSelect: "none" } : { textAlign: "center", userSelect: "none" }}
+                                  onClick={cabFormula ? () => toggleFareExpansion(cab.id) : undefined}
+                                  role={cabFormula ? "button" : undefined}
+                                  aria-expanded={cabFormula ? !!expandedFares[cab.id] : undefined}
+                                  tabIndex={cabFormula ? 0 : -1}
+                                  onKeyDown={cabFormula ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleFareExpansion(cab.id); } } : undefined}
+                                  title={cabFormula ? "Click to view/hide fare formula" : undefined}
                                 >
                                   <div style={{ fontSize: "0.65rem", color: "var(--text-gray)", lineHeight: 1.1 }}>Assured</div>
                                   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
                                     <span style={{ fontWeight: 800, fontSize: "1.05rem", color: "var(--primary-orange)", lineHeight: 1.15 }}>₹{cabPrice}</span>
-                                    <span style={{ fontSize: "0.95rem", fontWeight: 400, color: "var(--text-muted)", transition: "all 0.15s ease" }}>
-                                      {expandedFares[cab.id] ? "−" : "+"}
-                                    </span>
+                                    {cabFormula && (
+                                      <span style={{ fontSize: "0.95rem", fontWeight: 400, color: "var(--text-muted)", transition: "all 0.15s ease" }}>
+                                        {expandedFares[cab.id] ? "−" : "+"}
+                                      </span>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -1105,9 +1145,19 @@ Please confirm my booking. Thank you!`;
                           {tripType === "tempo" ? (
                             <>
                               <div className="cab-inclusions-title">Tempo Per-Km Rate Breakdown</div>
-                              <div style={{ fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                                {`₹${cab.ratePerKm}/km × ${getTempoEffectiveKm(cab)} km + ₹${cab.driverAllowance}/day × ${tempoDayCount} day${plural(tempoDayCount)} driver = ₹${cabPrice}`}
-                              </div>
+                              {(() => {
+                                const effectiveKm = getTempoEffectiveKm(cab);
+                                const runningCharges = cab.ratePerKm * effectiveKm;
+                                const totalDriverAllowance = cab.driverAllowance * tempoDayCount;
+                                const minBilledKm = cab.minKmPerDay * tempoDayCount;
+                                return (
+                                  <ul style={{ listStyleType: "none", margin: "0.3rem 0", padding: 0, fontSize: "0.75rem", color: "var(--text-gray)", lineHeight: "1.4" }}>
+                                    <li>• Running: ₹{cab.ratePerKm}/km × {effectiveKm} km {effectiveKm > tempoKmCount ? `(Min ${minBilledKm} km)` : `(Est. ${tempoKmCount} km)`} = ₹{runningCharges}</li>
+                                    <li>• Driver allowance: ₹{cab.driverAllowance}/day × {tempoDayCount} Days = ₹{totalDriverAllowance}</li>
+                                    <li style={{ fontWeight: 600 }}>• Billed Total: ₹{runningCharges} + ₹{totalDriverAllowance} = ₹{cabPrice}</li>
+                                  </ul>
+                                );
+                              })()}
                               <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", marginTop: "0.2rem" }}>
                                 Min {cab.minKmPerDay} km/day applies · {tempoDayCount} day{plural(tempoDayCount)} · Extra km billed @ ₹{cab.ratePerKm}/km
                               </div>
@@ -1115,11 +1165,25 @@ Please confirm my booking. Thank you!`;
                           ) : tripType === "city" ? (
                             <>
                               <div className="cab-inclusions-title">Local & Outstation Taxi Per-Day Rate Breakdown</div>
-                              <div style={{ fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                                {cityDayCount > 1
-                                  ? `(₹${cab.ratePerKm}/km × ${cab.minKmPerDay} km/day + ₹${cab.driverAllowance}/day driver) × ${cityDayCount} days = ₹${cabPrice}`
-                                  : `₹${cab.ratePerKm}/km × ${cab.minKmPerDay} km/day + ₹${cab.driverAllowance}/day driver = ₹${cabPrice}`}
-                              </div>
+                              {(() => {
+                                const runningChargesPerDay = cab.ratePerKm * cab.minKmPerDay;
+                                const dailyBaseCost = runningChargesPerDay + cab.driverAllowance;
+                                return (
+                                  <ul style={{ listStyleType: "none", margin: "0.3rem 0", padding: 0, fontSize: "0.75rem", color: "var(--text-gray)", lineHeight: "1.4" }}>
+                                    <li>• Running: ₹{cab.ratePerKm}/km × {cab.minKmPerDay} km/day (₹{runningChargesPerDay}/day)</li>
+                                    <li>• Driver allowance: ₹{cab.driverAllowance}/day</li>
+                                    {cityDayCount > 1 ? (
+                                      <>
+                                        <li>• Daily rate: ₹{dailyBaseCost}/day</li>
+                                        <li>• Duration: {cityDayCount} Days</li>
+                                        <li style={{ fontWeight: 600 }}>• Billed Total: ₹{dailyBaseCost} × {cityDayCount} = ₹{cabPrice}</li>
+                                      </>
+                                    ) : (
+                                      <li style={{ fontWeight: 600 }}>• Billed Total: ₹{runningChargesPerDay} + ₹{cab.driverAllowance} = ₹{cabPrice}</li>
+                                    )}
+                                  </ul>
+                                );
+                              })()}
                               <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", marginTop: "0.2rem" }}>
                                 Includes {cab.minKmPerDay} km/day · {cityDayCount} day{plural(cityDayCount)} · Extra km billed @ ₹{cab.ratePerKm}/km
                               </div>

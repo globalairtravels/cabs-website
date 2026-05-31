@@ -344,6 +344,29 @@ export const siteConfig = {
     }
   },
 
+  // Payment gateway configuration
+  payment: {
+    // Switch between "phonepe" and "razorpay" — only controls which endpoint the frontend calls.
+    // Both Cloud Functions remain deployed at all times.
+    gateway: "phonepe",
+
+    phonepe: {
+      // Set NEXT_PUBLIC_PHONEPE_FN_URL after deploying Cloud Functions:
+      //   firebase deploy --only functions
+      // Then: https://asia-south1-<project-id>.cloudfunctions.net/createPhonePeOrder
+      createOrderUrl: process.env.NEXT_PUBLIC_PHONEPE_FN_URL || "",
+      successPath: "/bookings/status",
+      failurePath: "/bookings/status",
+    },
+
+    razorpay: {
+      // Future — uncomment when Razorpay is wired up
+      createOrderUrl: process.env.NEXT_PUBLIC_RAZORPAY_FN_URL || "",
+      successPath: "/bookings/status",
+      failurePath: "/bookings/status",
+    },
+  },
+
   // Booking Rules & Notes
   notes: [
     "During peak season, rates may increase by ₹1 per km depending on vehicle demand.",
