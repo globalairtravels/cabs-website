@@ -431,17 +431,17 @@ Please confirm my booking. Thank you!`;
                       </div>
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                         <div className="form-group">
-                          <label htmlFor="reporting-date" className="form-label">Booking date</label>
+                          <label htmlFor="reporting-date" className="form-label">Booking Date</label>
                           <input id="reporting-date" type="date" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} required min={new Date().toISOString().split("T")[0]} />
                         </div>
                         <div className="form-group">
-                          <label htmlFor="reporting-time" className="form-label">Booking time</label>
+                          <label htmlFor="reporting-time" className="form-label">Booking Time</label>
                           <input id="reporting-time" type="time" className="form-input" value={time} onChange={(e) => setTime(e.target.value)} required />
                         </div>
                       </div>
                       {tripType === "city" && (
                         <div className="form-group" style={{ marginTop: "1rem" }}>
-                          <label htmlFor="city-days-input" className="form-label">Number of days</label>
+                          <label htmlFor="city-days-input" className="form-label">Number Of Days</label>
                           <input id="city-days-input" type="number" className="form-input" value={cityDays}
                             onChange={(e) => { const { value } = e.target; setCityDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
                             onBlur={() => setCityDays(cityDayCount)} min="1" max="30" required />
@@ -450,13 +450,13 @@ Please confirm my booking. Thank you!`;
                       {tripType === "tempo" && (
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "1rem" }}>
                           <div className="form-group">
-                            <label htmlFor="tempo-days-input" className="form-label">Number of days</label>
+                            <label htmlFor="tempo-days-input" className="form-label">Number Of Days</label>
                             <input id="tempo-days-input" type="number" className="form-input" value={tempoDays}
                               onChange={(e) => { const { value } = e.target; setTempoDays(value === "" ? "" : normalizePositiveInteger(value, { max: 30 })); }}
                               onBlur={() => setTempoDays(tempoDayCount)} min="1" max="30" required />
                           </div>
                           <div className="form-group">
-                            <label htmlFor="tempo-km-input" className="form-label">Estimated kilometers</label>
+                            <label htmlFor="tempo-km-input" className="form-label">Estimated Kilometers</label>
                             <input id="tempo-km-input" type="number" className="form-input" value={tempoEstKm}
                               onChange={(e) => { const { value } = e.target; setTempoEstKm(value === "" ? "" : normalizePositiveInteger(value)); }}
                               onBlur={() => setTempoEstKm(tempoKmCount)} min="1" required />
@@ -475,16 +475,16 @@ Please confirm my booking. Thank you!`;
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
                         <div className="form-group">
-                          <label htmlFor="cust-name" className="form-label">Full name</label>
+                          <label htmlFor="cust-name" className="form-label">Full Name</label>
                           <input id="cust-name" type="text" className="form-input" placeholder="Enter your full name" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
                         </div>
                         <div className="form-group">
-                          <label htmlFor="cust-phone" className="form-label">WhatsApp mobile number</label>
+                          <label htmlFor="cust-phone" className="form-label">WhatsApp Mobile Number</label>
                           <input id="cust-phone" type="tel" className="form-input" placeholder="10-digit mobile number" value={phone} onChange={(e) => setPhone(e.target.value)} required pattern="[6-9][0-9]{9}" inputMode="tel" autoComplete="tel" />
                         </div>
                         <div className="form-group">
                           <label htmlFor="cust-email" className="form-label">
-                            Email address <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
+                            Email Address <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
                           </label>
                           <input id="cust-email" type="email" className="form-input" placeholder="For booking confirmation" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
                         </div>
@@ -511,7 +511,7 @@ Please confirm my booking. Thank you!`;
                         {tripType === "airport" && (
                           <div className="form-group">
                             <label htmlFor="cust-flight" className="form-label">
-                              Flight number <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
+                              Flight Number <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
                             </label>
                             <input id="cust-flight" type="text" className="form-input" placeholder="e.g. 6E-203, AI-820" value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)} autoComplete="off" />
                           </div>
