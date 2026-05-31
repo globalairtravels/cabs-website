@@ -77,7 +77,7 @@
   },
   "cities": {
     "mysore": {
-      "name": "Mysore",
+      "name": "Mysuru",
       "validFor": [
         "airport",
         "city",
@@ -87,7 +87,7 @@
       "active": true
     },
     "blr-city": {
-      "name": "Bangalore City",
+      "name": "Bangalore",
       "validFor": [
         "city",
         "intercity",
@@ -99,46 +99,6 @@
       "name": "Bangalore Airport (KIA)",
       "validFor": [
         "airport"
-      ],
-      "active": true
-    },
-    "ooty": {
-      "name": "Ooty",
-      "validFor": [
-        "intercity",
-        "tempo"
-      ],
-      "active": true
-    },
-    "coorg": {
-      "name": "Coorg (Madikeri)",
-      "validFor": [
-        "intercity",
-        "tempo"
-      ],
-      "active": true
-    },
-    "kabini": {
-      "name": "Kabini",
-      "validFor": [
-        "intercity",
-        "tempo"
-      ],
-      "active": true
-    },
-    "bandipur": {
-      "name": "Bandipur",
-      "validFor": [
-        "intercity",
-        "tempo"
-      ],
-      "active": true
-    },
-    "wayanad": {
-      "name": "Wayanad",
-      "validFor": [
-        "intercity",
-        "tempo"
       ],
       "active": true
     }

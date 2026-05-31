@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { siteConfig } from "@/config/site";
 import { bookingConfig } from "@/lib/booking-config";
 
@@ -55,7 +55,7 @@ export default function Home() {
   const [tempoDays, setTempoDays] = useState(1);
   const [tempoEstKm, setTempoEstKm] = useState(300);
 
-  const [pickup, setPickup] = useState("Mysore");
+  const [pickup, setPickup] = useState("Mysuru");
   const [drop, setDrop] = useState("Bangalore Airport (KIA)");
   const [date, setDate] = useState(getTomorrowDate);
   const [time, setTime] = useState("10:00");
@@ -113,6 +113,58 @@ export default function Home() {
   const [trackedBooking, setTrackedBooking] = useState(null);
   const [trackAttempted, setTrackAttempted] = useState(false);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const queryBookingType = params.get("booking_type");
+    if (!queryBookingType) return;
+
+    const timer = setTimeout(() => {
+      let tType = "airport";
+      if (queryBookingType === "city") tType = "city";
+      else if (queryBookingType === "intercity") tType = "daily";
+      else if (queryBookingType === "tempo") tType = "tempo";
+      setTripType(tType);
+
+      const qPickup = params.get("pickup");
+      if (qPickup) setPickup(qPickup);
+
+      const qDrop = params.get("drop");
+      if (qDrop) setDrop(qDrop);
+
+      const qDate = params.get("date");
+      if (qDate) setDate(qDate);
+
+      const qTime = params.get("time");
+      if (qTime) setTime(qTime);
+
+      const qAirportType = params.get("airport_type");
+      if (qAirportType) setAirportType(qAirportType);
+
+      const qCityDays = params.get("city_days");
+      if (qCityDays) setCityDays(Number(qCityDays));
+
+      const qTempoDays = params.get("tempo_days");
+      if (qTempoDays) setTempoDays(Number(qTempoDays));
+
+      const qTempoEstKm = params.get("tempo_est_km");
+      if (qTempoEstKm) setTempoEstKm(Number(qTempoEstKm));
+
+      const qOutstationDirection = params.get("outstation_direction");
+      if (qOutstationDirection) setOutstationDirection(qOutstationDirection);
+
+      const qNumDays = params.get("num_days");
+      if (qNumDays) setNumDays(Number(qNumDays));
+
+      const qCabId = params.get("cab");
+      if (qCabId) {
+        const foundCab = bookingConfig.cabTypes.find((c) => c.id === qCabId);
+        if (foundCab) setSelectedCab(foundCab);
+      }
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const isOutstationTrip = tripType === "tempo";
   const showTripModeSelector = tripType === "tempo" || tripType === "city";
   const cityDayCount = normalizePositiveInteger(cityDays, { max: 30 });
@@ -135,22 +187,22 @@ export default function Home() {
   const handleAirportDirectionChange = (direction) => {
     setAirportType(direction);
     if (direction === "drop") {
-      setPickup("Mysore");
+      setPickup("Mysuru");
       setDrop("Bangalore Airport (KIA)");
     } else {
       setPickup("Bangalore Airport (KIA)");
-      setDrop("Mysore");
+      setDrop("Mysuru");
     }
   };
 
   const handleCityDirectionChange = (direction) => {
     setCityType(direction);
     if (direction === "drop") {
-      setPickup("Mysore");
-      setDrop("Bangalore City");
+      setPickup("Mysuru");
+      setDrop("Bangalore");
     } else {
-      setPickup("Bangalore City");
-      setDrop("Mysore");
+      setPickup("Bangalore");
+      setDrop("Mysuru");
     }
   };
 
@@ -168,15 +220,15 @@ export default function Home() {
     if (tab === "airport") {
       handleAirportDirectionChange("drop");
     } else if (tab === "city") {
-      setPickup("Mysore");
-      setDrop("Mysore");
+      setPickup("Mysuru");
+      setDrop("Mysuru");
     } else if (tab === "daily") {
-      setPickup("Mysore");
-      setDrop("Bangalore City");
+      setPickup("Mysuru");
+      setDrop("Bangalore");
       setOutstationDirection("oneway");
     } else if (tab === "tempo") {
-      setPickup("Mysore");
-      setDrop("Mysore");
+      setPickup("Mysuru");
+      setDrop("Mysuru");
       if (TEMPO_CAB) setSelectedCab(TEMPO_CAB);
     }
   };
@@ -204,43 +256,43 @@ export default function Home() {
       handleAirportDirectionChange("pickup");
     } else if (routeId === "mysore-blr-city") {
       setTripType("daily");
-      setPickup("Mysore");
-      setDrop("Bangalore City");
+      setPickup("Mysuru");
+      setDrop("Bangalore");
       setOutstationDirection("oneway");
     } else if (routeId === "blr-city-mysore") {
       setTripType("daily");
-      setPickup("Bangalore City");
-      setDrop("Mysore");
+      setPickup("Bangalore");
+      setDrop("Mysuru");
       setOutstationDirection("oneway");
     } else if (routeId === "local-mysore") {
       setTripType("city");
-      setPickup("Mysore");
-      setDrop("Mysore");
+      setPickup("Mysuru");
+      setDrop("Mysuru");
     } else if (routeId === "local-bangalore") {
       setTripType("city");
       setPickup("Bangalore");
       setDrop("Bangalore");
     } else if (routeId === "mysore-mangalore-airport") {
       setTripType("airport");
-      setPickup("Mysore");
+      setPickup("Mysuru");
       setDrop("Mangalore Airport");
       setAirportType("drop");
     } else if (routeId === "mysore-mangalore-city") {
       setTripType("city");
-      setPickup("Mysore");
-      setDrop("Mysore");
+      setPickup("Mysuru");
+      setDrop("Mysuru");
       setCityType("drop");
     } else if (routeId.startsWith("tour-")) {
       setTripType("daily");
       setOutstationDirection("oneway");
-      setPickup("Mysore");
+      setPickup("Mysuru");
       if (item.destination) setDrop(item.destination);
       if (item.days) setNumDays(item.days);
     } else if (routeId.startsWith("tempo-")) {
       setTripType("tempo");
       setOutstationDirection("oneway");
-      setPickup("Mysore");
-      setDrop("Mysore");
+      setPickup("Mysuru");
+      setDrop("Mysuru");
       if (item.days) setTempoDays(item.days);
       if (TEMPO_CAB) setSelectedCab(TEMPO_CAB);
     }
@@ -362,8 +414,27 @@ export default function Home() {
   );
 
   const handleCabSelect = (cab) => {
-    setSelectedCab(cab);
-    setStep(3);
+    const params = new URLSearchParams();
+    params.set("booking_type", TRIP_TYPE_TO_BOOKING_TYPE[tripType] || tripType);
+    params.set("pickup", pickup || "");
+    params.set("drop", drop || "");
+    params.set("cab", cab.id);
+    params.set("date", date || "");
+    params.set("time", time || "");
+
+    if (tripType === "airport") {
+      params.set("airport_type", airportType || "");
+    } else if (tripType === "city") {
+      params.set("city_days", String(cityDays));
+    } else if (tripType === "tempo") {
+      params.set("tempo_days", String(tempoDays));
+      params.set("tempo_est_km", String(tempoEstKm));
+    } else if (tripType === "daily") {
+      params.set("outstation_direction", outstationDirection || "");
+      params.set("num_days", String(numDays));
+    }
+
+    window.location.href = `${BASE_PATH}/bookings/new?${params.toString()}`;
   };
 
   const handlePassengerSubmit = (e) => {
@@ -448,7 +519,7 @@ Please confirm my booking. Thank you!`;
     ) {
       setTrackedBooking({
         id: trackBookingId.toUpperCase(),
-        route: "Mysore ➔ Bangalore Airport KIA",
+        route: "Mysuru ➔ Bangalore Airport KIA",
         car: selectedCab.name,
         date: date || "Tomorrow",
         time: time || "10:00 AM",

@@ -42,8 +42,8 @@ export const siteConfig = {
   popularRoutes: [
     {
       id: "mysore-blr-airport-oneway",
-      label: "Airport Transfer (Mysore ⇄ Bangalore Airport)",
-      pickup: "Mysore",
+      label: "Airport Transfer (Mysuru ⇄ Bangalore Airport)",
+      pickup: "Mysuru",
       drop: "Bangalore Airport (KIA)",
       distanceKm: 180,
       description: "Toll & Driver allowance included! Airport waiting up to 45 mins included.",
@@ -57,9 +57,9 @@ export const siteConfig = {
     },
     {
       id: "mysore-blr-city-oneway",
-      label: "Mysore ⇄ Bangalore City One Way (150 Kms Limit)",
-      pickup: "Mysore",
-      drop: "Bangalore City",
+      label: "Mysuru ⇄ Bangalore One Way (150 Kms Limit)",
+      pickup: "Mysuru",
+      drop: "Bangalore",
       distanceKm: 150,
       description: "Includes Toll (₹400) + Base Fare.",
       pricing: {
@@ -200,9 +200,9 @@ export const siteConfig = {
       quickSelect: {
         title: "Popular Airport Routes",
         items: [
-          { id: "mysore-blr-airport", name: "Mysore ➔ Bangalore Airport", subtitle: "₹3,600 Sedan • Toll Incl." },
-          { id: "blr-airport-mysore", name: "Bangalore Airport ➔ Mysore", subtitle: "₹3,600 Sedan • Toll Incl." },
-          { id: "mysore-mangalore-airport", name: "Mysore ➔ Mangalore Airport", subtitle: "₹5,500 Sedan • On Request" }
+          { id: "mysore-blr-airport", name: "Mysuru ➔ Bangalore Airport", subtitle: "₹3,600 Sedan • Toll Incl." },
+          { id: "blr-airport-mysore", name: "Bangalore Airport ➔ Mysuru", subtitle: "₹3,600 Sedan • Toll Incl." },
+          { id: "mysore-mangalore-airport", name: "Mysuru ➔ Mangalore Airport", subtitle: "₹5,500 Sedan • On Request" }
         ]
       },
       info: {
@@ -239,7 +239,7 @@ export const siteConfig = {
       quickSelect: {
         title: "Popular Daily Packages",
         items: [
-          { id: "local-mysore", name: "Mysore Local / Outstation", subtitle: "₹3,400/day Sedan • 250 km/day & driver incl." },
+          { id: "local-mysore", name: "Mysuru Local / Outstation", subtitle: "₹3,400/day Sedan • 250 km/day & driver incl." },
           { id: "local-bangalore", name: "Bangalore Local / Outstation", subtitle: "₹3,400/day Sedan • 250 km/day & driver incl." }
         ]
       },
@@ -278,8 +278,8 @@ export const siteConfig = {
       quickSelect: {
         title: "Popular Intercity Routes",
         items: [
-          { id: "mysore-blr-city", name: "Mysore ➔ Bangalore City", subtitle: "₹3,100 Sedan • Toll Incl." },
-          { id: "blr-city-mysore", name: "Bangalore City ➔ Mysore", subtitle: "₹3,100 Sedan • Toll Incl." }
+          { id: "mysore-blr-city", name: "Mysuru ➔ Bangalore", subtitle: "₹3,100 Sedan • Toll Incl." },
+          { id: "blr-city-mysore", name: "Bangalore ➔ Mysuru", subtitle: "₹3,100 Sedan • Toll Incl." }
         ]
       },
       info: {
