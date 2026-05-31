@@ -891,101 +891,67 @@ Please confirm my booking. Thank you!`;
                           const cabPrice = calculatePrice(cab);
                           const cabFormula = formatFareFormula(cab);
                           return (
-                            <div
-                              key={cab.id}
-                              className="inline-cab-row"
-                              style={{
-                                display: "flex",
-                                alignItems: "flex-start",
-                                gap: "0.75rem",
-                                padding: "0.75rem 0.85rem",
-                                border: "1px solid var(--border-color)",
-                                borderRadius: "8px",
-                                backgroundColor: "#fff",
-                              }}
-                            >
-                              <img
-                                src={cab.icon.startsWith("images/") ? getAssetPath(`/${cab.icon}`) : getAssetPath(`/icons/${cab.icon}`)}
-                                alt=""
-                                style={{ width: 72, height: 72, objectFit: "cover", borderRadius: "50%", boxShadow: "0 0 0 2px #fff, 0 0 0 3px #cbd5e1", flexShrink: 0 }}
-                              />
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--primary-navy)" }}>{cab.name}</div>
-                                <div style={{ fontSize: "0.7rem", color: "var(--text-gray)" }}>
-                                  {cab.seats} Seats • {cab.luggage} {cab.ac ? "• AC" : ""}
+                            <div key={cab.id} className="inline-cab-row">
+                              <div className="inline-cab-top-section">
+                                <img
+                                  src={cab.icon.startsWith("images/") ? getAssetPath(`/${cab.icon}`) : getAssetPath(`/icons/${cab.icon}`)}
+                                  alt=""
+                                  className="inline-cab-img"
+                                />
+                                <div className="inline-cab-details">
+                                  <div className="inline-cab-name">{cab.name}</div>
+                                  <div className="inline-cab-specs">
+                                    {cab.seats} Seats • {cab.luggage} {cab.ac ? "• AC" : ""}
+                                  </div>
+                                  <div className="inline-cab-example">e.g. {cab.example}</div>
                                 </div>
-                                <div style={{ fontSize: "0.68rem", color: "var(--text-gray)", marginTop: "0.15rem", marginBottom: "0.6rem" }}>e.g. {cab.example}</div>
-                                {cabFormula && expandedFares[cab.id] && (
-                                  <ul
-                                    style={{
-                                      fontSize: "0.68rem",
-                                      color: "var(--text-gray)",
-                                      marginTop: "0.1rem",
-                                      lineHeight: 1.4,
-                                      listStyleType: "none",
-                                      padding: 0,
-                                      margin: 0,
-                                      display: "flex",
-                                      flexDirection: "column",
-                                      gap: "0.25rem",
-                                      animation: "fadeIn 0.2s ease-out",
-                                      paddingLeft: "0.25rem",
-                                    }}
+                                <div className="inline-cab-actions">
+                                  <button
+                                    type="button"
+                                    className="inline-cab-book-btn"
+                                    onClick={() => handleCabSelect(cab)}
                                   >
+                                    Book
+                                  </button>
+                                  <div
+                                    className={`inline-cab-price-box ${cabFormula ? "has-formula" : ""}`}
+                                    onClick={cabFormula ? () => toggleFareExpansion(cab.id) : undefined}
+                                    role={cabFormula ? "button" : undefined}
+                                    aria-expanded={cabFormula ? !!expandedFares[cab.id] : undefined}
+                                    tabIndex={cabFormula ? 0 : -1}
+                                    onKeyDown={cabFormula ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleFareExpansion(cab.id); } } : undefined}
+                                    title={cabFormula ? "Click to view/hide fare formula" : undefined}
+                                  >
+                                    <div className="inline-cab-assured">Assured</div>
+                                    <div className="inline-cab-price-row">
+                                      <span className="inline-cab-price-amount">₹{cabPrice}</span>
+                                      {cabFormula && (
+                                        <span className="inline-cab-toggle-icon">
+                                          {expandedFares[cab.id] ? "−" : "+"}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {cabFormula && expandedFares[cab.id] && (
+                                <div className="inline-cab-fare-details">
+                                  <ul className="inline-cab-fare-list">
                                     {cabFormula.map((point, idx) => {
                                       const isLast = idx === cabFormula.length - 1;
                                       return (
                                         <li
                                           key={idx}
-                                          style={isLast ? { fontWeight: 600, marginTop: "0.2rem", borderTop: "1px dashed #e2e8f0", paddingTop: "0.3rem" } : {}}
+                                          className={`inline-cab-fare-item ${isLast ? "total" : ""}`}
                                         >
                                           • {point}
                                         </li>
                                       );
                                     })}
                                   </ul>
-                                )}
-                              </div>
-                              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.35rem", flexShrink: 0, minWidth: "72px" }}>
-                                <button
-                                  type="button"
-                                  className="btn-primary"
-                                  style={{
-                                    minHeight: "32px",
-                                    padding: "0.35rem 0.75rem",
-                                    fontSize: "0.75rem",
-                                    width: "100%",
-                                    cursor: "pointer",
-                                    backgroundColor: "#f1f5f9",
-                                    border: "1px solid #cbd5e1",
-                                    borderRadius: "6px",
-                                    fontWeight: 600,
-                                    color: "var(--text-dark)",
-                                  }}
-                                  onClick={() => handleCabSelect(cab)}
-                                >
-                                  Book
-                                </button>
-                                <div
-                                  style={cabFormula ? { textAlign: "center", cursor: "pointer", userSelect: "none" } : { textAlign: "center", userSelect: "none" }}
-                                  onClick={cabFormula ? () => toggleFareExpansion(cab.id) : undefined}
-                                  role={cabFormula ? "button" : undefined}
-                                  aria-expanded={cabFormula ? !!expandedFares[cab.id] : undefined}
-                                  tabIndex={cabFormula ? 0 : -1}
-                                  onKeyDown={cabFormula ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleFareExpansion(cab.id); } } : undefined}
-                                  title={cabFormula ? "Click to view/hide fare formula" : undefined}
-                                >
-                                  <div style={{ fontSize: "0.65rem", color: "var(--text-gray)", lineHeight: 1.1 }}>Assured</div>
-                                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
-                                    <span style={{ fontWeight: 800, fontSize: "1.05rem", color: "var(--primary-orange)", lineHeight: 1.15 }}>₹{cabPrice}</span>
-                                    {cabFormula && (
-                                      <span style={{ fontSize: "0.95rem", fontWeight: 400, color: "var(--text-muted)", transition: "all 0.15s ease" }}>
-                                        {expandedFares[cab.id] ? "−" : "+"}
-                                      </span>
-                                    )}
-                                  </div>
                                 </div>
-                              </div>
+                              )}
                             </div>
                           );
                         })}
