@@ -33,11 +33,6 @@ export default function AccountHeader() {
           <nav className="desktop-only" aria-label="Main Navigation">
             <ul className="desktop-nav">
               <li>
-                <a href={`${BASE_PATH}/`} className="nav-item-link">
-                  <span>Book a Cab</span>
-                </a>
-              </li>
-              <li>
                 <AuthControl variant="desktop" />
               </li>
             </ul>
@@ -54,12 +49,6 @@ export default function AccountHeader() {
             </div>
             <div className="mobile-drawer-body">
               <ul className="mobile-drawer-nav">
-                <li>
-                  <a href={`${BASE_PATH}/`} className="drawer-nav-link">
-                    <span>Book a Cab</span>
-                  </a>
-                </li>
-                <li className="divider"></li>
                 <li>
                   <AuthControl variant="mobile" onNavigate={() => setShowMobileMenu(false)} />
                 </li>

@@ -108,7 +108,7 @@ export default function AccountPage() {
               <div className="booking-card">
                 <form onSubmit={handleSubmit} className="account-form">
                   <div className="form-group">
-                    <label className="form-label">Mobile number</label>
+                    <label className="form-label">Mobile Number</label>
                     <div className="account-readonly">
                       {profile?.phone || user.phoneNumber}
                       <span className="account-verified-badge">✓ Verified</span>
@@ -116,14 +116,14 @@ export default function AccountPage() {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="acc-name" className="form-label">Full name</label>
+                    <label htmlFor="acc-name" className="form-label">Full Name</label>
                     <input id="acc-name" type="text" className="form-input" placeholder="Your full name"
                       value={form.name} onChange={setField("name")} autoComplete="name" />
                   </div>
 
                   <div className="form-group">
                     <label htmlFor="acc-email" className="form-label">
-                      Email address
+                      Email Address
                     </label>
                     <input id="acc-email" type="email" className="form-input" placeholder="you@example.com"
                       value={form.email} onChange={setField("email")} autoComplete="email" />
@@ -132,14 +132,14 @@ export default function AccountPage() {
                   <div className="account-section-label">Address</div>
 
                   <div className="form-group">
-                    <label htmlFor="acc-line1" className="form-label">Address line 1</label>
+                    <label htmlFor="acc-line1" className="form-label">Address Line 1</label>
                     <input id="acc-line1" type="text" className="form-input" placeholder="House / flat, street"
                       value={form.line1} onChange={setField("line1")} autoComplete="address-line1" />
                   </div>
 
                   <div className="form-group">
                     <label htmlFor="acc-line2" className="form-label">
-                      Address line 2 <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
+                      Address Line 2 <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(optional)</span>
                     </label>
                     <input id="acc-line2" type="text" className="form-input" placeholder="Area, landmark"
                       value={form.line2} onChange={setField("line2")} autoComplete="address-line2" />
@@ -169,7 +169,7 @@ export default function AccountPage() {
 
                   <div className="account-form-actions">
                     <button type="submit" className="btn-primary" disabled={saving}>
-                      {saving ? "Saving…" : savedAt ? "✓ Saved" : "Save changes"}
+                      {saving ? "Saving…" : savedAt ? "✓ Saved" : "Save"}
                     </button>
                   </div>
                 </form>
