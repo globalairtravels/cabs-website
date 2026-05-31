@@ -1084,9 +1084,9 @@ export default function Home() {
                             </div>
                             <p className="cab-example">e.g. {cab.example}</p>
                             <div className="cab-specs">
-                              <span className="cab-spec-badge">👤 {cab.seats} Seats</span>
-                              <span className="cab-spec-badge">💼 {cab.luggage}</span>
-                              <span className="cab-spec-badge">{cab.ac ? "❄️ AC" : "Non-AC"}</span>
+                              <span className="cab-spec-badge">{cab.seats} Seats</span>
+                              <span className="cab-spec-badge">{cab.luggage}</span>
+                              <span className="cab-spec-badge">{cab.ac ? "AC" : "Non-AC"}</span>
                             </div>
                           </div>
                         </div>

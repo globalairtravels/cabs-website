@@ -556,9 +556,9 @@ Please confirm my booking. Thank you!`;
                       </div>
                       <p className="cab-example">e.g. {selectedCab.example}</p>
                       <div className="cab-specs">
-                        <span className="cab-spec-badge">👤 {selectedCab.seats} Seats</span>
-                        <span className="cab-spec-badge">💼 {selectedCab.luggage}</span>
-                        {selectedCab.ac && <span className="cab-spec-badge">❄️ AC</span>}
+                        <span className="cab-spec-badge">{selectedCab.seats} Seats</span>
+                        <span className="cab-spec-badge">{selectedCab.luggage}</span>
+                        {selectedCab.ac && <span className="cab-spec-badge">AC</span>}
                       </div>
                     </div>
                   </div>
