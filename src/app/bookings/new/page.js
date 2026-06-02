@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { siteConfig } from "@/config/site";
 import { bookingConfig } from "@/lib/booking-config";
 import { useAuth } from "@/context/AuthProvider";
@@ -283,6 +284,11 @@ export default function BookingNew() {
       return;
     }
 
+    // Fresh id per attempt: PhonePe rejects a reused merchantOrderId, so an
+    // abandoned/failed payment must retry under a new reference.
+    const attemptBookingId = createBookingId();
+    setBookingId(attemptBookingId);
+
     setPaymentLoading(true);
     setPaymentError("");
     try {
@@ -315,7 +321,7 @@ export default function BookingNew() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          bookingId,
+          bookingId: attemptBookingId,
           amount: onlinePaymentAmount * 100, // paise
           customerPhone: phone,
           uid: user?.uid ?? null,
@@ -413,15 +419,15 @@ Please confirm my booking. Thank you!`;
       <header className="header">
         <div className="header-container">
           <a href="#" className="logo-link" onClick={() => window.location.href = `${BASE_PATH}/`}>
-            <img src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="logo-image" />
+            <Image src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="logo-image" width={120} height={40} />
           </a>
 
           <div className="mobile-only header-mobile-actions">
             <a href={`tel:${siteConfig.phone}`} className="mobile-call-icon-btn" aria-label="Call Us">
-              <img src={getAssetPath("/icons/call/phone-ring.svg")} alt="" className="nav-icon" width="20" height="20" />
+              <Image src={getAssetPath("/icons/call/phone-ring.svg")} alt="" className="nav-icon" width={20} height={20} />
             </a>
             <button type="button" className="mobile-menu-toggle" onClick={() => setShowMobileMenu(true)} aria-label="Open navigation menu">
-              <img src={getAssetPath("/icons/nav/menu.svg")} alt="" className="nav-icon" width="24" height="24" />
+              <Image src={getAssetPath("/icons/nav/menu.svg")} alt="" className="nav-icon" width={24} height={24} />
             </button>
           </div>
 
@@ -429,13 +435,13 @@ Please confirm my booking. Thank you!`;
             <ul className="desktop-nav">
               <li>
                 <button type="button" className="nav-item-link" onClick={handleOffersClick}>
-                  <img src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="nav-icon" width="20" height="20" />
+                  <Image src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="nav-icon" width={20} height={20} />
                   <span>Offers</span>
                 </button>
               </li>
               <li>
                 <button type="button" className="nav-item-link" onClick={() => setShowSupport(true)}>
-                  <img src={getAssetPath("/icons/nav/support-nav.svg")} alt="" className="nav-icon" width="20" height="20" />
+                  <Image src={getAssetPath("/icons/nav/support-nav.svg")} alt="" className="nav-icon" width={20} height={20} />
                   <span>Support</span>
                 </button>
               </li>
@@ -451,20 +457,20 @@ Please confirm my booking. Thank you!`;
         <div className="mobile-drawer-backdrop" onClick={() => setShowMobileMenu(false)}>
           <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
             <div className="mobile-drawer-header">
-              <img src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="logo-image" />
+              <Image src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="logo-image" width={120} height={40} />
               <button type="button" className="drawer-close-btn" onClick={() => setShowMobileMenu(false)}>✕</button>
             </div>
             <div className="mobile-drawer-body">
               <ul className="mobile-drawer-nav">
                 <li>
                   <button type="button" className="drawer-nav-link" onClick={() => { setShowMobileMenu(false); handleOffersClick(); }}>
-                    <img src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="nav-icon" width="18" height="18" />
+                    <Image src={getAssetPath("/icons/nav/offers-nav.svg")} alt="" className="nav-icon" width={18} height={18} />
                     <span>Offers & Promos</span>
                   </button>
                 </li>
                 <li>
                   <button type="button" className="drawer-nav-link" onClick={() => { setShowMobileMenu(false); setShowSupport(true); }}>
-                    <img src={getAssetPath("/icons/nav/support-nav.svg")} alt="" className="nav-icon" width="18" height="18" />
+                    <Image src={getAssetPath("/icons/nav/support-nav.svg")} alt="" className="nav-icon" width={18} height={18} />
                     <span>Help & Support</span>
                   </button>
                 </li>
@@ -661,7 +667,7 @@ Please confirm my booking. Thank you!`;
               <div className="booking-summary">
                 <div className="route-summary-bar" style={{ marginBottom: "1rem" }}>
                   <div className="trip-type-icon-box">
-                    <img src={getAssetPath(TRIP_TYPE_ICON[tripType])} alt="" className="trip-type-icon-img" />
+                    <Image src={getAssetPath(TRIP_TYPE_ICON[tripType])} alt="" className="trip-type-icon-img" width={24} height={24} />
                   </div>
                   <div className="route-summary-info">
                     <span className="route-summary-cities">
@@ -674,10 +680,12 @@ Please confirm my booking. Thank you!`;
                 <div className="cab-card selected">
                   <div className="cab-card-header">
                     <div className="cab-icon-box">
-                      <img
+                      <Image
                         src={selectedCab.icon.startsWith("images/") ? getAssetPath(`/${selectedCab.icon}`) : getAssetPath(`/icons/${selectedCab.icon}`)}
                         alt=""
                         className="cab-icon-img"
+                        width={64}
+                        height={40}
                       />
                     </div>
                     <div className="cab-meta">
@@ -840,7 +848,7 @@ Please confirm my booking. Thank you!`;
           {step === 5 && (
             <div className="booking-card success-card">
               <div className="success-badge">
-                <img src={getAssetPath("/icons/verified.svg")} alt="" className="success-icon-svg" />
+                <Image src={getAssetPath("/icons/verified.svg")} alt="" className="success-icon-svg" width={56} height={56} />
               </div>
               <h2 className="success-title">Trip Registered!</h2>
               <p className="success-desc">
@@ -884,7 +892,7 @@ Please confirm my booking. Thank you!`;
                   rel="noreferrer"
                   className="btn-whatsapp-confirm"
                 >
-                  <img src={WHATSAPP_ICON_PATH} alt="" className="whatsapp-icon-white" />
+                  <Image src={WHATSAPP_ICON_PATH} alt="" className="whatsapp-icon-white" width={24} height={24} />
                   Send Details on WhatsApp
                 </a>
                 <button
@@ -904,7 +912,7 @@ Please confirm my booking. Thank you!`;
       </div>
 
       <a href={getWhatsAppUrl()} className="whatsapp-float" target="_blank" rel="noreferrer" aria-label="WhatsApp support">
-        <img src={WHATSAPP_ICON_PATH} alt="WhatsApp" className="whatsapp-float-icon" />
+        <Image src={WHATSAPP_ICON_PATH} alt="WhatsApp" className="whatsapp-float-icon" width={56} height={56} />
       </a>
 
 
@@ -915,7 +923,7 @@ Please confirm my booking. Thank you!`;
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="modal-close-btn" onClick={() => setShowMyBookings(false)}>✕</button>
             <h2 className="modal-title">
-              <img src={getAssetPath("/icons/booking-flow/confirmed.svg")} alt="" className="nav-icon" width="20" height="20" style={{ color: "var(--primary-orange)" }} />
+              <Image src={getAssetPath("/icons/booking-flow/confirmed.svg")} alt="" className="nav-icon" width={20} height={20} style={{ color: "var(--primary-orange)" }} />
               <span>Track Your Booking</span>
             </h2>
             <div className="modal-body">
@@ -999,7 +1007,7 @@ Please confirm my booking. Thank you!`;
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="modal-close-btn" onClick={() => setShowSupport(false)}>✕</button>
             <h2 className="modal-title">
-              <img src={getAssetPath("/icons/nav/support-nav.svg")} alt="" className="nav-icon" width="20" height="20" style={{ color: "var(--primary-orange)" }} />
+              <Image src={getAssetPath("/icons/nav/support-nav.svg")} alt="" className="nav-icon" width={20} height={20} style={{ color: "var(--primary-orange)" }} />
               <span>Customer Helpdesk</span>
             </h2>
             <div className="modal-body">

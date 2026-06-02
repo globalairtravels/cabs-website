@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useAuth } from "@/context/AuthProvider";
 import { getDb } from "@/lib/firebase";
@@ -93,7 +94,7 @@ export default function BookingStatusPage() {
         {showSpinner ? (
           <div style={{ display: "inline-block", width: 48, height: 48, border: "3px solid #e2e8f0", borderTopColor: "var(--primary-orange, #F26B1F)", borderRadius: "50%", animation: "spin 1s linear infinite", marginBottom: "1rem" }} />
         ) : (
-          <img src={getAssetPath(view.icon)} alt="" style={{ width: 56, height: 56, marginBottom: "1rem" }} />
+          <Image src={getAssetPath(view.icon)} alt="" width={56} height={56} style={{ marginBottom: "1rem" }} />
         )}
         <style dangerouslySetInnerHTML={{ __html: "@keyframes spin { to { transform: rotate(360deg); } }" }} />
 

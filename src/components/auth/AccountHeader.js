@@ -4,6 +4,7 @@
 // drawer that mirrors the home/booking headers.
 
 import { useState } from "react";
+import Image from "next/image";
 import { siteConfig } from "@/config/site";
 import AuthControl from "./AuthControl";
 
@@ -18,15 +19,15 @@ export default function AccountHeader() {
       <header className="header">
         <div className="header-container">
           <a href={`${BASE_PATH}/`} className="logo-link">
-            <img src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="logo-image" />
+            <Image src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="logo-image" width={120} height={40} />
           </a>
 
           <div className="mobile-only header-mobile-actions">
             <a href={`tel:${siteConfig.phone}`} className="mobile-call-icon-btn" aria-label="Call Us">
-              <img src={getAssetPath("/icons/call/phone-ring.svg")} alt="" className="nav-icon" width="20" height="20" />
+              <Image src={getAssetPath("/icons/call/phone-ring.svg")} alt="" className="nav-icon" width={20} height={20} />
             </a>
             <button type="button" className="mobile-menu-toggle" onClick={() => setShowMobileMenu(true)} aria-label="Open navigation menu">
-              <img src={getAssetPath("/icons/nav/menu.svg")} alt="" className="nav-icon" width="24" height="24" />
+              <Image src={getAssetPath("/icons/nav/menu.svg")} alt="" className="nav-icon" width={24} height={24} />
             </button>
           </div>
 
@@ -44,7 +45,7 @@ export default function AccountHeader() {
         <div className="mobile-drawer-backdrop" onClick={() => setShowMobileMenu(false)}>
           <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
             <div className="mobile-drawer-header">
-              <img src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="logo-image" />
+              <Image src={getAssetPath("/logo/logo.svg")} alt="Global Air Travels Logo" className="logo-image" width={120} height={40} />
               <button type="button" className="drawer-close-btn" onClick={() => setShowMobileMenu(false)}>✕</button>
             </div>
             <div className="mobile-drawer-body">
