@@ -75,7 +75,6 @@ export default function BookingNew() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [pickupAddress, setPickupAddress] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
   const [addrLine1, setAddrLine1] = useState("");
   const [addrLine2, setAddrLine2] = useState("");
@@ -161,14 +160,27 @@ export default function BookingNew() {
       if (profile.email) setEmail((v) => v || profile.email);
       const digits = (profile.phone || "").replace(/\D/g, "").slice(-10);
       if (digits) setPhone((v) => v || digits);
-      if (profile.line1) setAddrLine1((v) => v || profile.line1);
-      if (profile.line2) setAddrLine2((v) => v || profile.line2);
-      if (profile.city) setAddrCity((v) => v || profile.city);
-      if (profile.state) setAddrState((v) => v || profile.state);
-      if (profile.pincode) setAddrPincode((v) => v || profile.pincode);
+      if (profile.address?.line1) setAddrLine1((v) => v || profile.address.line1);
+      if (profile.address?.line2) setAddrLine2((v) => v || profile.address.line2);
+      if (profile.address?.city) setAddrCity((v) => v || profile.address.city);
+      if (profile.address?.state) setAddrState((v) => v || profile.address.state);
+      if (profile.address?.pincode) setAddrPincode((v) => v || profile.address.pincode);
     }, 0);
     return () => clearTimeout(timer);
   }, [profile]);
+
+  useEffect(() => {
+    if (addrPincode.length !== 6) return;
+    fetch(`https://api.postalpincode.in/pincode/${addrPincode}`)
+      .then((r) => r.json())
+      .then(([res]) => {
+        if (res.Status === "Success" && res.PostOffice?.length) {
+          setAddrState((v) => v || res.PostOffice[0].State);
+          setAddrCity((v) => v || res.PostOffice[0].District);
+        }
+      })
+      .catch(() => {});
+  }, [addrPincode]);
 
   const cityDayCount = normalizePositiveInteger(cityDays, { max: 30 });
   const tempoDayCount = normalizePositiveInteger(tempoDays, { max: 30 });
@@ -247,8 +259,8 @@ export default function BookingNew() {
 
   const handlePassengerSubmit = (e) => {
     e.preventDefault();
-    if (!name || !phone || !pickupAddress) {
-      alert("Please fill in name, phone, and pickup address.");
+    if (!name || !phone) {
+      alert("Please fill in name and phone.");
       return;
     }
     setStep(5);
@@ -285,8 +297,7 @@ I would like to book a cab. Here are my booking details:
 *Passenger Details:*
 *Name:* ${name}
 *Phone:* ${phone}
-*Pickup Address:* ${pickupAddress}
-${flightNumber ? `*Flight Details:* ${flightNumber}\n` : ""}
+${addrLine1 ? `*Address:* ${[addrLine1, addrLine2, addrCity, addrState, addrPincode].filter(Boolean).join(", ")}\n` : ""}${flightNumber ? `*Flight Details:* ${flightNumber}\n` : ""}
 *Payment Option:* ${payStatus}
 *Assured Fare:* ₹${totalPrice}/-
 
@@ -498,26 +509,6 @@ Please confirm my booking. Thank you!`;
                           </label>
                           <input id="cust-email" type="email" className="form-input" placeholder="For booking confirmation" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
                         </div>
-                        <div className="form-group">
-                          <label htmlFor="cust-address" className="form-label">
-                            {tripType === "airport" && airportType === "pickup" ? "Drop address in Mysuru" : "Pickup address"}
-                          </label>
-                          <textarea
-                            id="cust-address"
-                            className="form-input"
-                            placeholder={
-                              tripType === "airport" && airportType === "pickup"
-                                ? "Your destination in Mysuru (home / hotel)"
-                                : tripType === "airport"
-                                ? "Your home / hotel address in Mysuru"
-                                : "Reporting address with any landmark"
-                            }
-                            value={pickupAddress}
-                            onChange={(e) => setPickupAddress(e.target.value)}
-                            required
-                            autoComplete="street-address"
-                          />
-                        </div>
                         {tripType === "airport" && (
                           <div className="form-group">
                             <label htmlFor="cust-flight" className="form-label">
@@ -526,6 +517,7 @@ Please confirm my booking. Thank you!`;
                             <input id="cust-flight" type="text" className="form-input" placeholder="e.g. 6E-203, AI-820" value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)} autoComplete="off" />
                           </div>
                         )}
+                        <div className="account-section-label">Address</div>
                         <div className="form-group">
                           <label htmlFor="cust-addr-line1" className="form-label">Address Line 1</label>
                           <input id="cust-addr-line1" type="text" className="form-input" placeholder="House / flat, street" value={addrLine1} onChange={(e) => setAddrLine1(e.target.value)} autoComplete="address-line1" />
