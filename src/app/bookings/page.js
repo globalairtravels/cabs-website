@@ -12,6 +12,7 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const WHATSAPP_NUMBER = siteConfig.whatsapp.replace(/\D/g, "");
 
 const STATUS_META = {
+  confirmed: { label: "Confirmed", cls: "ok" },
   paid: { label: "Paid", cls: "ok" },
   success: { label: "Confirmed", cls: "ok" },
   pending: { label: "Pending", cls: "warn" },

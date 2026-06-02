@@ -53,7 +53,7 @@ const getWhatsAppUrl = (message) => {
 const plural = (n) => (n > 1 ? "s" : "");
 
 export default function BookingNew() {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(3);
   const [tripType, setTripType] = useState("airport");
@@ -83,6 +83,8 @@ export default function BookingNew() {
   const [addrPincode, setAddrPincode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("full");
   const [appliedPromo, setAppliedPromo] = useState(null);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
 
   // Modals / Misc
   const [bookingId, setBookingId] = useState(createBookingId);
@@ -257,13 +259,76 @@ export default function BookingNew() {
     }
   };
 
-  const handlePassengerSubmit = (e) => {
+  // Initiate online payment via the configured gateway. siteConfig.payment.gateway
+  // selects which Cloud Function endpoint to hit (only "phonepe" is wired today).
+  // The function creates a pending booking, returns a hosted-checkout redirectUrl,
+  // and the webhook later flips paymentStatus to confirmed/failed. We never mark a
+  // booking paid on the client — the redirect to /bookings/status is informational.
+  const handlePassengerSubmit = async (e) => {
     e.preventDefault();
+    if (paymentLoading) return;
     if (!name || !phone) {
       alert("Please fill in name and phone.");
       return;
     }
-    setStep(5);
+
+    const gateway = siteConfig.payment.gateway;
+    const fnUrl = siteConfig.payment[gateway]?.createOrderUrl;
+    if (!fnUrl) {
+      setPaymentError("Online payments are temporarily unavailable. Please contact support to confirm your booking.");
+      return;
+    }
+    if (onlinePaymentAmount <= 0) {
+      setPaymentError("Nothing to pay online for the selected option.");
+      return;
+    }
+
+    setPaymentLoading(true);
+    setPaymentError("");
+    try {
+      const bookingDetails = {
+        tripType,
+        airportType,
+        cityDays: cityDayCount,
+        tempoDays: tempoDayCount,
+        tempoEstKm: tempoKmCount,
+        pickup,
+        drop,
+        date,
+        time,
+        cab: selectedCab.name,
+        cabId: selectedCab.id,
+        seats: selectedCab.seats,
+        totalPrice,
+        finalTotal,
+        paymentMethod,
+        onlinePaymentAmount,
+        payToDriverAmount,
+        promoCode: appliedPromo?.code ?? null,
+        promoDiscount,
+        name,
+        email,
+        address: [addrLine1, addrLine2, addrCity, addrState, addrPincode].filter(Boolean).join(", "),
+        flightNumber,
+      };
+      const res = await fetch(fnUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookingId,
+          amount: onlinePaymentAmount * 100, // paise
+          customerPhone: phone,
+          uid: user?.uid ?? null,
+          bookingDetails,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Payment initiation failed");
+      window.location.href = data.redirectUrl;
+    } catch (err) {
+      setPaymentError(err.message || "Something went wrong. Please try again.");
+      setPaymentLoading(false);
+    }
   };
 
   const getWhatsAppMessage = () => {
@@ -579,9 +644,14 @@ Please confirm my booking. Thank you!`;
                         </div>
                       </div>
 
-                      <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-                        Pay Now ₹{onlinePaymentAmount}
+                      <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center", opacity: paymentLoading ? 0.7 : 1, cursor: paymentLoading ? "wait" : "pointer" }} disabled={paymentLoading}>
+                        {paymentLoading ? "Redirecting to payment…" : `Pay Now ₹${onlinePaymentAmount}`}
                       </button>
+                      {paymentError && (
+                        <p role="alert" style={{ color: "var(--error-red)", fontSize: "0.8rem", marginTop: "0.75rem", textAlign: "center", fontWeight: 600 }}>
+                          {paymentError}
+                        </p>
+                      )}
                     </div>
 
                   </form>
