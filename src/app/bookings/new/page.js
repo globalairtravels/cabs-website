@@ -273,8 +273,7 @@ export default function BookingNew() {
       return;
     }
 
-    const gateway = siteConfig.payment.gateway;
-    const fnUrl = siteConfig.payment[gateway]?.createOrderUrl;
+    const fnUrl = siteConfig.getPaymentOrderUrl();
     if (!fnUrl) {
       setPaymentError("Online payments are temporarily unavailable. Please contact support to confirm your booking.");
       return;

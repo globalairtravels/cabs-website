@@ -492,7 +492,7 @@ export default function Home() {
   const [paymentError, setPaymentError] = useState("");
 
   const handlePhonePePay = async () => {
-    const fnUrl = siteConfig.payment.phonepe.createOrderUrl;
+    const fnUrl = siteConfig.getPaymentOrderUrl();
     if (!fnUrl) { alert("Payment gateway not configured. Please contact support."); return; }
     setPaymentLoading(true);
     setPaymentError("");

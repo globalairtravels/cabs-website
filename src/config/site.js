@@ -345,25 +345,37 @@ export const siteConfig = {
 
   // Payment gateway configuration
   payment: {
-    // Switch between "phonepe" and "razorpay" — only controls which endpoint the frontend calls.
-    // Both Cloud Functions remain deployed at all times.
+    // Active gateway. The unified payments API exposes one Cloud Function per
+    // gateway (named after it), so switching gateways needs no URL change.
     gateway: "phonepe",
 
+    // Base URL of the payments Functions deployment (no trailing path). Endpoints
+    // are uniform across gateways:
+    //   POST {apiBaseUrl}/{gateway}/orders/new        → { redirectUrl, bookingId }
+    //   GET  {apiBaseUrl}/{gateway}/orders/{orderId}   → { paymentStatus }
+    //   POST {apiBaseUrl}/{gateway}/webhook            ← register in gateway dashboard
+    // Set NEXT_PUBLIC_PAYMENTS_API_URL after deploying functions, e.g.
+    //   https://asia-south1-<project-id>.cloudfunctions.net
+    apiBaseUrl: process.env.NEXT_PUBLIC_PAYMENTS_API_URL || "",
+
     phonepe: {
-      // Set NEXT_PUBLIC_PHONEPE_FN_URL after deploying Cloud Functions:
-      //   firebase deploy --only functions
-      // Then: https://asia-south1-<project-id>.cloudfunctions.net/createPhonePeOrder
-      createOrderUrl: process.env.NEXT_PUBLIC_PHONEPE_FN_URL || "",
       successPath: "/bookings/status",
       failurePath: "/bookings/status",
     },
 
     razorpay: {
-      // Future — uncomment when Razorpay is wired up
-      createOrderUrl: process.env.NEXT_PUBLIC_RAZORPAY_FN_URL || "",
+      // Future — add the adapter under functions/payments/gateways/ and export it.
       successPath: "/bookings/status",
       failurePath: "/bookings/status",
     },
+  },
+
+  // Build the create-order endpoint for the active (or given) gateway.
+  // Returns "" when the API base URL isn't configured so callers can degrade.
+  getPaymentOrderUrl(gateway) {
+    const base = this.payment.apiBaseUrl;
+    if (!base) return "";
+    return `${base.replace(/\/+$/, "")}/${gateway || this.payment.gateway}/orders/new`;
   },
 
   // Booking Rules & Notes

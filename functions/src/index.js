@@ -4,13 +4,15 @@ if (!admin.apps.length) {
   admin.initializeApp();
 }
 
-const { createPhonePeOrder } = require("./phonepe/createOrder");
-const { phonePeWebhook } = require("./phonepe/webhook");
+const { createGatewayFunction } = require("./payments/handler");
+const phonepeAdapter = require("./payments/gateways/phonepe");
 
-// PhonePe — active gateway
-module.exports = { createPhonePeOrder, phonePeWebhook };
+// One HTTP function per gateway, mounted at the gateway name. Endpoints:
+//   POST /<gateway>/orders/new        — create order, returns { redirectUrl }
+//   GET  /<gateway>/orders/<orderId>  — reconcile + return { paymentStatus }
+//   POST /<gateway>/webhook           — gateway → booking status updates
+exports.phonepe = createGatewayFunction("phonepe", phonepeAdapter);
 
-// Razorpay — future gateway (uncomment when ready)
-// const { createRazorpayOrder } = require("./razorpay/createOrder");
-// const { razorpayWebhook } = require("./razorpay/webhook");
-// module.exports = { ...module.exports, createRazorpayOrder, razorpayWebhook };
+// Future gateways — drop an adapter in payments/gateways/ and export it here:
+// const razorpayAdapter = require("./payments/gateways/razorpay");
+// exports.razorpay = createGatewayFunction("razorpay", razorpayAdapter);
