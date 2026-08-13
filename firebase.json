@@ -7,7 +7,7 @@
     "source": "functions",
     "codebase": "default",
     "predeploy": [
-      "node -e \"require('fs').copyFileSync('firestore/config.checkout.json','functions/src/config/checkout.json')\""
+      "cp firestore/config.checkout.json functions/src/config/checkout.json"
     ],
     "ignore": [
       "node_modules",

@@ -1,7 +1,6 @@
 const { google } = require("googleapis");
 const { defineSecret, defineString } = require("firebase-functions/params");
 
-const SHEETS_CREDENTIALS = defineSecret("GOOGLE_SHEETS_CREDENTIALS");
 const SPREADSHEET_ID = defineSecret("GOOGLE_SHEETS_SPREADSHEET_ID");
 const SHEET_TAB = defineString("GOOGLE_SHEETS_TAB", { default: "BookingRequests" });
 
@@ -48,7 +47,10 @@ function rupees(paise) {
 }
 
 function sheetsSecrets() {
-  return [SHEETS_CREDENTIALS, SPREADSHEET_ID];
+  // Spreadsheet id is required. JSON credentials are optional — when omitted
+  // the function uses Application Default Credentials (the Cloud Functions
+  // service account). Share the sheet with that account as Editor.
+  return [SPREADSHEET_ID];
 }
 
 function spreadsheetId() {
@@ -67,12 +69,7 @@ function tabName() {
 
 async function getSheetsClient() {
   let credentials = null;
-  let raw = process.env.GOOGLE_SHEETS_CREDENTIALS || "";
-  try {
-    raw = SHEETS_CREDENTIALS.value() || raw;
-  } catch {
-    // Secret not bound (emulator / ADC-only). Fall through.
-  }
+  const raw = process.env.GOOGLE_SHEETS_CREDENTIALS || "";
   try {
     if (raw) credentials = typeof raw === "string" ? JSON.parse(raw) : raw;
   } catch (err) {
