@@ -4,15 +4,17 @@ if (!admin.apps.length) {
   admin.initializeApp();
 }
 
-const { createGatewayFunction } = require("./payments/handler");
+const { createGatewayRouter } = require("./payments/handler");
 const phonepeAdapter = require("./payments/gateways/phonepe");
 
-// One HTTP function per gateway, mounted at the gateway name. Endpoints:
-//   POST /<gateway>/orders/new        — create order, returns { redirectUrl }
-//   GET  /<gateway>/orders/<orderId>  — reconcile + return { paymentStatus }
-//   POST /<gateway>/webhook           — gateway → booking status updates
-exports.phonepe = createGatewayFunction("phonepe", phonepeAdapter);
-
-// Future gateways — drop an adapter in payments/gateways/ and export it here:
+// Single "payments" function routes all gateways by path prefix. Endpoints:
+//   POST /payments/<gateway>/orders/new        — create order, returns { redirectUrl }
+//   GET  /payments/<gateway>/orders/<orderId>  — reconcile + return { paymentStatus }
+//   POST /payments/<gateway>/webhook           — gateway → booking status updates
+//
+// To add a gateway: drop an adapter in payments/gateways/ and add it to the map below.
 // const razorpayAdapter = require("./payments/gateways/razorpay");
-// exports.razorpay = createGatewayFunction("razorpay", razorpayAdapter);
+exports.payments = createGatewayRouter({
+  phonepe: phonepeAdapter,
+  // razorpay: razorpayAdapter,
+});

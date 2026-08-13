@@ -166,33 +166,41 @@ async function handleWebhook(req, res, gatewayName, adapter) {
 }
 
 /**
- * Build one HTTP function per gateway, mounted at the gateway name so the path
- * after it is gateway-relative. URL shape (function name = <gateway>):
- *   POST /<gateway>/orders/new        → { redirectUrl, bookingId }
- *   GET  /<gateway>/orders/<orderId>  → { bookingId, paymentStatus, amount }
- *   POST /<gateway>/webhook           → "OK"
+ * Single HTTP function that routes across all registered gateways.
+ * URL shape (function name = "payments"):
+ *   POST /payments/<gateway>/orders/new        → { redirectUrl, bookingId }
+ *   GET  /payments/<gateway>/orders/<orderId>  → { bookingId, paymentStatus, amount }
+ *   POST /payments/<gateway>/webhook           → "OK"
  *
- * `adapter` must provide: createOrder(), verifyWebhook(), optional getOrderStatus(),
- * and `secrets` (the defineSecret handles this gateway needs).
+ * `adapters` is a map of { [gatewayName]: adapter }. Each adapter must provide:
+ * createOrder(), verifyWebhook(), optional getOrderStatus(), and `secrets`.
  */
-function createGatewayFunction(gatewayName, adapter) {
+function createGatewayRouter(adapters) {
+  const allSecrets = Object.values(adapters).flatMap((a) => a.secrets || []);
+
   return onRequest(
-    { secrets: adapter.secrets || [], region: "asia-south1" },
+    { secrets: allSecrets, region: "asia-south1" },
     async (req, res) => {
       setCors(req, res);
       if (req.method === "OPTIONS") return res.status(204).send("");
 
       const segments = (req.path || "").split("/").filter(Boolean);
+      const gatewayName = segments[0];
+      const adapter = adapters[gatewayName];
 
-      if (segments[0] === "orders" && segments[1] === "new" && segments.length === 2) {
+      if (!adapter) return res.status(404).json({ error: "Unknown payment gateway" });
+
+      const sub = segments.slice(1);
+
+      if (sub[0] === "orders" && sub[1] === "new" && sub.length === 2) {
         if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
         return handleCreateOrder(req, res, gatewayName, adapter);
       }
-      if (segments[0] === "orders" && segments.length === 2) {
+      if (sub[0] === "orders" && sub.length === 2) {
         if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
-        return handleOrderStatus(req, res, gatewayName, adapter, decodeURIComponent(segments[1]));
+        return handleOrderStatus(req, res, gatewayName, adapter, decodeURIComponent(sub[1]));
       }
-      if (segments[0] === "webhook" && segments.length === 1) {
+      if (sub[0] === "webhook" && sub.length === 1) {
         if (req.method !== "POST") return res.status(405).send("Method not allowed");
         return handleWebhook(req, res, gatewayName, adapter);
       }
@@ -202,4 +210,4 @@ function createGatewayFunction(gatewayName, adapter) {
   );
 }
 
-module.exports = { createGatewayFunction };
+module.exports = { createGatewayRouter };

@@ -345,17 +345,16 @@ export const siteConfig = {
 
   // Payment gateway configuration
   payment: {
-    // Active gateway. The unified payments API exposes one Cloud Function per
-    // gateway (named after it), so switching gateways needs no URL change.
+    // Active gateway. The single "payments" Cloud Function routes by this name.
     gateway: "phonepe",
 
-    // Base URL of the payments Functions deployment (no trailing path). Endpoints
-    // are uniform across gateways:
+    // Base URL of the payments Cloud Function (include the function name, no trailing slash).
+    // Endpoints are routed by gateway name after the base:
     //   POST {apiBaseUrl}/{gateway}/orders/new        → { redirectUrl, bookingId }
-    //   GET  {apiBaseUrl}/{gateway}/orders/{orderId}   → { paymentStatus }
-    //   POST {apiBaseUrl}/{gateway}/webhook            ← register in gateway dashboard
-    // Set NEXT_PUBLIC_PAYMENTS_API_URL after deploying functions, e.g.
-    //   https://asia-south1-<project-id>.cloudfunctions.net
+    //   GET  {apiBaseUrl}/{gateway}/orders/{orderId}  → { paymentStatus }
+    //   POST {apiBaseUrl}/{gateway}/webhook           ← register in gateway dashboard
+    // Set NEXT_PUBLIC_PAYMENTS_API_URL to the full function URL, e.g.
+    //   https://asia-south1-<project-id>.cloudfunctions.net/payments
     apiBaseUrl: process.env.NEXT_PUBLIC_PAYMENTS_API_URL || "",
 
     phonepe: {
