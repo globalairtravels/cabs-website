@@ -429,7 +429,7 @@ export default function Home() {
     setShowToast(true);
     window.setTimeout(() => {
       setShowToast(false);
-      window.location.assign(`${BASE_PATH}/account`);
+      window.location.assign(`${BASE_PATH}/account/`);
     }, 2500);
   };
 
@@ -459,7 +459,7 @@ export default function Home() {
       return;
     }
 
-    window.location.assign(`${BASE_PATH}/bookings/new?${params.toString()}`);
+    window.location.assign(`${BASE_PATH}/bookings/new/?${params.toString()}`);
   };
 
   useEffect(() => {
@@ -472,12 +472,12 @@ export default function Home() {
         setShowToast(true);
         window.setTimeout(() => {
           setShowToast(false);
-          window.location.assign(`${BASE_PATH}/account`);
+          window.location.assign(`${BASE_PATH}/account/`);
         }, 2500);
       }, 0);
       return () => window.clearTimeout(timer);
     }
-    window.location.assign(`${BASE_PATH}/bookings/new?${booking.params}`);
+    window.location.assign(`${BASE_PATH}/bookings/new/?${booking.params}`);
   }, [user, profile]);
 
   const handlePassengerSubmit = (e) => {
@@ -522,7 +522,7 @@ export default function Home() {
         window.location.assign(data.redirectUrl);
         return;
       }
-      window.location.assign(`${BASE_PATH}/bookings/status?id=${encodeURIComponent(data.bookingId || bookingId)}`);
+      window.location.assign(`${BASE_PATH}/bookings/status/?id=${encodeURIComponent(data.bookingId || bookingId)}`);
     } catch (err) {
       setPaymentError(err.message || "Something went wrong. Please try again.");
       setPaymentLoading(false);

@@ -152,7 +152,7 @@ export default function BookingStatusPage() {
           )}
           {(status === "confirmed" || status === "pending" || status === "requested") && (
             <a
-              href={`${BASE_PATH}/account/bookings`}
+              href={`${BASE_PATH}/bookings/`}
               style={{ display: "inline-block", background: "var(--primary-orange, #F26B1F)", color: "#fff", fontWeight: 700, borderRadius: "0.5rem", padding: "0.75rem 2rem", textDecoration: "none", fontSize: "0.95rem" }}
             >
               View My Bookings

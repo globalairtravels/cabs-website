@@ -121,7 +121,7 @@ export default function MyBookingsPage() {
                     return (
                       <a
                         key={b.id}
-                        href={`${BASE_PATH}/bookings/status?id=${encodeURIComponent(b.bookingId || b.id)}`}
+                        href={`${BASE_PATH}/bookings/status/?id=${encodeURIComponent(b.bookingId || b.id)}`}
                         className="booking-row-card"
                       >
                         <div className="booking-row-main">

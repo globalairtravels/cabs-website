@@ -32,7 +32,7 @@ function paymentsEnv() {
 
 function redirectUrlFor(bookingId) {
   const base = process.env.SITE_URL || "https://globalairtravels.com";
-  return `${base.replace(/\/+$/, "")}/bookings/status?id=${encodeURIComponent(bookingId)}`;
+  return `${base.replace(/\/+$/, "")}/bookings/status/?id=${encodeURIComponent(bookingId)}`;
 }
 
 function mintBookingId() {

@@ -97,10 +97,10 @@ export default function AuthControl({ variant = "desktop", onNavigate }) {
                 <span className="drawer-account-phone">{profile?.phone || user.phoneNumber}</span>
               </div>
             </div>
-            <button type="button" className="drawer-nav-link" onClick={() => go("/account")}>
+            <button type="button" className="drawer-nav-link" onClick={() => go("/account/")}>
               <span>Account</span>
             </button>
-            <button type="button" className="drawer-nav-link" onClick={() => go("/account/bookings")}>
+            <button type="button" className="drawer-nav-link" onClick={() => go("/bookings/")}>
               <span>Bookings</span>
             </button>
             <button type="button" className="drawer-nav-link drawer-signout" onClick={handleSignOut}>
@@ -140,10 +140,10 @@ export default function AuthControl({ variant = "desktop", onNavigate }) {
                 <span className="account-dropdown-name">{profile?.name || "Your account"}</span>
                 <span className="account-dropdown-phone">{profile?.phone || user.phoneNumber}</span>
               </div>
-              <button type="button" className="account-dropdown-item" role="menuitem" onClick={() => go("/account")}>
+              <button type="button" className="account-dropdown-item" role="menuitem" onClick={() => go("/account/")}>
                 Account
               </button>
-              <button type="button" className="account-dropdown-item" role="menuitem" onClick={() => go("/account/bookings")}>
+              <button type="button" className="account-dropdown-item" role="menuitem" onClick={() => go("/bookings/")}>
                 Bookings
               </button>
               <div className="account-dropdown-divider" />

@@ -336,7 +336,7 @@ export default function BookingNew() {
         return;
       }
       const confirmedId = data.bookingId || attemptBookingId;
-      window.location.assign(`${BASE_PATH}/bookings/status?id=${encodeURIComponent(confirmedId)}`);
+      window.location.assign(`${BASE_PATH}/bookings/status/?id=${encodeURIComponent(confirmedId)}`);
     } catch (err) {
       setPaymentError(err.message || "Something went wrong. Please try again.");
       setPaymentLoading(false);
