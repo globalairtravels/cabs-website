@@ -39,6 +39,7 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_BASE_PATH: /cabs-website
+          NEXT_PUBLIC_BOOKINGS_API_URL: https://asia-south1-globalairtravels-9651f.cloudfunctions.net/bookings
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5

@@ -6,8 +6,7 @@ const { sheetsSecrets, spreadsheetId, appendBookingRow, updateBookingRow } = req
 const ALLOWED_ORIGINS = [
   "https://globalairtravels.com",
   "https://www.globalairtravels.com",
-  "https://globalairtravels-9651f.web.app",
-  "https://globalairtravels-9651f.firebaseapp.com",
+  "https://globalairtravels.github.io",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
 ];

@@ -15,15 +15,5 @@
       "firebase-debug.log",
       "firebase-debug.*.log"
     ]
-  },
-  "hosting": {
-    "public": "out",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "cleanUrls": true,
-    "trailingSlash": false
   }
 }
