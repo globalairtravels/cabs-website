@@ -12,6 +12,7 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const WHATSAPP_NUMBER = siteConfig.whatsapp.replace(/\D/g, "");
 
 const STATUS_META = {
+  requested: { label: "Requested", cls: "ok" },
   confirmed: { label: "Confirmed", cls: "ok" },
   paid: { label: "Paid", cls: "ok" },
   success: { label: "Confirmed", cls: "ok" },
@@ -107,7 +108,7 @@ export default function MyBookingsPage() {
                     No bookings yet
                   </h2>
                   <p style={{ color: "var(--text-gray)", fontSize: "0.88rem", marginBottom: "1.25rem" }}>
-                    Bookings paid online from this number will appear here.
+                    Bookings requested or paid from this number will appear here.
                   </p>
                   <a href={`${BASE_PATH}/`} className="btn-primary" style={{ display: "inline-flex" }}>Book a Cab</a>
                 </div>

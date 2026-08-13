@@ -4,6 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { siteConfig } from "@/config/site";
 import { bookingConfig } from "@/lib/booking-config";
+import {
+  checkoutConfig,
+  paymentOptionsFor,
+  advanceRupeesFor,
+  getCreateBookingUrl,
+} from "@/lib/checkout-config";
 import { useAuth } from "@/context/AuthProvider";
 import AuthControl from "@/components/auth/AuthControl";
 
@@ -82,7 +88,7 @@ export default function BookingNew() {
   const [addrCity, setAddrCity] = useState("");
   const [addrState, setAddrState] = useState("");
   const [addrPincode, setAddrPincode] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("full");
+  const [paymentMethod, setPaymentMethod] = useState("advance");
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState("");
@@ -214,9 +220,14 @@ export default function BookingNew() {
   const advanceDays =
     tripType === "city" ? cityDayCount :
     tripType === "tempo" ? tempoDayCount : 1;
-  const requiredAdvance = 500 * advanceDays;
+  const requiredAdvance = advanceRupeesFor(advanceDays);
 
   const bookingTypeId = TRIP_TYPE_TO_BOOKING_TYPE[tripType];
+  const allowedPaymentOptions = paymentOptionsFor(bookingTypeId);
+  const sheetOnly = checkoutConfig.sheetOnly;
+  const activePaymentMethod = allowedPaymentOptions.includes(paymentMethod)
+    ? paymentMethod
+    : allowedPaymentOptions[0];
   const applicablePromos = bookingConfig.promos.filter(
     (promo) => !promo.appliesTo || promo.appliesTo.length === 0 || promo.appliesTo.includes(bookingTypeId)
   );
@@ -231,13 +242,13 @@ export default function BookingNew() {
     : 0;
   const finalTotal = Math.max(0, totalPrice - promoDiscount);
 
-  const onlinePaymentAmount = paymentMethod === "full" ? finalTotal : paymentMethod === "advance" ? requiredAdvance : 0;
+  const onlinePaymentAmount = activePaymentMethod === "full" ? finalTotal : activePaymentMethod === "advance" ? requiredAdvance : 0;
   const payToDriverAmount = finalTotal - onlinePaymentAmount;
 
   const handleApplyPromo = (promo) => {
     if (appliedPromo?.code === promo.code) {
       setAppliedPromo(null);
-    } else if (paymentMethod === "advance") {
+    } else if (activePaymentMethod === "advance") {
       setToastMessage("Coupons are only applicable for full online payments");
       setShowToast(true);
       window.setTimeout(() => setShowToast(false), 2500);
@@ -251,6 +262,7 @@ export default function BookingNew() {
   };
 
   const handleSelectPaymentMethod = (method) => {
+    if (!allowedPaymentOptions.includes(method)) return;
     setPaymentMethod(method);
     if (method === "advance" && appliedPromo) {
       setAppliedPromo(null);
@@ -260,11 +272,7 @@ export default function BookingNew() {
     }
   };
 
-  // Initiate online payment via the configured gateway. siteConfig.payment.gateway
-  // selects which Cloud Function endpoint to hit (only "phonepe" is wired today).
-  // The function creates a pending booking, returns a hosted-checkout redirectUrl,
-  // and the webhook later flips paymentStatus to confirmed/failed. We never mark a
-  // booking paid on the client — the redirect to /bookings/status is informational.
+  // One create-booking call. Config decides sheet-only vs a payment redirect.
   const handlePassengerSubmit = async (e) => {
     e.preventDefault();
     if (paymentLoading) return;
@@ -273,18 +281,12 @@ export default function BookingNew() {
       return;
     }
 
-    const fnUrl = siteConfig.getPaymentOrderUrl();
+    const fnUrl = getCreateBookingUrl();
     if (!fnUrl) {
-      setPaymentError("Online payments are temporarily unavailable. Please contact support to confirm your booking.");
-      return;
-    }
-    if (onlinePaymentAmount <= 0) {
-      setPaymentError("Nothing to pay online for the selected option.");
+      setPaymentError("Booking is temporarily unavailable. Please contact support to confirm your trip.");
       return;
     }
 
-    // Fresh id per attempt: PhonePe rejects a reused merchantOrderId, so an
-    // abandoned/failed payment must retry under a new reference.
     const attemptBookingId = createBookingId();
     setBookingId(attemptBookingId);
 
@@ -306,7 +308,7 @@ export default function BookingNew() {
         seats: selectedCab.seats,
         totalPrice,
         finalTotal,
-        paymentMethod,
+        paymentMethod: activePaymentMethod,
         onlinePaymentAmount,
         payToDriverAmount,
         promoCode: appliedPromo?.code ?? null,
@@ -321,15 +323,20 @@ export default function BookingNew() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bookingId: attemptBookingId,
-          amount: onlinePaymentAmount * 100, // paise
           customerPhone: phone,
           uid: user?.uid ?? null,
+          paymentMethod: activePaymentMethod,
           bookingDetails,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Payment initiation failed");
-      window.location.href = data.redirectUrl;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not submit your booking.");
+      if (data.mode === "redirect" && data.redirectUrl) {
+        window.location.assign(data.redirectUrl);
+        return;
+      }
+      const confirmedId = data.bookingId || attemptBookingId;
+      window.location.assign(`${BASE_PATH}/bookings/status?id=${encodeURIComponent(confirmedId)}`);
     } catch (err) {
       setPaymentError(err.message || "Something went wrong. Please try again.");
       setPaymentLoading(false);
@@ -351,9 +358,13 @@ export default function BookingNew() {
       tripDetails = `Intercity Travels (${numDays} Day${plural(numDays)})`;
     }
 
-    const payStatus =
-      paymentMethod === "full" ? "Paid 100% Full UPI" :
-      `Paid ₹${requiredAdvance} Advance UPI (Balance to Driver)`;
+    const payStatus = sheetOnly
+      ? (activePaymentMethod === "full"
+          ? `Request — full fare ₹${finalTotal} (to be collected)`
+          : `Request — ₹${requiredAdvance} advance (₹${payToDriverAmount} to driver)`)
+      : activePaymentMethod === "full"
+        ? "Paid 100% Full UPI"
+        : `Paid ₹${requiredAdvance} Advance UPI (Balance to Driver)`;
 
     return `Hello Global Air Travels,
 
@@ -617,40 +628,57 @@ Please confirm my booking. Thank you!`;
 
                     <hr style={{ border: "none", borderTop: "1px solid var(--border-color)", margin: 0 }} />
 
-                    {/* ── Section 3: Review & Pay ── */}
+                    {/* ── Section 3: Review ── */}
                     <div style={{ padding: "1.5rem 0 0.5rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
                         <div style={{ width: "2rem", height: "2rem", borderRadius: "50%", border: "2px solid var(--text-dark)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.85rem", color: "var(--text-dark)", flexShrink: 0 }}>3</div>
-                        <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "var(--text-dark)" }}>Review &amp; Pay</span>
+                        <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "var(--text-dark)" }}>
+                          {sheetOnly ? "Review & Request" : "Review & Pay"}
+                        </span>
                       </div>
 
-                      {/* Payment method selection */}
                       <div className="payment-methods" role="radiogroup" aria-label="Payment Mode" style={{ marginBottom: "1rem" }}>
-                        <div className={`payment-method-card ${paymentMethod === "full" ? "selected" : ""}`} onClick={() => handleSelectPaymentMethod("full")}>
-                          <input type="radio" id="radio-full" name="payment-preference" checked={paymentMethod === "full"} onChange={() => {}} className="payment-radio" />
-                          <div className="payment-method-info">
-                            <label htmlFor="radio-full" className="payment-method-name">
-                              Pay Full Online (₹{finalTotal})
-                              <span className="payment-badge">Zero Fees</span>
-                            </label>
-                            <span className="payment-method-desc">Pay full ₹{finalTotal} online now using GPay/PhonePe/UPI.</span>
+                        {allowedPaymentOptions.includes("full") && (
+                          <div className={`payment-method-card ${activePaymentMethod === "full" ? "selected" : ""}`} onClick={() => handleSelectPaymentMethod("full")}>
+                            <input type="radio" id="radio-full" name="payment-preference" checked={activePaymentMethod === "full"} onChange={() => {}} className="payment-radio" />
+                            <div className="payment-method-info">
+                              <label htmlFor="radio-full" className="payment-method-name">
+                                {sheetOnly ? `Full fare (₹${finalTotal})` : `Pay Full Online (₹${finalTotal})`}
+                                <span className="payment-badge">Zero Fees</span>
+                              </label>
+                              <span className="payment-method-desc">
+                                {sheetOnly
+                                  ? `We'll confirm the full ₹${finalTotal} when we call or WhatsApp you.`
+                                  : `Pay full ₹${finalTotal} online now using UPI / card.`}
+                              </span>
+                            </div>
                           </div>
-                        </div>
+                        )}
 
-                        <div className={`payment-method-card ${paymentMethod === "advance" ? "selected" : ""}`} onClick={() => handleSelectPaymentMethod("advance")}>
-                          <input type="radio" id="radio-advance" name="payment-preference" checked={paymentMethod === "advance"} onChange={() => {}} className="payment-radio" />
-                          <div className="payment-method-info">
-                            <label htmlFor="radio-advance" className="payment-method-name">
-                              Pay Booking Advance (₹{requiredAdvance})
-                              <span className="payment-badge">Leaflet Policy</span>
-                            </label>
-                            <span className="payment-method-desc">Pay ₹{requiredAdvance} now via GPay/PhonePe to secure booking. Pay balance ₹{payToDriverAmount} to driver.</span>
+                        {allowedPaymentOptions.includes("advance") && (
+                          <div className={`payment-method-card ${activePaymentMethod === "advance" ? "selected" : ""}`} onClick={() => handleSelectPaymentMethod("advance")}>
+                            <input type="radio" id="radio-advance" name="payment-preference" checked={activePaymentMethod === "advance"} onChange={() => {}} className="payment-radio" />
+                            <div className="payment-method-info">
+                              <label htmlFor="radio-advance" className="payment-method-name">
+                                {sheetOnly ? `Advance (₹${requiredAdvance})` : `Pay Booking Advance (₹${requiredAdvance})`}
+                                <span className="payment-badge">Leaflet Policy</span>
+                              </label>
+                              <span className="payment-method-desc">
+                                {sheetOnly
+                                  ? `₹${requiredAdvance} advance to confirm. Balance ₹${payToDriverAmount} to the driver.`
+                                  : `Pay ₹${requiredAdvance} now. Pay balance ₹${payToDriverAmount} to the driver.`}
+                              </span>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
 
                       <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center", opacity: paymentLoading ? 0.7 : 1, cursor: paymentLoading ? "wait" : "pointer" }} disabled={paymentLoading}>
-                        {paymentLoading ? "Redirecting to payment…" : `Pay Now ₹${onlinePaymentAmount}`}
+                        {paymentLoading
+                          ? (sheetOnly ? "Submitting…" : "Redirecting to payment…")
+                          : sheetOnly
+                            ? `Request booking`
+                            : `Pay Now ₹${onlinePaymentAmount}`}
                       </button>
                       {paymentError && (
                         <p role="alert" style={{ color: "var(--error-red)", fontSize: "0.8rem", marginTop: "0.75rem", textAlign: "center", fontWeight: 600 }}>
@@ -875,10 +903,10 @@ Please confirm my booking. Thank you!`;
                 <div className="bill-row" style={{ borderTop: "1px dashed var(--border-color)", paddingTop: "0.5rem", marginTop: "0.5rem" }}>
                   <span>Payment Mode:</span>
                   <span style={{ fontWeight: 600, color: "var(--primary-orange)" }}>
-                    {paymentMethod === "full"
-                      ? "Paid Full Online"
-                      : paymentMethod === "advance"
-                      ? `Paid ₹${requiredAdvance} (₹${payToDriverAmount} to Driver)`
+                    {activePaymentMethod === "full"
+                      ? (sheetOnly ? "Requested — full fare" : "Paid Full Online")
+                      : activePaymentMethod === "advance"
+                      ? `${sheetOnly ? "Requested" : "Paid"} ₹${requiredAdvance} (₹${payToDriverAmount} to Driver)`
                       : `Pay Driver ₹${totalPrice} at Trip End`}
                   </span>
                 </div>

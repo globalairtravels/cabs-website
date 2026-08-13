@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { siteConfig } from "@/config/site";
 import { bookingConfig } from "@/lib/booking-config";
+import { getCreateBookingUrl } from "@/lib/checkout-config";
 import { useAuth } from "@/context/AuthProvider";
 import AuthControl from "@/components/auth/AuthControl";
 import LoginModal from "@/components/auth/LoginModal";
@@ -492,31 +493,36 @@ export default function Home() {
   const [paymentError, setPaymentError] = useState("");
 
   const handlePhonePePay = async () => {
-    const fnUrl = siteConfig.getPaymentOrderUrl();
-    if (!fnUrl) { alert("Payment gateway not configured. Please contact support."); return; }
+    const fnUrl = getCreateBookingUrl();
+    if (!fnUrl) { alert("Booking is temporarily unavailable. Please contact support."); return; }
     setPaymentLoading(true);
     setPaymentError("");
     try {
       const bookingDetails = {
         tripType, airportType, pickup, drop, date, time,
-        cab: selectedCab.name, seats: selectedCab.seats,
-        totalPrice, paymentMethod,
+        cab: selectedCab.name, cabId: selectedCab.id, seats: selectedCab.seats,
+        totalPrice, finalTotal: totalPrice, paymentMethod,
         name, email, pickupAddress, flightNumber,
+        address: pickupAddress,
       };
       const res = await fetch(fnUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bookingId,
-          amount: onlinePaymentAmount * 100,
           customerPhone: phone,
           uid: user?.uid ?? null,
+          paymentMethod,
           bookingDetails,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Payment initiation failed");
-      window.location.href = data.redirectUrl;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not submit your booking.");
+      if (data.mode === "redirect" && data.redirectUrl) {
+        window.location.assign(data.redirectUrl);
+        return;
+      }
+      window.location.assign(`${BASE_PATH}/bookings/status?id=${encodeURIComponent(data.bookingId || bookingId)}`);
     } catch (err) {
       setPaymentError(err.message || "Something went wrong. Please try again.");
       setPaymentLoading(false);

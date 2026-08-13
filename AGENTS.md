@@ -13,9 +13,11 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Output**: Static export (`out/` directory generated via `npm run build`).
 
 ## Key Guidelines & Conventions
-1. **Dynamic Configuration (`src/config/site.js`)**:
-   - All critical metadata, route packages, cab vehicle types, per-km pricing, driver allowance, UPI payee IDs, and company phone numbers (`+919844082581`) are maintained in `src/config/site.js`.
-   - **Never** hardcode pricing, route descriptions, vehicle capacities, or contact details in pages or components. Always reference them from `siteConfig`.
+1. **Dynamic Configuration**:
+   - Branding, contact numbers, and leaflet copy live in `src/config/site.js`.
+   - Fares, cabs, cities, and promos live in `firestore/config.booking.json` (read via `src/lib/booking-config.js`).
+   - Checkout policy (Google Sheet vs PhonePe/Razorpay, advance vs full per booking type) lives in `firestore/config.checkout.json` (read via `src/lib/checkout-config.js`). The Cloud Function copies this file on deploy.
+   - **Never** hardcode pricing, payment-option policy, vehicle capacities, or contact details in pages. The browser always POSTs `NEXT_PUBLIC_BOOKINGS_API_URL/new` — it does not call a gateway-specific URL.
 2. **Brand & Design Style**:
    - The design is modeled after a premium travel agency (e.g. Cleartrip-like layout) optimized for mobile responsiveness.
    - Core colors are defined in `:root` CSS variables in `globals.css`:

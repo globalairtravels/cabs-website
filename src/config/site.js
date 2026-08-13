@@ -343,38 +343,20 @@ export const siteConfig = {
     }
   },
 
-  // Payment gateway configuration
+  // Checkout policy (which PG, advance vs full, sheet capture) lives in
+  // firestore/config.checkout.json via src/lib/checkout-config.js.
+  // The browser always POSTs NEXT_PUBLIC_BOOKINGS_API_URL/new.
   payment: {
-    // Active gateway. The single "payments" Cloud Function routes by this name.
-    gateway: "phonepe",
-
-    // Base URL of the payments Cloud Function (include the function name, no trailing slash).
-    // Endpoints are routed by gateway name after the base:
-    //   POST {apiBaseUrl}/{gateway}/orders/new        → { redirectUrl, bookingId }
-    //   GET  {apiBaseUrl}/{gateway}/orders/{orderId}  → { paymentStatus }
-    //   POST {apiBaseUrl}/{gateway}/webhook           ← register in gateway dashboard
-    // Set NEXT_PUBLIC_PAYMENTS_API_URL to the full function URL, e.g.
-    //   https://asia-south1-<project-id>.cloudfunctions.net/payments
-    apiBaseUrl: process.env.NEXT_PUBLIC_PAYMENTS_API_URL || "",
-
-    phonepe: {
-      successPath: "/bookings/status",
-      failurePath: "/bookings/status",
-    },
-
-    razorpay: {
-      // Future — add the adapter under functions/payments/gateways/ and export it.
-      successPath: "/bookings/status",
-      failurePath: "/bookings/status",
-    },
+    apiBaseUrl: process.env.NEXT_PUBLIC_BOOKINGS_API_URL || process.env.NEXT_PUBLIC_PAYMENTS_API_URL || "",
+    successPath: "/bookings/status",
+    failurePath: "/bookings/status",
   },
 
-  // Build the create-order endpoint for the active (or given) gateway.
-  // Returns "" when the API base URL isn't configured so callers can degrade.
-  getPaymentOrderUrl(gateway) {
+  // Legacy helper — prefer getCreateBookingUrl() from checkout-config.
+  getPaymentOrderUrl() {
     const base = this.payment.apiBaseUrl;
     if (!base) return "";
-    return `${base.replace(/\/+$/, "")}/${gateway || this.payment.gateway}/orders/new`;
+    return `${base.replace(/\/+$/, "")}/new`;
   },
 
   // Booking Rules & Notes

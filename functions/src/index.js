@@ -4,17 +4,21 @@ if (!admin.apps.length) {
   admin.initializeApp();
 }
 
-const { createGatewayRouter } = require("./payments/handler");
+const { createBookingsRouter } = require("./bookings/handler");
 const phonepeAdapter = require("./payments/gateways/phonepe");
+const razorpayAdapter = require("./payments/gateways/razorpay");
 
-// Single "payments" function routes all gateways by path prefix. Endpoints:
-//   POST /payments/<gateway>/orders/new        — create order, returns { redirectUrl }
-//   GET  /payments/<gateway>/orders/<orderId>  — reconcile + return { paymentStatus }
-//   POST /payments/<gateway>/webhook           — gateway → booking status updates
-//
-// To add a gateway: drop an adapter in payments/gateways/ and add it to the map below.
-// const razorpayAdapter = require("./payments/gateways/razorpay");
-exports.payments = createGatewayRouter({
+// Single function. Frontend always POSTs /new — config decides sheet-only vs a gateway.
+//   POST /bookings/new
+//   GET  /bookings/:bookingId
+//   POST /bookings/webhooks/phonepe
+//   POST /bookings/webhooks/razorpay
+const router = createBookingsRouter({
   phonepe: phonepeAdapter,
-  // razorpay: razorpayAdapter,
+  razorpay: razorpayAdapter,
 });
+
+exports.bookings = router;
+// Same router under the previous function name so an already-deployed `payments`
+// URL keeps working after a redeploy.
+exports.payments = router;

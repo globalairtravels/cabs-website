@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "updatedAt": "2026-08-13T00:00:00.000Z",
+  "sheet": {
+    "enabled": true
+  },
+  "gateways": {
+    "phonepe": {
+      "enabled": false
+    },
+    "razorpay": {
+      "enabled": false
+    }
+  },
+  "defaultGateway": null,
+  "advanceRupeesPerDay": 500,
+  "paymentOptions": {
+    "default": ["advance"],
+    "byBookingType": {
+      "airport": ["advance", "full"],
+      "city": ["advance"],
+      "intercity": ["advance", "full"],
+      "tempo": ["advance"]
+    }
+  }
+}
