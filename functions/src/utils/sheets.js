@@ -2,7 +2,7 @@ const { google } = require("googleapis");
 const { defineSecret, defineString } = require("firebase-functions/params");
 
 const SPREADSHEET_ID = defineSecret("GOOGLE_SHEETS_SPREADSHEET_ID");
-const SHEET_TAB = defineString("GOOGLE_SHEETS_TAB", { default: "BookingRequests" });
+const SHEET_TAB = defineString("GOOGLE_SHEETS_TAB", { default: "CabBookings" });
 
 const HEADERS = [
   "bookingId",
@@ -64,7 +64,7 @@ function spreadsheetId() {
 }
 
 function tabName() {
-  return (SHEET_TAB.value() || process.env.GOOGLE_SHEETS_TAB || "BookingRequests").trim();
+  return (SHEET_TAB.value() || process.env.GOOGLE_SHEETS_TAB || "CabBookings").trim();
 }
 
 async function getSheetsClient() {
