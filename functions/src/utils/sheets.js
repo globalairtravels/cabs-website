@@ -6,36 +6,51 @@ const SHEET_TAB = defineString("GOOGLE_SHEETS_TAB", { default: "CabBookings" });
 
 const HEADERS = [
   "bookingId",
-  "createdAt",
-  "updatedAt",
   "status",
-  "gateway",
   "name",
   "phone",
-  "email",
-  "address",
-  "tripType",
-  "pickup",
-  "drop",
   "date",
   "time",
-  "days",
-  "estKm",
-  "flightNumber",
+  "pickup",
+  "drop",
+  "tripType",
   "cab",
-  "cabId",
-  "seats",
-  "fare",
-  "promo",
-  "discount",
-  "finalTotal",
   "paymentOption",
   "advanceAmount",
   "balanceToDriver",
   "amountPaid",
+  "finalTotal",
+  "address",
+  "flightNumber",
+  "days",
+  "estKm",
+  "email",
+  "fare",
+  "promo",
+  "discount",
+  "seats",
+  "cabId",
+  "gateway",
   "uid",
   "notes",
+  "createdAt",
+  "updatedAt",
 ];
+
+function lastCol() {
+  let n = HEADERS.length;
+  let label = "";
+  while (n > 0) {
+    const rem = (n - 1) % 26;
+    label = String.fromCharCode(65 + rem) + label;
+    n = Math.floor((n - 1) / 26);
+  }
+  return label;
+}
+
+function headersMatch(row) {
+  return Array.isArray(row) && HEADERS.length === row.length && HEADERS.every((name, i) => row[i] === name);
+}
 
 function nowIst() {
   return new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: false });
@@ -102,55 +117,76 @@ async function ensureTabAndHeader(sheets, id, tab) {
     });
   }
 
-  const header = await sheets.spreadsheets.values.get({
+  const all = await sheets.spreadsheets.values.get({
     spreadsheetId: id,
-    range: `${quoteTab(tab)}!1:1`,
+    range: quoteTab(tab),
   });
-  const row = header.data.values?.[0] || [];
-  if (row[0] === HEADERS[0]) return;
+  const rows = all.data.values || [];
+  const existingHeader = rows[0] || [];
+  if (headersMatch(existingHeader)) return;
 
+  const remapped = rows.slice(1).map((row) => {
+    const byName = {};
+    existingHeader.forEach((name, i) => {
+      byName[name] = row[i] ?? "";
+    });
+    return HEADERS.map((name) => byName[name] ?? "");
+  });
+
+  await sheets.spreadsheets.values.clear({
+    spreadsheetId: id,
+    range: quoteTab(tab),
+  });
   await sheets.spreadsheets.values.update({
     spreadsheetId: id,
     range: `${quoteTab(tab)}!A1`,
     valueInputOption: "RAW",
-    requestBody: { values: [HEADERS] },
+    requestBody: { values: [HEADERS, ...remapped] },
   });
 }
 
-function rowFromRecord(record, { createdAt, updatedAt, amountPaid } = {}) {
+function fieldMap(record, { createdAt, updatedAt, amountPaid } = {}) {
   const details = record.bookingDetails || {};
-  return [
-    record.bookingId || "",
-    createdAt || nowIst(),
-    updatedAt || nowIst(),
-    record.paymentStatus || "",
-    record.paymentGateway || "none",
-    details.name || "",
-    record.customerPhone || details.phone || "",
-    details.email || "",
-    details.address || "",
-    details.tripType || "",
-    details.pickup || "",
-    details.drop || "",
-    details.date || "",
-    details.time || "",
-    details.cityDays || details.tempoDays || details.days || "",
-    details.tempoEstKm || details.estKm || "",
-    details.flightNumber || "",
-    details.cab || "",
-    details.cabId || "",
-    details.seats || "",
-    details.totalPrice ?? "",
-    details.promoCode || "",
-    details.promoDiscount ?? "",
-    details.finalTotal ?? details.totalPrice ?? "",
-    details.paymentMethod || "",
-    details.onlinePaymentAmount ?? "",
-    details.payToDriverAmount ?? "",
-    amountPaid ?? rupees(record.amount),
-    record.uid || "",
-    details.notes || "",
-  ].map((value) => (value == null ? "" : String(value)));
+  return {
+    bookingId: record.bookingId || "",
+    status: record.paymentStatus || "",
+    name: details.name || "",
+    phone: record.customerPhone || details.phone || "",
+    date: details.date || "",
+    time: details.time || "",
+    pickup: details.pickup || "",
+    drop: details.drop || "",
+    tripType: details.tripType || "",
+    cab: details.cab || "",
+    paymentOption: details.paymentMethod || "",
+    advanceAmount: details.onlinePaymentAmount ?? "",
+    balanceToDriver: details.payToDriverAmount ?? "",
+    amountPaid: amountPaid ?? rupees(record.amount),
+    finalTotal: details.finalTotal ?? details.totalPrice ?? "",
+    address: details.address || "",
+    flightNumber: details.flightNumber || "",
+    days: details.cityDays || details.tempoDays || details.days || "",
+    estKm: details.tempoEstKm || details.estKm || "",
+    email: details.email || "",
+    fare: details.totalPrice ?? "",
+    promo: details.promoCode || "",
+    discount: details.promoDiscount ?? "",
+    seats: details.seats || "",
+    cabId: details.cabId || "",
+    gateway: record.paymentGateway || "none",
+    uid: record.uid || "",
+    notes: details.notes || "",
+    createdAt: createdAt || nowIst(),
+    updatedAt: updatedAt || nowIst(),
+  };
+}
+
+function rowFromRecord(record, extras = {}) {
+  const fields = fieldMap(record, extras);
+  return HEADERS.map((name) => {
+    const value = fields[name];
+    return value == null ? "" : String(value);
+  });
 }
 
 async function appendBookingRow(record) {
@@ -216,7 +252,7 @@ async function updateBookingRow(bookingId, patch) {
 
   const current = await sheets.spreadsheets.values.get({
     spreadsheetId: id,
-    range: `${quoteTab(tab)}!A${rowNumber}:AD${rowNumber}`,
+    range: `${quoteTab(tab)}!A${rowNumber}:${lastCol()}${rowNumber}`,
   });
   const existing = current.data.values?.[0] || [];
   while (existing.length < HEADERS.length) existing.push("");
@@ -229,7 +265,7 @@ async function updateBookingRow(bookingId, patch) {
 
   await sheets.spreadsheets.values.update({
     spreadsheetId: id,
-    range: `${quoteTab(tab)}!A${rowNumber}:AD${rowNumber}`,
+    range: `${quoteTab(tab)}!A${rowNumber}:${lastCol()}${rowNumber}`,
     valueInputOption: "RAW",
     requestBody: { values: [existing] },
   });
