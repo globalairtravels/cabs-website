@@ -117,31 +117,17 @@ async function ensureTabAndHeader(sheets, id, tab) {
     });
   }
 
-  const all = await sheets.spreadsheets.values.get({
+  const header = await sheets.spreadsheets.values.get({
     spreadsheetId: id,
-    range: quoteTab(tab),
+    range: `${quoteTab(tab)}!1:1`,
   });
-  const rows = all.data.values || [];
-  const existingHeader = rows[0] || [];
-  if (headersMatch(existingHeader)) return;
+  if (headersMatch(header.data.values?.[0] || [])) return;
 
-  const remapped = rows.slice(1).map((row) => {
-    const byName = {};
-    existingHeader.forEach((name, i) => {
-      byName[name] = row[i] ?? "";
-    });
-    return HEADERS.map((name) => byName[name] ?? "");
-  });
-
-  await sheets.spreadsheets.values.clear({
-    spreadsheetId: id,
-    range: quoteTab(tab),
-  });
   await sheets.spreadsheets.values.update({
     spreadsheetId: id,
     range: `${quoteTab(tab)}!A1`,
     valueInputOption: "RAW",
-    requestBody: { values: [HEADERS, ...remapped] },
+    requestBody: { values: [HEADERS] },
   });
 }
 
