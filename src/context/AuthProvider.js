@@ -60,6 +60,9 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  // False until the first onAuthStateChanged. Cached user is only for the
+  // header — Firestore queries must wait for a real Auth token.
+  const [authReady, setAuthReady] = useState(false);
 
   // reCAPTCHA verifier + the pending confirmationResult live across the two
   // OTP steps, so they are kept in refs rather than state.
@@ -91,19 +94,24 @@ export function AuthProvider({ children }) {
     // Restore cached snapshot instantly so the header doesn't flash
     // "Log in" while Firebase validates the token in the background.
     const cached = readCache();
-    if (cached) {
-      setUser({ uid: cached.uid, phoneNumber: cached.phoneNumber });
-      setProfile(cached);
-      setLoading(false);
-    }
+    const cacheTimer = cached
+      ? setTimeout(() => {
+          setUser({ uid: cached.uid, phoneNumber: cached.phoneNumber });
+          setProfile(cached);
+          setLoading(false);
+        }, 0)
+      : null;
 
     const auth = getFirebaseAuth();
     if (!auth) {
-      if (!cached) {
-        const t = setTimeout(() => setLoading(false), 0);
-        return () => clearTimeout(t);
-      }
-      return;
+      const t = setTimeout(() => {
+        setLoading(false);
+        setAuthReady(true);
+      }, 0);
+      return () => {
+        if (cacheTimer) clearTimeout(cacheTimer);
+        clearTimeout(t);
+      };
     }
     const unsub = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
@@ -121,8 +129,12 @@ export function AuthProvider({ children }) {
         clearCache();
       }
       setLoading(false);
+      setAuthReady(true);
     });
-    return unsub;
+    return () => {
+      if (cacheTimer) clearTimeout(cacheTimer);
+      unsub();
+    };
   }, [loadProfile]);
 
   // ----- reCAPTCHA -----
@@ -213,6 +225,7 @@ export function AuthProvider({ children }) {
     user,
     profile,
     loading,
+    authReady,
     isConfigured: isFirebaseConfigured,
     sendOtp,
     confirmOtp,
@@ -232,6 +245,7 @@ export function useAuth() {
       user: null,
       profile: null,
       loading: false,
+      authReady: true,
       isConfigured: false,
       sendOtp: async () => { throw new Error("Auth unavailable"); },
       confirmOtp: async () => { throw new Error("Auth unavailable"); },

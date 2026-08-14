@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
 import { useAuth } from "@/context/AuthProvider";
 import { getDb } from "@/lib/firebase";
@@ -34,39 +34,52 @@ function routeOf(details) {
   return drop ? `${pickup} → ${drop}` : pickup || "—";
 }
 
+function createdAtMs(value) {
+  if (!value) return 0;
+  if (typeof value.toMillis === "function") return value.toMillis();
+  const d = typeof value.toDate === "function" ? value.toDate() : new Date(value);
+  const ms = d.getTime();
+  return Number.isNaN(ms) ? 0 : ms;
+}
+
 export default function MyBookingsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, authReady } = useAuth();
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const fetchedFor = useRef(null);
 
   useEffect(() => {
-    if (authLoading) return undefined;
+    if (!authReady) return undefined;
     if (!user) {
       const t = setTimeout(() => setLoading(false), 0);
       return () => clearTimeout(t);
     }
-    if (fetchedFor.current === user.uid) return undefined;
 
     let cancelled = false;
+    const uid = user.uid;
     const run = async () => {
       const db = getDb();
       if (!db) {
-        if (!cancelled) { setError("Bookings are unavailable right now."); setLoading(false); }
+        if (!cancelled) {
+          setError("Bookings are unavailable right now.");
+          setLoading(false);
+        }
         return;
       }
       try {
-        fetchedFor.current = user.uid;
-        const q = query(
-          collection(db, "bookings"),
-          where("uid", "==", user.uid),
-          orderBy("createdAt", "desc")
-        );
-        const snap = await getDocs(q);
+        const owned = collection(db, "bookings");
+        let snap;
+        try {
+          snap = await getDocs(query(owned, where("uid", "==", uid), orderBy("createdAt", "desc")));
+        } catch {
+          snap = await getDocs(query(owned, where("uid", "==", uid)));
+        }
         if (cancelled) return;
-        setBookings(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        list.sort((a, b) => createdAtMs(b.createdAt) - createdAtMs(a.createdAt));
+        setBookings(list);
+        setError("");
       } catch (err) {
         if (!cancelled) setError(err?.message || "Could not load your bookings.");
       } finally {
@@ -75,9 +88,9 @@ export default function MyBookingsPage() {
     };
     run();
     return () => { cancelled = true; };
-  }, [user, authLoading]);
+  }, [user, authReady]);
 
-  const busy = authLoading || loading;
+  const busy = !authReady || loading;
 
   return (
     <div className="flex flex-col min-h-screen account-page-bg">
